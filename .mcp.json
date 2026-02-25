@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "xano": {
+      "type": "sse",
+      "url": "https://xano.atlanticsoft.co/x2/mcp/meta/mcp/sse?filter=logic,database,ai,audit",
+      "headers": {
+        "Authorization": "Bearer ${XANO_TOKEN}"
+      }
+    }
+  }
+}
