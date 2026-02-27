@@ -100,3 +100,27 @@ After every change:
 5. No obvious runtime errors (check for undefined references, missing imports)
 
 If any check fails, **fix and re-verify** — don't just report the issue.
+
+## Delivery Reporting
+
+When working on a task, update the delivery log at `features/delivery/<ID>.md`.
+
+**When to write**: When starting and completing extension work.
+
+**What to write**: The `## DEV: Extension` stage.
+
+**Format** (see `features/DELIVERY_FORMAT.md` for full spec):
+```markdown
+## DEV: Extension
+- **Status**: in-progress
+- **Agent**: chrome-ext-developer
+- **Date**: YYYY-MM-DD
+- **Notes**: What was changed. Version increment. Which extension(s) affected.
+- **Commits**: linked_communication@hash
+```
+
+**Rules**:
+- Set status to `in-progress` when starting work. Update to `done` when complete and verified.
+- Include commit hashes in `Commits` if you made git commits.
+- Note the version increment and which extension(s) were modified.
+- Append to the file if it exists; the PM should have already created it.

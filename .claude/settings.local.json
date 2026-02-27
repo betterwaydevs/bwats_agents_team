@@ -71,7 +71,8 @@
         "Grep",
         "Glob",
         "WebFetch(domain:docs.xano.com)",
-        "WebFetch(domain:xano.atlanticsoft.co)"
+        "WebFetch(domain:xano.atlanticsoft.co)",
+        "WebFetch"
     ]
   }
 }

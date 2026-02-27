@@ -47,11 +47,19 @@ Discovered patterns, gotchas, and best practices for the team orchestrator (the 
 - **Solution**: The PM (orchestrator) must enforce a strict delivery checklist: (1) Call the actual API endpoint and verify the response data is correct, (2) Run Playwright tests and visually inspect screenshots — don't just check pass/fail, (3) For user-reported bugs, test the exact URL on live, (4) For API integrations, verify the real external API returns data before testing the frontend. Never mark a task done until the report screenshot proves the feature works with real data.
 - **Date**: 2026-02-27
 
+### XanoScript timestamp inputs must be nullable for optional filter params
+- **Issue**: Deployed `touchpoint_after` and `touchpoint_before` as `timestamp touchpoint_after?` (optional but NOT nullable). With `nullable: false`, Xano coerces the missing value to a default (likely `0` epoch) instead of `null`. In the lambda, the truthiness check `if (touchpoint_after_filter || touchpoint_before_filter)` could behave unpredictably because `0` is falsy but other coerced defaults might not be. The filters appeared to be silently ignored.
+- **Solution**: Use `timestamp? touchpoint_after?` (nullable type + optional field) so that when the input is omitted, it is truly `null` in the lambda. The `?` on the type = nullable, the `?` on the field name = optional. Also, always re-publish via `updateAPI` with `publish: true` after changes to force a function stack recompile.
+- **Date**: 2026-02-27
+
 ---
 
 ## Team Coordination
 
-_(Add entries as patterns are discovered)_
+### Orchestrator must delegate, never implement
+- **Issue**: The orchestrator was reading files, writing code, and running TypeScript checks directly — consuming context on implementation details instead of preserving it for coordination and tracking. Even "simple" single-file tasks were handled inline, causing context to fill up with code rather than task status.
+- **Solution**: The orchestrator NEVER executes implementation work (no Edit, no Write to code files, no running builds/tests). Every task — even a single-file change — gets delegated to the appropriate subagent via `Task` tool (doesn't require `TeamCreate`). The orchestrator's job is: (1) understand the request, (2) delegate with clear instructions, (3) track results, (4) report back to the user. This keeps orchestrator context focused on coordination.
+- **Date**: 2026-02-27
 
 ---
 
@@ -60,6 +68,23 @@ _(Add entries as patterns are discovered)_
 _(Add entries as patterns are discovered)_
 
 ---
+
+## API & Backend Verification
+
+### XanoScript: itemsTotal vs items.length After Post-Query Filtering
+- **Issue**: When filtering in a `api.lambda` (JavaScript) after the Xano pagination query, `itemsTotal` reflects the pre-filter DB count. `items.length` / `itemsReceived` reflect the actual filtered count. When verifying filters via curl, check `items.length`, NOT `itemsTotal`.
+- **Solution**: Always check `.items.length` (or `.itemsReceived`) in curl tests. The `itemsTotal` is set by Xano's paginated query before the lambda runs.
+- **Date**: 2026-02-27
+
+### Xano API Canonical: `_dY_2A8p` is Association (NOT `UVhvxoOh`)
+- **Issue**: CLAUDE.md and multiple agent prompts incorrectly list `UVhvxoOh` as the association API canonical. This canonical does NOT exist on any Xano branch. The correct canonical for the association group is `_dY_2A8p`.
+- **Solution**: Use `_dY_2A8p` for all association API calls. The `UVhvxoOh` canonical in docs is a phantom — needs cleanup.
+- **Date**: 2026-02-27
+
+### Playwright Screenshots: Login Credentials & Grid Selectors
+- **Issue**: Login password is `$123456` (from `bwats_xano/.env`), not `betterway1`. Grid defaults to "Pre Selected" tab (9 rows), not "All Stages" (24+ rows). Need to click "All Stages" tab to see full dataset.
+- **Solution**: Read credentials from `bwats_xano/.env`. After navigating to grid, click `button[role="tab"]:has-text("All Stages")` to show all people.
+- **Date**: 2026-02-27
 
 ## How to Add Learnings
 

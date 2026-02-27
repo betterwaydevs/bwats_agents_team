@@ -103,3 +103,27 @@ When integrating with Xano backend APIs:
 - This project syncs with **Lovable.dev** — maintain the existing structure
 - Use existing components before creating new ones
 - Keep the Lovable-compatible structure intact
+
+## Delivery Reporting
+
+When working on a task, update the delivery log at `features/delivery/<ID>.md`.
+
+**When to write**: When starting and completing frontend work.
+
+**What to write**: The `## DEV: Frontend` stage.
+
+**Format** (see `features/DELIVERY_FORMAT.md` for full spec):
+```markdown
+## DEV: Frontend
+- **Status**: in-progress
+- **Agent**: frontend-developer
+- **Date**: YYYY-MM-DD
+- **Notes**: What components/pages were created or modified. Build status.
+- **Commits**: nearshore-talent-compass@hash
+```
+
+**Rules**:
+- Set status to `in-progress` when starting work. Update to `done` when complete and build passes.
+- Include commit hashes in `Commits` if you made git commits.
+- Describe components/pages built or modified in Notes.
+- Append to the file if it exists; the PM should have already created it.

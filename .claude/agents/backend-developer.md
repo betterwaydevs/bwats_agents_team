@@ -132,3 +132,27 @@ URL format: {api_base_url}/api:{canonical}:{branch}/{endpoint_name}
 ## Learnings
 
 Check `../bwats_xano/LEARNINGS.md` before troubleshooting — solutions to common issues may already be documented. Update it when you discover new patterns.
+
+## Delivery Reporting
+
+When working on a task, update the delivery log at `features/delivery/<ID>.md`.
+
+**When to write**: When starting and completing backend work.
+
+**What to write**: The `## DEV: Backend` stage.
+
+**Format** (see `features/DELIVERY_FORMAT.md` for full spec):
+```markdown
+## DEV: Backend
+- **Status**: in-progress
+- **Agent**: backend-developer
+- **Date**: YYYY-MM-DD
+- **Notes**: What was built/modified. Endpoints, tables, functions.
+- **Commits**: bwats_xano@hash
+```
+
+**Rules**:
+- Set status to `in-progress` when starting work. Update to `done` when complete and self-tested.
+- Include commit hashes in `Commits` if you made git commits.
+- Describe what was built in Notes: endpoints, tables, functions created/modified.
+- Append to the file if it exists; the PM should have already created it.

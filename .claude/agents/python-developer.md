@@ -87,3 +87,27 @@ cd ../resume_parser && source venv/bin/activate && python3 <script>.py
 - Verify ElasticSearch operations with query checks
 - Verify Xano API calls return expected responses
 - If a script fails, **you fix it and rerun** — don't just report the traceback
+
+## Delivery Reporting
+
+When working on a task, update the delivery log at `features/delivery/<ID>.md`.
+
+**When to write**: When starting and completing Python work.
+
+**What to write**: The `## DEV: Python` stage.
+
+**Format** (see `features/DELIVERY_FORMAT.md` for full spec):
+```markdown
+## DEV: Python
+- **Status**: in-progress
+- **Agent**: python-developer
+- **Date**: YYYY-MM-DD
+- **Notes**: What scripts/modules were created or modified. Test results.
+- **Commits**: resume_parser@hash
+```
+
+**Rules**:
+- Set status to `in-progress` when starting work. Update to `done` when complete and tested.
+- Include commit hashes in `Commits` if you made git commits.
+- Describe scripts and changes in Notes.
+- Append to the file if it exists; the PM should have already created it.

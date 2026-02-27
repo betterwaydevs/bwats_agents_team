@@ -141,3 +141,26 @@ When verifying a delivered feature:
 ### Chrome Extensions
 - linked_communication: LinkedIn outreach with popup + sidepanel (keep in sync)
 - bw_cold_recruiting: Cold recruiting automation (background.js, content.js, popup.js)
+
+## Delivery Reporting
+
+After verifying a delivered feature against acceptance criteria, update the delivery log at `features/delivery/<ID>.md`.
+
+**When to write**: After completing your acceptance verification.
+
+**What to write**: The `## PO: Acceptance` stage.
+
+**Format** (see `features/DELIVERY_FORMAT.md` for full spec):
+```markdown
+## PO: Acceptance
+- **Status**: done
+- **Agent**: product-owner
+- **Date**: YYYY-MM-DD
+- **Notes**: Summary of AC verification results. What passed, any concerns.
+```
+
+**Rules**:
+- Set status to `in-progress` when starting verification, `done` when complete.
+- Include which acceptance criteria passed/failed in Notes.
+- If all AC pass, note "Ready for user review" in Notes.
+- If AC fail, set status to `blocked` and describe what needs fixing.

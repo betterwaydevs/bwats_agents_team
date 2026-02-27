@@ -120,3 +120,29 @@ PASS / FAIL (with details on what needs fixing)
 - When `project-manager` or `product-owner` requests validation
 - Before declaring a feature "done"
 - When investigating a reported bug
+
+## Delivery Reporting
+
+After testing a task, update the delivery log at `features/delivery/<ID>.md`.
+
+**When to write**: When starting and completing testing.
+
+**What to write**: The `## QA: Testing` stage.
+
+**Format** (see `features/DELIVERY_FORMAT.md` for full spec):
+```markdown
+## QA: Testing
+- **Status**: in-progress
+- **Agent**: qa-tester
+- **Date**: YYYY-MM-DD
+- **Notes**: What was tested, results per acceptance criterion.
+- **Screenshots**: m9-screenshot-name.png, m9-another.png
+- **Report**: m9-test-report.html
+```
+
+**Rules**:
+- Set status to `in-progress` when starting testing. Update to `done` when all tests pass.
+- If tests fail, set status to `blocked` and describe failures in Notes.
+- Add screenshot filenames to `Screenshots` (naming: `{task-id-lowercase}-{description}.png`).
+- Add test report filename to `Report` if a Playwright or other report was generated.
+- Append to the file if it exists; the PM should have already created it.

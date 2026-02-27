@@ -21,7 +21,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 | P2 | Auto-Organize Housekeeper Failing to Move People | BACK | pending | — | [spec](specs/P2-auto-organize-housekeeper.md) |
 | P3 | Add Prospect — Manual E2E Test | TEST | pending | — | [spec](specs/P3-add-prospect-e2e-test.md) |
 
-| **W1** | **Multi-Agent Team Delivery Workflow** | **PROCESS** | **pending** | — | [spec](specs/W1-multi-agent-delivery-workflow.md) |
+| **W1** | **Multi-Agent Team Delivery Workflow** | **PROCESS** | **in-progress** | — | [spec](specs/W1-multi-agent-delivery-workflow.md) |
 
 ## Medium Priority
 
@@ -30,7 +30,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 | M1 | Email Account Stickiness Per Person | BACK | pending | — | [spec](specs/M1-email-account-stickiness.md) |
 | M2 | Email Event Tracking (Opens, Clicks, Bounces) | BOTH | pending | — | [spec](specs/M2-email-event-tracking.md) |
 | M3 | Auto-Reply Email for Job Applications | BOTH | pending | — | [spec](specs/M3-auto-reply-email.md) |
-| M4 | Filter People by Last Outreach Date | BOTH | pending | — | [spec](specs/M4-filter-last-outreach.md) |
+| M4 | Filter People by Last Outreach Date | BOTH | in-progress | — | [spec](specs/M4-filter-last-outreach.md) |
 | M5 | Frontend Permission UI Changes | FRONT | pending | — | [spec](specs/M5-frontend-permissions.md) |
 | M6 | Frontend LinkedIn "My Connections" Filter | FRONT | **done** | — | [spec](specs/M6-linkedin-connections-filter.md) |
 | M7 | Replace Hardcoded "Laura Pulgarin" in Templates | BACK | **done** | — | [spec](specs/M7-replace-hardcoded-name.md) |
@@ -45,6 +45,8 @@ When picking up a task, agents MUST read both the spec and progress files before
 | L2 | Prerender / SEO Meta Tags | FRONT/INFRA | pending | — | [spec](specs/L2-prerender-seo.md) |
 | L3 | LinkedIn Matching Optimization | BACK | pending | — | [spec](specs/L3-linkedin-matching.md) |
 | L4 | CoreSignal Enrichment — Manual Fix | BACK | pending | — | [spec](specs/L4-coresignal-enrichment.md) |
+| L5 | /ats CLI Skill — Interactive ATS from CLI | TOOL | **done** | — | [spec](specs/L5-ats-cli-skill.md) |
+| L6 | CLI Token Page — Browser-based auth for /ats | FRONT | pending | — | [spec](specs/L6-cli-token-page.md) |
 
 ## Quick Fixes (< 15 min each)
 
@@ -54,6 +56,8 @@ When picking up a task, agents MUST read both the spec and progress files before
 | QF2 | Fix email inbox hurl test (HTML vs JSON) | BACK | pending | — |
 | QF3 | Bulk cleanup 43 zombie "executing" tasks on dev | BACK | pending | — |
 | QF4 | Extend retry 24h cutoff for old failed tasks | BACK | pending | — |
+| QF5 | Reduce WhatsApp unread polling — only poll when dropdown open | FRONT | pending | — |
+| QF6 | Verify WHAPI webhook is delivering real messages to Xano | BACK | pending | — |
 
 ## Delegated to Intern
 

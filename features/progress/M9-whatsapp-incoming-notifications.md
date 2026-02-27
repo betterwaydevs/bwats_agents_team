@@ -2,23 +2,14 @@
 
 ## Manual Tasks for Pablo
 
-### Xano Setup (BLOCKED — token expired)
-1. **Refresh Xano MCP token** — Current `XANO_TOKEN` in `bwats_xano/.env` is rejected ("Invalid token"). Generate a new one from Xano admin panel with workspace:database scope level 7 for workspace 6. Update `.env`.
-2. **Create `whatsapp_unread` table** in Xano (or re-run the agent after token refresh):
-   - `person_id` (int, required)
-   - `person_type` (text, required — "candidate" or "prospect")
-   - `phone_number` (text)
-   - `last_message` (text)
-   - `last_message_at` (timestamp)
-   - `unread_count` (int, default 0)
-   - `message_id` (text)
-   - `created_at` (timestamp, default now)
-   - `read_at` (timestamp, nullable)
+### Xano Setup (DONE)
+1. ~~**Refresh Xano MCP token**~~ DONE — Token refreshed and working.
+2. ~~**Create `whatsapp_unread` table**~~ DONE — Table ID 201, development branch.
 3. **Check touchpoint `direction` enum** — May only have "outbound". Needs "inbound" added for webhook touchpoints.
-4. **Deploy the 3 XanoScript endpoints** via MCP to the `messaging` API group:
-   - `POST /messaging/whatsapp_webhook` (auth: none)
-   - `GET /messaging/whatsapp_unread` (auth: user)
-   - `PUT /messaging/whatsapp_mark_read` (auth: user)
+4. ~~**Deploy the 3 XanoScript endpoints**~~ DONE — All 3 deployed to messaging API group (development branch):
+   - `POST /messaging/whatsapp_webhook` (ID: 43110, auth: none)
+   - `GET /messaging/whatsapp_unread` (ID: 43111, auth: user)
+   - `PUT /messaging/whatsapp_mark_read` (ID: 43112, auth: user)
 
 ### WHAPI Configuration
 5. **Configure WHAPI webhook** — In WHAPI dashboard, set the incoming message webhook URL to:
@@ -85,4 +76,44 @@ TypeScript compiles clean (`npx tsc --noEmit` passes).
    - Sets `unread_count = 0`, `read_at = now`
 
 ### Blockers
-- **Xano MCP token expired** — Cannot create table or deploy endpoints until token is refreshed
+- ~~**Xano MCP token expired** — Cannot create table or deploy endpoints until token is refreshed~~ RESOLVED
+
+---
+
+## 2026-02-27 — Session 2: Xano Deployment
+
+### Status: Backend Deployed to Development Branch
+
+### What was deployed
+
+**Table created:**
+- `whatsapp_unread` (ID: 201) on development branch
+  - Fields: id, person_id, person_type, phone_number, last_message, last_message_at, unread_count (default 0), message_id, created_at (default now), read_at
+  - Indexes: primary(id), btree(person_id+person_type), btree(unread_count DESC), btree(last_message_at DESC)
+
+**Endpoints deployed to messaging API group (canonical: 2CPT0xvS, group ID: 1516):**
+
+1. `POST /messaging/whatsapp_webhook` (ID: 43110) — Auth: none
+   - Fixed: Removed `return` statement inside conditional (not valid in XanoScript API stacks)
+   - Fixed: Wrapped foreach in conditional instead of early return
+   - Fixed: Used lambda extraction for `as` variable dot-access (XanoScript gotcha)
+
+2. `GET /messaging/whatsapp_unread` (ID: 43111) — Auth: user JWT
+   - Fixed: Sort syntax from `[{field: "name", dir: "dir"}]` to `{table.field: "dir"}`
+   - Fixed: Used lambda extraction for all `as` variable field access
+   - Returns enriched items with person_name, person_slug, and total_unread count
+
+3. `PUT /messaging/whatsapp_mark_read` (ID: 43112) — Auth: user JWT
+   - Fixed: Used lambda extraction for unread_record.id access
+
+### XanoScript Fixes Applied During Deployment
+- `return = $var` is NOT valid inside API stack conditionals — restructured to wrap logic in conditional
+- Sort syntax is `{table.field: "dir"}` not `[{field: "name", dir: "dir"}]`
+- Lambda `as` variable dot-access is unreliable — use follow-up lambdas to extract fields
+- MCP Streamable HTTP transport used (SSE transport has auth issues per LEARNINGS.md)
+
+### Remaining Manual Tasks
+- Configure WHAPI webhook URL to point to the new endpoint
+- Set `WHAPI_WEBHOOK_SECRET` environment variable in Xano
+- Test with a real WhatsApp message
+- Verify touchpoint `direction` enum includes "inbound"

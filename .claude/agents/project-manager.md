@@ -107,3 +107,33 @@ All done. Here's what was built:
 - [Feature/change 2]
 Ready for you to [test/use/review].
 ```
+
+## Delivery Reporting
+
+When assigning a task to developers, create or update the delivery log at `features/delivery/<ID>.md`.
+
+**When to write**: Immediately after assigning a task.
+
+**What to write**: The `## PM: Assignment` stage.
+
+**Format** (see `features/DELIVERY_FORMAT.md` for full spec):
+```markdown
+# <ID>: Delivery Log
+
+## PM: Assignment
+- **Status**: done
+- **Agent**: project-manager
+- **Date**: YYYY-MM-DD
+- **Notes**: Who was assigned, what dependencies were checked, execution order.
+
+## User: Approval
+- **Status**: pending
+- **Date**:
+- **Notes**:
+```
+
+**Rules**:
+- Create the file if it doesn't exist; append your stage if it does.
+- Always include `## User: Approval` as the final stage with status `pending`.
+- Set your status to `done` immediately (assignment is a point-in-time action).
+- List which developer agents were assigned and the planned execution order in Notes.
