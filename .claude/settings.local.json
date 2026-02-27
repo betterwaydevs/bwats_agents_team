@@ -57,7 +57,10 @@
       "Grep(../**)",
       "Glob(../**)",
       "Read(/home/pablo/projects/bwats/**)",
-      "Grep(/home/pablo/projects/bwats/**)"
+      "Edit(/home/pablo/projects/bwats/**)",
+      "Write(/home/pablo/projects/bwats/**)",
+      "Grep(/home/pablo/projects/bwats/**)",
+      "Glob(/home/pablo/projects/bwats/**)"
     ]
   }
 }
