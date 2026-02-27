@@ -35,7 +35,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 | M6 | Frontend LinkedIn "My Connections" Filter | FRONT | **done** | — | [spec](specs/M6-linkedin-connections-filter.md) |
 | M7 | Replace Hardcoded "Laura Pulgarin" in Templates | BACK | **done** | — | [spec](specs/M7-replace-hardcoded-name.md) |
 | M8 | Task Supervisor Agent | BACK | pending | — | [spec](specs/M8-task-supervisor-agent.md) |
-| M9 | Incoming WhatsApp Messages & Notifications | BOTH | in-progress | — | [spec](specs/M9-whatsapp-incoming-notifications.md) |
+| M9 | Incoming WhatsApp Messages & Notifications | BOTH | **monitoring** | — | [spec](specs/M9-whatsapp-incoming-notifications.md) |
 
 ## Low Priority / Future
 
