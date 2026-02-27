@@ -71,6 +71,38 @@ The `backend-developer` team agent invokes tier-2 subagents when doing Xano work
 | auto_agents | 8MRsSZQv | Yes |
 | auth | Ks58d17q | No (for login) |
 
+## Orchestrator Learning System
+
+The team orchestrator maintains a knowledge base of discovered patterns, gotchas, and best practices in [LEARNINGS.md](./LEARNINGS.md).
+
+**Scope**: Only learnings relevant to orchestration — agent coordination, permissions, team workflows, cross-project issues, and Claude Code configuration. Project-specific learnings (XanoScript, React, Python, etc.) belong in their respective project's own LEARNINGS.md.
+
+### When to Consult LEARNINGS.md
+- **Before troubleshooting**: When encountering agent errors, permission denials, or coordination issues — check LEARNINGS.md first
+- **Before configuring agents or permissions**: Past mistakes are documented here
+- **When a problem seems familiar**: It may have been solved before
+
+### When to Update LEARNINGS.md
+You MUST append to LEARNINGS.md when you discover:
+- A permission or settings pattern that caused agent failures
+- A cross-project coordination issue and how it was resolved
+- A team workflow pattern that works well (or doesn't)
+- A Claude Code configuration quirk (agent teams, MCP, settings)
+- A solution to an error that took multiple attempts to fix
+
+### How to Update LEARNINGS.md
+1. Read the current LEARNINGS.md to find the appropriate category
+2. Append a new entry with this format:
+```markdown
+### Brief Title
+- **Issue**: What the problem or discovery is
+- **Solution**: How to fix or handle it
+- **Date**: YYYY-MM-DD
+```
+3. Keep entries concise but complete enough to be useful in future sessions
+
+**IMPORTANT**: Do NOT wait until the end of the session. Append learnings immediately when discovered, so they aren't lost if the session ends unexpectedly.
+
 ## Workflow — Three Modes
 
 ### 1. Planning Mode
