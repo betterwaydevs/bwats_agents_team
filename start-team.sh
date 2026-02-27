@@ -41,41 +41,6 @@ for arg in "$@"; do
   esac
 done
 
-# --- Load .env ---
-echo -e "${CYAN}Loading environment...${NC}"
-ENV_FILE="$SCRIPT_DIR/.env"
-
-if [ -L "$ENV_FILE" ]; then
-  # Resolve symlink
-  REAL_ENV="$(readlink -f "$ENV_FILE")"
-  if [ -f "$REAL_ENV" ]; then
-    set -a
-    source "$REAL_ENV"
-    set +a
-    echo -e "  ${GREEN}✓${NC} Loaded .env (→ $REAL_ENV)"
-  else
-    echo -e "  ${RED}✗${NC} .env symlink target not found: $REAL_ENV"
-    exit 1
-  fi
-elif [ -f "$ENV_FILE" ]; then
-  set -a
-  source "$ENV_FILE"
-  set +a
-  echo -e "  ${GREEN}✓${NC} Loaded .env"
-else
-  echo -e "  ${RED}✗${NC} No .env file found"
-  exit 1
-fi
-
-# --- Verify XANO_TOKEN ---
-if [ -z "${XANO_TOKEN:-}" ]; then
-  echo -e "  ${RED}✗${NC} XANO_TOKEN is not set"
-  exit 1
-else
-  TOKEN_PREVIEW="${XANO_TOKEN:0:20}..."
-  echo -e "  ${GREEN}✓${NC} XANO_TOKEN is set ($TOKEN_PREVIEW)"
-fi
-
 # --- Check agent definitions ---
 echo ""
 echo -e "${CYAN}Checking agent definitions...${NC}"
@@ -135,15 +100,6 @@ if command -v claude &> /dev/null; then
 else
   echo -e "  ${RED}✗${NC} Claude CLI not found. Install: npm install -g @anthropic-ai/claude-code"
   exit 1
-fi
-
-# --- Check MCP config ---
-echo ""
-echo -e "${CYAN}Checking MCP configuration...${NC}"
-if [ -f "$SCRIPT_DIR/.mcp.json" ]; then
-  echo -e "  ${GREEN}✓${NC} .mcp.json found (Xano MCP server)"
-else
-  echo -e "  ${YELLOW}⚠${NC} .mcp.json not found — MCP tools will not be available"
 fi
 
 # --- Launch ---

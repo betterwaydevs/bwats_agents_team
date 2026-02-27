@@ -56,9 +56,8 @@ The `backend-developer` team agent invokes tier-2 subagents when doing Xano work
 
 ## Environment
 
-- `.env` symlinks to `../.env` — provides `XANO_TOKEN`, `TEST_USER_EMAIL`, `TEST_USER_PASSWORD`
-- `.mcp.json` configures the Xano SSE MCP server
-- `.claude/settings.local.json` enables agent teams and sets permissions
+- Xano credentials (`XANO_TOKEN`, `TEST_USER_EMAIL`, `TEST_USER_PASSWORD`) and MCP config live in `../bwats_xano/`, not here. The `backend-developer` agent accesses them when working from that directory.
+- `.claude/settings.local.json` sets permissions for team-level operations (Bash, file access, web fetch)
 
 ## API Reference (Xano Canonicals)
 
