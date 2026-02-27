@@ -45,3 +45,9 @@
 - Kamatera has IP whitelisting — Xano server IP must be allowed
 - MCP SSE transport may return "Invalid token" — use Streamable HTTP (`/stream`) as workaround
 - Xano `api.request` response wraps in `{ headers, result, status }` — use `.response.result` to unwrap
+
+### Known Issue — Tailscale + Public IP
+- Tailscale may affect the public IP seen by Kamatera from Xano's outgoing requests
+- Need to verify Xano's outgoing IP is whitelisted in Kamatera console
+- Also check if VMs report Tailscale IPs vs public IPs in the detail response
+- User to test manually on 2026-02-28

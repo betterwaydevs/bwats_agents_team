@@ -29,9 +29,10 @@ When picking up a task, agents MUST read both the spec and progress files before
 | M3 | Auto-Reply Email for Job Applications | BOTH | pending | — | [spec](specs/M3-auto-reply-email.md) |
 | M4 | Filter People by Last Outreach Date | BOTH | pending | — | [spec](specs/M4-filter-last-outreach.md) |
 | M5 | Frontend Permission UI Changes | FRONT | pending | — | [spec](specs/M5-frontend-permissions.md) |
-| M6 | Frontend LinkedIn "My Connections" Filter | FRONT | pending | — | [spec](specs/M6-linkedin-connections-filter.md) |
-| M7 | Replace Hardcoded "Laura Pulgarin" in Templates | BACK | pending | — | [spec](specs/M7-replace-hardcoded-name.md) |
+| M6 | Frontend LinkedIn "My Connections" Filter | FRONT | **done** | — | [spec](specs/M6-linkedin-connections-filter.md) |
+| M7 | Replace Hardcoded "Laura Pulgarin" in Templates | BACK | **done** | — | [spec](specs/M7-replace-hardcoded-name.md) |
 | M8 | Task Supervisor Agent | BACK | pending | — | [spec](specs/M8-task-supervisor-agent.md) |
+| M9 | Incoming WhatsApp Messages & Notifications | BOTH | in-progress | — | [spec](specs/M9-whatsapp-incoming-notifications.md) |
 
 ## Low Priority / Future
 
