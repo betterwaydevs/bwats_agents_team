@@ -37,7 +37,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 
 | ID | Title | Type | Status | Owner | Spec |
 |----|-------|------|--------|-------|------|
-| L1 | Virtual Machines / RDP Section | FRONT | pending | — | [spec](specs/L1-virtual-machines.md) |
+| L1 | Virtual Machines — Kamatera Integration | BOTH | **in-progress** | — | [spec](specs/L1-virtual-machines.md) |
 | L2 | Prerender / SEO Meta Tags | FRONT/INFRA | pending | — | [spec](specs/L2-prerender-seo.md) |
 | L3 | LinkedIn Matching Optimization | BACK | pending | — | [spec](specs/L3-linkedin-matching.md) |
 | L4 | CoreSignal Enrichment — Manual Fix | BACK | pending | — | [spec](specs/L4-coresignal-enrichment.md) |
