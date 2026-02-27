@@ -164,3 +164,4 @@ After verifying a delivered feature against acceptance criteria, update the deli
 - Include which acceptance criteria passed/failed in Notes.
 - If all AC pass, note "Ready for user review" in Notes.
 - If AC fail, set status to `blocked` and describe what needs fixing.
+- **On re-verification after fixes**: Replace Notes with the latest verification results. The delivery log must always reflect the current state, not old state.

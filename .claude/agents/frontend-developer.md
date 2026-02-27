@@ -127,3 +127,4 @@ When working on a task, update the delivery log at `features/delivery/<ID>.md`.
 - Include commit hashes in `Commits` if you made git commits.
 - Describe components/pages built or modified in Notes.
 - Append to the file if it exists; the PM should have already created it.
+- **On re-work/fixes**: When asked to fix something, update your stage — replace Notes with the latest summary, replace Screenshots with fresh ones, append new commits. The delivery log must always reflect the current state, not old state.

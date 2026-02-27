@@ -146,3 +146,4 @@ After testing a task, update the delivery log at `features/delivery/<ID>.md`.
 - Add screenshot filenames to `Screenshots` (naming: `{task-id-lowercase}-{description}.png`).
 - Add test report filename to `Report` if a Playwright or other report was generated.
 - Append to the file if it exists; the PM should have already created it.
+- **On re-test after fixes**: Replace Notes, Screenshots, and Report with fresh data. Capture new screenshots that show the fixed behavior. Generate a new report. The delivery log must always reflect the current test results, not old ones.

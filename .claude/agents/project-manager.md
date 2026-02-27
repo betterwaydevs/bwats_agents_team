@@ -137,3 +137,4 @@ When assigning a task to developers, create or update the delivery log at `featu
 - Always include `## User: Approval` as the final stage with status `pending`.
 - Set your status to `done` immediately (assignment is a point-in-time action).
 - List which developer agents were assigned and the planned execution order in Notes.
+- **On re-assignment after feedback**: Update your Notes to reflect the current assignment state. When sending agents back to fix things, ensure they update their delivery stages with fresh data (notes, screenshots, reports).

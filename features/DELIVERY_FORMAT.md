@@ -74,6 +74,19 @@ Not every task needs all stages. Use what's relevant:
 4. Add `Screenshots` if you captured any
 5. Add `Report` if you generated a test report
 
+### When re-doing work after feedback (CRITICAL):
+
+When the user or another agent requests changes, you MUST update your delivery stage to reflect the latest state:
+
+1. Set your stage status back to `in-progress`
+2. **Replace** your `Notes` with the latest summary — do NOT keep old notes. The delivery log must reflect current state, not history.
+3. **Replace** your `Screenshots` with new filenames — old screenshots are stale and misleading. Capture fresh ones that show the fixed behavior.
+4. **Replace** your `Report` with a new report filename — regenerate the report so it reflects the current state.
+5. **Append** new commit hashes to `Commits` (these are additive).
+6. When the fix is verified, set status back to `done` with the current date.
+
+**The delivery log is a live status board, not a history log.** Progress history belongs in `features/progress/<ID>.md`. The delivery log must always show the latest state of each stage so the dashboard displays current, accurate information.
+
 ### User: Approval Stage
 
 Always include `## User: Approval` as the last stage with status `pending`. This is updated via the dashboard UI, not by agents.

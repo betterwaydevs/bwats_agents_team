@@ -100,6 +100,14 @@ Before any agent reports their stage as "done" in the delivery log:
 - **Feedback per stage**: Allow the user to provide feedback directly from any stage in the report (not just the final approval).
 - **Reports always current**: When agents re-do work after feedback, they must replace screenshots, notes, and reports with fresh data (rule already in DELIVERY_FORMAT.md and agent files).
 
+### Reports Storage
+
+- **Central report store in team folder**: `features/reports/<ID>/` — each task gets a subfolder for its reports, screenshots, and artifacts. This is the canonical location for delivery proof.
+- **Report types**: HTML reports (Playwright), markdown summaries, PDFs, screenshots — all go in the task's report folder.
+- **Dashboard serves from team folder**: The report API must resolve reports from `features/reports/<ID>/` instead of (or in addition to) the current `nearshore-talent-compass/tests/report/` path.
+- **Delivery log references**: The `Report` and `Screenshots` fields in delivery logs point to files inside `features/reports/<ID>/`.
+- **QA writes reports here**: QA agent generates reports and copies screenshots into `features/reports/<ID>/` as the final deliverable. Individual project test outputs (Playwright in nearshore, curl logs in bwats_xano) can stay in their project folders, but the summary report lives here.
+
 ### Dashboard Navigation & Filtering
 
 - **Dashboard home shows limited tasks**: Currently sections cut off after 5. In Progress must show ALL tasks (most important view). Completed and Pending can link to filtered views.
