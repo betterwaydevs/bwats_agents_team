@@ -71,6 +71,20 @@ The `backend-developer` team agent invokes tier-2 subagents when doing Xano work
 | auto_agents | 8MRsSZQv | Yes |
 | auth | Ks58d17q | No (for login) |
 
+## Feature Tracking
+
+All tasks and features are tracked in [`features/`](./features/):
+
+- **[`features/BACKLOG.md`](./features/BACKLOG.md)** — Master list with ID, title, priority, status, owner
+- **`features/specs/<ID>.md`** — Full spec per task: requirements, acceptance criteria, dependencies
+- **`features/progress/<ID>.md`** — Running log per task: work done, findings, blockers, current state
+
+### Workflow
+1. PM/PO creates a spec in `specs/` and adds a row to `BACKLOG.md`
+2. When assigned, developer reads both spec and progress (if exists) before starting
+3. Developer creates/updates `progress/<ID>.md` as they work
+4. On completion, PM updates BACKLOG.md status to `done`
+
 ## Orchestrator Learning System
 
 The team orchestrator maintains a knowledge base of discovered patterns, gotchas, and best practices in [LEARNINGS.md](./LEARNINGS.md).
