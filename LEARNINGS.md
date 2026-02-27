@@ -25,6 +25,30 @@ Discovered patterns, gotchas, and best practices for the team orchestrator (the 
 
 ---
 
+### Curl to Xano dev branch requires X-Data-Source header and proper escaping
+- **Issue**: Calling Xano development endpoints from the orchestrator via curl failed for two reasons: (1) passwords containing `$` get interpreted by the shell, and (2) the `X-Data-Source: development` header is required for dev branch authentication.
+- **Solution**: Use `jq -n` to build JSON payloads (handles special chars), read env vars with `grep | cut` instead of `source`, and always include `-H "X-Data-Source: development"`. See `bwats_xano/LEARNINGS.md` entry "X-Data-Source Header Required" for full details.
+- **Date**: 2026-02-27
+
+### Xano MCP "Invalid token" is an SSE transport bug, not token expiration
+- **Issue**: MCP tool calls returned "Invalid token" even though the `XANO_TOKEN` was valid and set to never expire. We kept thinking the token had expired and needed regeneration.
+- **Solution**: Switch `.mcp.json` from `"type": "sse"` with `/sse` URL to `"type": "streamable-http"` with `/stream` URL. The Xano Metadata API token does NOT expire when created with "never expire" — the SSE transport has an authentication bug on tool calls.
+- **Date**: 2026-02-27
+
+---
+
+### Always test user-reported bugs on live, not dev
+- **Issue**: Fixed P4 profile bug and tested on dev server, but the specific person (Juliano) only exists in the live database. Dev tests passed but the fix couldn't be validated against the actual broken URL.
+- **Solution**: Use `http://pablo-home-linux.tailf79837.ts.net:8080/` for live testing. Dev credentials don't work on live — ask Pablo for live credentials at session start. When a user reports a specific broken URL, always test that exact URL on live.
+- **Date**: 2026-02-27
+
+### Every task must be tested end-to-end before delivery
+- **Issue**: Multiple tasks (Tailscale IPs, P4 profile fix) were declared "done" without verifying the actual output. The Tailscale integration had a response-path bug (`resp.response.devices` instead of `resp.response.result.devices`) that returned empty data — but no one tested the real API response. The P4 fix was tested on dev where the broken record didn't exist. In both cases, the screenshots showed broken/incomplete results but were treated as passing.
+- **Solution**: The PM (orchestrator) must enforce a strict delivery checklist: (1) Call the actual API endpoint and verify the response data is correct, (2) Run Playwright tests and visually inspect screenshots — don't just check pass/fail, (3) For user-reported bugs, test the exact URL on live, (4) For API integrations, verify the real external API returns data before testing the frontend. Never mark a task done until the report screenshot proves the feature works with real data.
+- **Date**: 2026-02-27
+
+---
+
 ## Team Coordination
 
 _(Add entries as patterns are discovered)_

@@ -16,9 +16,12 @@ When picking up a task, agents MUST read both the spec and progress files before
 
 | ID | Title | Type | Status | Owner | Spec |
 |----|-------|------|--------|-------|------|
+| **P4** | **Profile Not Loading — Source Mismatch Fallback** | **FRONT** | **done** | — | [spec](specs/P4-profile-source-fallback.md) |
 | P1 | Prospects Grid Freezing After Actions | FRONT | pending | — | [spec](specs/P1-prospects-grid-freeze.md) |
 | P2 | Auto-Organize Housekeeper Failing to Move People | BACK | pending | — | [spec](specs/P2-auto-organize-housekeeper.md) |
 | P3 | Add Prospect — Manual E2E Test | TEST | pending | — | [spec](specs/P3-add-prospect-e2e-test.md) |
+
+| **W1** | **Multi-Agent Team Delivery Workflow** | **PROCESS** | **pending** | — | [spec](specs/W1-multi-agent-delivery-workflow.md) |
 
 ## Medium Priority
 
