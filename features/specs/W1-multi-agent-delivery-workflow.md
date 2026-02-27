@@ -91,15 +91,26 @@ Before any agent reports their stage as "done" in the delivery log:
 
 ---
 
-## Phase 3: Team Configuration & Settings (PLANNED)
+## Phase 3: Dashboard UX & Delivery Improvements (PLANNED)
 
-Current issue: agent teams need proper configuration to ensure each agent has the right tools, MCP connections, and permissions.
+### Delivery Report UX
 
-### Requirements (to be expanded)
+- **Date + time**: All delivery stages must show date AND time (not just YYYY-MM-DD). Agents write `YYYY-MM-DD HH:MM`, dashboard displays it.
+- **Approve/reject from the report**: Move approve/reject buttons to the top of the delivery view — prominent, always visible when User: Approval is pending. Not buried at the bottom.
+- **Feedback per stage**: Allow the user to provide feedback directly from any stage in the report (not just the final approval).
+- **Reports always current**: When agents re-do work after feedback, they must replace screenshots, notes, and reports with fresh data (rule already in DELIVERY_FORMAT.md and agent files).
+
+### Dashboard Navigation & Filtering
+
+- **Dashboard home shows limited tasks**: Currently sections cut off after 5. In Progress must show ALL tasks (most important view). Completed and Pending can link to filtered views.
+- **Sidebar navigation**: Add links for "In Progress", "Completed", "Pending" as separate views — not just the flat dashboard.
+- **All Tasks view**: A page that shows every task with filtering (by status, type, owner, priority).
+- **Filters**: Filter tasks by status, type (BACK/FRONT/BOTH/EXT), owner, priority.
+
+### Team Configuration & Settings
 
 - Team settings that ensure backend-developer agent connects to Xano MCP
 - Verification that agents can actually use their assigned tools before starting work
-- Reports dashboard improvements — deeper integration, better report viewing interface
 - Agent capability verification at team startup (can each agent do what it needs to?)
 
 ---
@@ -139,9 +150,15 @@ Every task — before being marked done — must pass ALL of the following:
 - [ ] Process tested on at least one real task end-to-end with full verification
 
 ### Phase 3 (PLANNED)
+- [ ] Delivery stages show date + time (not just date)
+- [ ] Approve/reject buttons prominent at top of delivery view
+- [ ] Feedback mechanism per-stage (not just final approval)
+- [ ] Dashboard home shows ALL in-progress tasks (no cutoff)
+- [ ] Sidebar links for In Progress, Completed, Pending filtered views
+- [ ] All Tasks page with filters (status, type, owner, priority)
 - [ ] Team startup verifies each agent can connect to its required tools
-- [ ] Reports dashboard shows richer detail
 - [ ] Agent capability pre-flight check before task assignment
+- [ ] Report serving supports any path and format — delivery logs should reference reports from any project, and the dashboard should resolve and display them regardless of location or format (.html, .md, .pdf). Currently hardcoded to `nearshore-talent-compass/tests/report/*.html`
 
 ---
 
