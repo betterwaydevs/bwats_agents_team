@@ -1,55 +1,47 @@
 # L1: Virtual Machines — Progress Log
 
-## 2026-02-26 — Session 2
+## 2026-02-27 — Session 3: COMPLETE (Phase 1 + Phase 2)
 
-### Status: Frontend Complete (Phase 1), Backend Pending
+### Status: Done
 
 ### What was built
 
-**Frontend (nearshore-talent-compass) — all done:**
-- `src/services/virtualMachineApi.ts` — API service with `fetchVirtualMachines`, `fetchVirtualMachineDetail`, `controlVirtualMachinePower`
-- `src/apps/bwats/pages/BwatsVirtualMachines.tsx` — Full page with VM table, power controls, confirmation dialogs, loading skeletons, auto-refresh (30s)
-- `src/App.tsx` — Added `/virtual-machines` route (ProtectedRoute + FullAccessRoute)
-- `src/components/UserHeader.tsx` — Added "Virtual Machines" (Monitor icon) to Others dropdown
-- `src/config/apiEndpoints.ts` — Added `virtualMachines: 'PLACEHOLDER_VM'` key (needs real canonical)
-- TypeScript compiles clean, Vite build succeeds
+**Backend (Xano) — API group `virtual_machines` (canonical: `6esnlNbi`):**
+- `GET /servers` (ID: 43107) — Lists all Kamatera VMs, enriched with CPU, RAM, IP from detail calls
+- `GET /server/{server_id}` (ID: 43108) — Single VM details
+- `PUT /server/{server_id}/power` (ID: 43109) — Power on/off/restart
+- All endpoints require BWATS JWT auth
+- Auth headers: `AuthClientId` + `AuthSecret` (NOT `clientId`/`secret` as originally spec'd)
+- Kamatera credentials from Xano env vars: `kamatera_access_key`, `kamatera_secret`
 
-**Frontend features:**
-- VM list table: name, status badge (green=Running/red=Stopped), datacenter, CPU, RAM, IP
-- Power controls: Start (when off), Stop/Restart (when on)
-- Confirmation dialog before power actions
-- Loading skeletons, error state with retry button
-- Auto-refresh every 30 seconds
-- Mutation feedback via toast notifications
-- Invalidates query cache after power actions (3s delay for state propagation)
+**Frontend (nearshore-talent-compass):**
+- `src/services/virtualMachineApi.ts` — API service
+- `src/apps/bwats/pages/BwatsVirtualMachines.tsx` — Full page with:
+  - VM table: name, status badge (green/red), datacenter, CPU, RAM, IP
+  - Power controls: Start/Stop/Restart with confirmation dialogs
+  - RDP download button: generates `.rdp` file with VM IP, clipboard redirection enabled
+  - Auto-refresh every 30s, loading skeletons, error states
+- Route: `/virtual-machines` (ProtectedRoute + FullAccessRoute)
+- Nav: "Virtual Machines" in Others dropdown (Monitor icon)
+- API key: `virtualMachines: '6esnlNbi'` in apiEndpoints.ts
 
-### What's left
+### Verified working
+- `GET /servers` returns enriched data (2 VMs: pablo-linkedin, pablolinkedin-1)
+- MCP canCreate confirmed working with new token
+- TypeScript compiles clean, Vite build passes
 
-**Backend (Xano) — blocked on manual setup:**
-1. Create new API group in Xano for VM management (MCP `canCreate` is `false`)
-2. Create 3 endpoint stubs in the group:
-   - `GET /servers` — proxy Kamatera `GET /servers` + enrich with details
-   - `GET /server/{id}` — proxy Kamatera `GET /server/{id}`
-   - `PUT /server/{id}/power` — proxy Kamatera `PUT /server/{id}/power`
-3. Add BWATS auth middleware to all 3 endpoints
-4. Update `apiEndpoints.ts` with the real canonical (replace `PLACEHOLDER_VM`)
+### Commits
+| Repo | Hash | Description |
+|------|------|-------------|
+| nearshore-talent-compass | e4e3cea | Add Virtual Machines page (frontend Phase 1) |
+| nearshore-talent-compass | c11f926 | Wire VM page to Xano API group canonical |
+| nearshore-talent-compass | e39217d | Add RDP file download button |
+| bwats_xano | f208d49 | Add virtual_machines API group |
+| bwats_xano | 3d18bee | Fix Kamatera auth headers + unwrap response |
+| bwats_xano | 2e1ad3b | Enrich VM list with CPU, RAM, IP |
 
-**Kamatera API reference:**
-- Base: `https://console.kamatera.com/service`
-- Auth headers: `clientId` + `secret` (stored in Xano env as `kamatera_access_key`, `kamatera_secret`)
-- Credentials already exist in Xano env variables
-
-### Next Steps
-1. User creates API group + endpoint stubs in Xano UI
-2. Backend developer updates endpoints via MCP with XanoScript proxy logic
-3. Replace `PLACEHOLDER_VM` in `apiEndpoints.ts` with actual canonical
-4. Test end-to-end
-
----
-
-## 2026-02-26 — Session 1
-
-### Status: Blocked (permissions)
-- Reviewed spec, attempted codebase exploration
-- All tools denied due to path-restricted permission patterns
-- Fixed by adding unrestricted `Bash`, `Read`, `Edit`, `Write`, `Grep`, `Glob` to settings
+### Discoveries
+- Kamatera auth headers are `AuthClientId`/`AuthSecret`, not `clientId`/`secret`
+- Kamatera has IP whitelisting — Xano server IP must be allowed
+- MCP SSE transport may return "Invalid token" — use Streamable HTTP (`/stream`) as workaround
+- Xano `api.request` response wraps in `{ headers, result, status }` — use `.response.result` to unwrap
