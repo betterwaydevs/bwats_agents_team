@@ -42,6 +42,18 @@ Haiku-based cost-saving agents for routine Xano tasks. Located in `../bwats_xano
 
 The `backend-developer` team agent invokes tier-2 subagents when doing Xano work.
 
+## Agent Teams — Default Work Mode
+
+When a task involves **2+ independent workstreams** (e.g., backend + frontend, multiple files in different projects, research + implementation), **always use Claude agent teams** via `TeamCreate` to parallelize the work. Do not serialize work that can be done concurrently.
+
+Examples of when to spawn a team:
+- A feature that spans backend (Xano) + frontend (React) — spawn `backend-developer` + `frontend-developer`
+- Multiple independent bug fixes — assign each to the appropriate developer agent
+- Research + implementation — one agent explores while another builds
+- Testing while developing — `qa-tester` validates as developers deliver
+
+Only work single-threaded when the task is truly sequential or trivial (single file edit, quick lookup, one-liner fix).
+
 ## Cross-Project Rules
 
 1. **Backend before frontend**: When a feature spans backend + frontend, build the API first, then the UI.
