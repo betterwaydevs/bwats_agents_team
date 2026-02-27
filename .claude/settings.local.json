@@ -63,7 +63,15 @@
       "Edit(/home/pablo/projects/bwats/**)",
       "Write(/home/pablo/projects/bwats/**)",
       "Grep(/home/pablo/projects/bwats/**)",
-      "Glob(/home/pablo/projects/bwats/**)"
+      "Glob(/home/pablo/projects/bwats/**)",
+              "Bash",
+        "Read",
+        "Edit",
+        "Write",
+        "Grep",
+        "Glob",
+        "WebFetch(domain:docs.xano.com)",
+        "WebFetch(domain:xano.atlanticsoft.co)"
     ]
   }
 }
