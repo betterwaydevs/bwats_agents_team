@@ -18,6 +18,11 @@ Discovered patterns, gotchas, and best practices for the team orchestrator (the 
 - **Solution**: Removed `.env` symlink, `.mcp.json`, and all `mcp__xano__*` permissions from `team/`. Xano credentials and MCP config live exclusively in `../bwats_xano/`.
 - **Date**: 2026-02-26
 
+### CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS is required for teams
+- **Issue**: Removed the `env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` setting from `settings.local.json` during MCP cleanup, thinking it was MCP-related. It's actually the flag that enables agent teams (TeamCreate, SendMessage, teammate coordination).
+- **Solution**: Always keep `"env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" }` in `settings.local.json`. It's independent of MCP.
+- **Date**: 2026-02-26
+
 ---
 
 ## Team Coordination
