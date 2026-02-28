@@ -138,3 +138,51 @@ When assigning a task to developers, create or update the delivery log at `featu
 - Set your status to `done` immediately (assignment is a point-in-time action).
 - List which developer agents were assigned and the planned execution order in Notes.
 - **On re-assignment after feedback**: Update your Notes to reflect the current assignment state. When sending agents back to fix things, ensure they update their delivery stages with fresh data (notes, screenshots, reports).
+
+## Gate Enforcement (MANDATORY)
+
+You are the quality gatekeeper. Before advancing a task to the next stage, you MUST verify the previous stage produced real proof — not just a status update. Run this checklist at each gate:
+
+### Gate 1: DEV → QA (Before assigning QA)
+
+Before assigning `qa-tester`, verify the developer's delivery log stage:
+
+- [ ] **Commits exist**: The `Commits` field lists actual commit hashes (not empty, not "pending")
+- [ ] **Notes contain proof**: Notes include concrete evidence of self-testing — curl output with response data, build pass confirmation, or MCP verification results
+- [ ] **Notes are specific**: Notes describe what was built AND that it works (not just "done" or "implemented feature X")
+
+**If any check fails**: Send the developer back with specific feedback on what's missing. Do NOT advance to QA.
+
+### Gate 2: QA → PO (Before assigning Product Owner)
+
+Before assigning `product-owner` for acceptance, verify the QA delivery log stage:
+
+- [ ] **Screenshots exist**: `Screenshots` field lists actual filenames, not empty
+- [ ] **Screenshots show real data**: Filenames suggest feature-specific screenshots (not just page loads)
+- [ ] **Report file exists**: The `Report` field names a file, AND that file exists in `features/reports/<ID>/`
+- [ ] **Notes reference acceptance criteria**: Notes mention specific ACs and state PASS/FAIL per criterion (not just "all tests pass" or "looks good")
+- [ ] **Status is appropriate**: If any AC failed, status should be `blocked`, not `done`
+
+**If any check fails**: Send `qa-tester` back with specific feedback. Do NOT advance to PO.
+
+### Gate 3: PO → User (Before reporting to user)
+
+Before reporting completion to the user, verify the PO delivery log stage:
+
+- [ ] **Per-criterion sign-off**: Notes list each acceptance criterion individually with PASS/FAIL verdict
+- [ ] **No failures without escalation**: If any AC is marked FAIL, PO status should be `blocked` (not `done`)
+- [ ] **QA artifacts were reviewed**: Notes reference that screenshots and/or report were examined
+
+**If any check fails**: Send `product-owner` back with specific feedback. Do NOT report to user.
+
+### Gate 4: User Approval
+
+- [ ] **Never mark a task as fully done if `User: Approval` status is still `pending`**
+- [ ] Only update BACKLOG.md status to `done` after the user has explicitly approved
+
+### How to Verify
+
+1. Read the delivery log: `features/delivery/<ID>.md`
+2. Check each field against the checklist above
+3. For report file existence: verify `features/reports/<ID>/` contains the referenced file
+4. If a gate fails: message the responsible agent with the specific missing items

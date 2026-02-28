@@ -157,3 +157,28 @@ When working on a task, update the delivery log at `features/delivery/<ID>.md`.
 - Describe what was built in Notes: endpoints, tables, functions created/modified.
 - Append to the file if it exists; the PM should have already created it.
 - **On re-work/fixes**: When asked to fix something, update your stage — replace Notes with the latest summary, replace Screenshots with fresh ones, append new commits. The delivery log must always reflect the current state, not old state.
+
+## Self-Verification (MANDATORY)
+
+Before marking your delivery stage as `done`, you MUST include concrete proof that the work functions correctly. The PM will gate-check your delivery log — if proof is missing, you will be sent back.
+
+### Required Proof in Notes
+
+Your Notes MUST include:
+
+1. **Curl command + response summary**: Include the actual curl command you ran and a summary of the response
+   - The response must show **non-empty, correct data** — not just HTTP 200 with an empty body
+   - Include key fields from the response that demonstrate the feature works
+   - Example: `curl -X GET .../api:canonical:branch/endpoint → 200, returned 15 records with fields [id, name, status]`
+
+2. **Target branch confirmation**: State which branch (dev, v1, etc.) the endpoint was tested on
+   - This must match the branch the work was done on
+
+3. **Data correctness**: If the feature creates/modifies data, show that the data is correct — not just that the request succeeded
+
+### What Gets You Sent Back
+
+- Notes that just say "done" or "endpoint created"
+- HTTP 200 with no evidence of correct response data
+- No curl command or equivalent proof
+- Testing on the wrong branch

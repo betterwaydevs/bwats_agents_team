@@ -57,6 +57,68 @@ Not every task needs all stages. Use what's relevant:
 | EXT | PM → DEV:Extension → QA → PO → User |
 | TEST | PM → QA → PO → User |
 
+## Stage Dependency Rules
+
+Each stage has prerequisites that MUST be satisfied (status `done`) before it can begin. Agents MUST NOT start work on a stage unless all its prerequisites are met.
+
+| Stage | Prerequisites |
+|---|---|
+| `PM: Assignment` | None (first stage) |
+| `DEV: Backend` | `PM: Assignment` must be `done` |
+| `DEV: Frontend` | `PM: Assignment` must be `done` |
+| `DEV: Extension` | `PM: Assignment` must be `done` |
+| `DEV: Python` | `PM: Assignment` must be `done` |
+| `QA: Testing` | ALL `DEV:*` stages in the task must be `done` |
+| `PO: Acceptance` | `QA: Testing` must be `done` |
+| `User: Approval` | `PO: Acceptance` must be `done` |
+
+**Parallel DEV stages**: When a task has multiple DEV stages (e.g., `DEV: Backend` + `DEV: Frontend`), they may run in parallel after `PM: Assignment` is done. However, QA cannot begin until ALL of them are complete.
+
+## Proof Requirements Per Stage
+
+Each stage type has specific proof artifacts that agents MUST provide when marking the stage `done`. Missing proof means the stage is not truly complete.
+
+### DEV Stages (Backend, Frontend, Extension, Python)
+
+| Field | Required? | Details |
+|---|---|---|
+| **Commits** | Required | At least one `repo@hash` entry proving code was committed |
+| **Notes** | Required | Must include self-test proof — what the developer tested and the outcome (e.g., "Verified endpoint returns 200 with correct payload", "Confirmed UI renders correctly in browser") |
+| **Screenshots** | Optional | Helpful for frontend/UI work but not mandatory for DEV stages |
+
+### QA: Testing
+
+| Field | Required? | Details |
+|---|---|---|
+| **Screenshots** | Required | Visual proof of tested functionality |
+| **Report** | Required | Test report file stored in `features/reports/<ID>/` (e.g., `features/reports/M9/test-report.html`). Can be any format (HTML, JSON, text). |
+| **Notes** | Required | Must include per-criterion PASS/FAIL results mapped to the acceptance criteria from the spec. Example: "AC1: Badge shows count — PASS", "AC2: Dropdown lists notifications — PASS" |
+
+### PO: Acceptance
+
+| Field | Required? | Details |
+|---|---|---|
+| **Notes** | Required | Must include a per-AC verdict for every acceptance criterion in the spec. Example: "AC1: PASS — badge correctly displays unread count", "AC2: PASS — dropdown shows all notifications" |
+| **Screenshots** | Optional | Only if the PO spots issues or wants to document specific behavior |
+
+### User: Approval
+
+| Field | Required? | Details |
+|---|---|---|
+| **Status** | Required | Updated via the dashboard approve/reject buttons. No other fields needed from agents. |
+
+## Blocking Rule
+
+If any stage is set to `blocked`, all downstream stages (per the dependency chain above) are **automatically considered blocked**. Work must flow backwards to resolve the issue before the pipeline can proceed.
+
+**How blocking works:**
+1. An agent or user sets a stage to `blocked` (with Notes explaining why)
+2. All stages that depend on the blocked stage cannot proceed, regardless of their current status
+3. The responsible agent for the blocked stage must fix the issue and return the stage to `in-progress` → `done`
+4. Only after the blocked stage is resolved can downstream stages resume
+
+**Example:** If `QA: Testing` is set to `blocked` because tests fail, then `PO: Acceptance` and `User: Approval` cannot proceed. The developer must fix the issue (their DEV stage goes back to `in-progress`), QA re-tests, and only then can the pipeline continue.
+
 ## Agent Workflow
 
 ### When starting work on a task:

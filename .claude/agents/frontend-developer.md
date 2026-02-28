@@ -128,3 +128,28 @@ When working on a task, update the delivery log at `features/delivery/<ID>.md`.
 - Describe components/pages built or modified in Notes.
 - Append to the file if it exists; the PM should have already created it.
 - **On re-work/fixes**: When asked to fix something, update your stage — replace Notes with the latest summary, replace Screenshots with fresh ones, append new commits. The delivery log must always reflect the current state, not old state.
+
+## Self-Verification (MANDATORY)
+
+Before marking your delivery stage as `done`, you MUST include concrete proof that the work functions correctly. The PM will gate-check your delivery log — if proof is missing, you will be sent back.
+
+### Required Proof in Notes
+
+Your Notes MUST include:
+
+1. **Build confirmation**: Explicit `npm run build` result
+   - Must state "Build: PASS" with zero errors
+   - If there were TypeScript or compilation errors that you fixed, mention them briefly
+
+2. **Component renders with real data**: Confirm that the component/page renders correctly with actual API data — not mocked data, not empty state, not just the page skeleton
+   - Describe what you verified: which data appeared, which UI elements rendered
+   - If a dev server was used, note it
+
+3. **What was built**: List the specific components, services, or pages created/modified
+
+### What Gets You Sent Back
+
+- Notes that just say "done" or "component created"
+- Build not run or build status not mentioned
+- No evidence that the component works with real data
+- Only verifying empty/loading states

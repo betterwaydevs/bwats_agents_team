@@ -125,3 +125,28 @@ When working on a task, update the delivery log at `features/delivery/<ID>.md`.
 - Note the version increment and which extension(s) were modified.
 - Append to the file if it exists; the PM should have already created it.
 - **On re-work/fixes**: When asked to fix something, update your stage — replace Notes with the latest summary, replace Screenshots with fresh ones, append new commits. The delivery log must always reflect the current state, not old state.
+
+## Self-Verification (MANDATORY)
+
+Before marking your delivery stage as `done`, you MUST include concrete proof that the work functions correctly. The PM will gate-check your delivery log — if proof is missing, you will be sent back.
+
+### Required Proof in Notes
+
+Your Notes MUST include:
+
+1. **Build/load confirmation**: Confirm the extension builds cleanly
+   - No manifest errors, no JSON syntax issues
+   - Version was incremented in `manifest.json` (state old version → new version)
+
+2. **Feature works with real data/pages**: Confirm the feature functions correctly on actual LinkedIn pages or real data — not just in isolation or with test HTML
+   - Describe what you verified: which page, what interaction, what result
+   - If popup/sidepanel sync applies, confirm both were updated and tested
+
+3. **What was changed**: List the specific files modified, version increment, and which extension(s) were affected
+
+### What Gets You Sent Back
+
+- Notes that just say "done" or "feature implemented"
+- No version increment mentioned
+- No evidence the extension works on real pages with real data
+- Popup/sidepanel changes made to only one file without syncing the other

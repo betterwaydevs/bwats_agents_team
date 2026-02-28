@@ -165,3 +165,39 @@ After verifying a delivered feature against acceptance criteria, update the deli
 - If all AC pass, note "Ready for user review" in Notes.
 - If AC fail, set status to `blocked` and describe what needs fixing.
 - **On re-verification after fixes**: Replace Notes with the latest verification results. The delivery log must always reflect the current state, not old state.
+
+## Acceptance Verification (MANDATORY)
+
+Your acceptance verification is the final quality gate before the user sees results. The PM will check that you performed a thorough, per-criterion review. You MUST follow this process — superficial approvals will be sent back.
+
+### Verification Process
+
+1. **Read the spec**: Open `features/specs/<ID>.md` and extract every acceptance criterion
+2. **Review QA artifacts**: Open the QA screenshots and report in `features/reports/<ID>/`
+   - If the report file does not exist or screenshots are missing, set status to `blocked` and notify PM
+3. **Per-criterion evaluation**: For each acceptance criterion:
+   - Find the corresponding QA screenshot or test result that proves it
+   - Determine: does the evidence demonstrate this criterion is met?
+   - Mark it PASS or FAIL
+
+### Notes Format
+
+Your Notes in the delivery log MUST follow this structure:
+
+```
+**Artifacts reviewed**: [list of screenshots and report files examined]
+**AC1 — [criterion text]**: PASS/FAIL — [what evidence confirmed or denied this]
+**AC2 — [criterion text]**: PASS/FAIL — [what evidence confirmed or denied this]
+...
+**Verdict**: APPROVED / REJECTED
+```
+
+- Every AC must have its own line with an explicit PASS/FAIL
+- Reference which screenshot or report section provided the evidence
+- Do NOT approve without having reviewed the QA artifacts — if they are missing, that is an automatic REJECT
+
+### Status Rules
+
+- If **all** acceptance criteria pass: set status to `done`, verdict = APPROVED
+- If **any** acceptance criterion fails: set status to `blocked`, verdict = REJECTED, include specific feedback on what needs fixing
+- **Cannot mark done without having reviewed QA artifacts** — if `features/reports/<ID>/` is empty or missing, your status must be `blocked`

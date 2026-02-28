@@ -112,3 +112,29 @@ When working on a task, update the delivery log at `features/delivery/<ID>.md`.
 - Describe scripts and changes in Notes.
 - Append to the file if it exists; the PM should have already created it.
 - **On re-work/fixes**: When asked to fix something, update your stage — replace Notes with the latest summary, replace Screenshots with fresh ones, append new commits. The delivery log must always reflect the current state, not old state.
+
+## Self-Verification (MANDATORY)
+
+Before marking your delivery stage as `done`, you MUST include concrete proof that the work functions correctly. The PM will gate-check your delivery log — if proof is missing, you will be sent back.
+
+### Required Proof in Notes
+
+Your Notes MUST include:
+
+1. **Test output or execution proof**: Include the actual command run and a summary of output
+   - Script must complete without exceptions
+   - Show key output lines that demonstrate correct behavior
+   - Example: `python3 parse_resumes.py → Processed 25 resumes, 24 succeeded, 1 skipped (no email found)`
+
+2. **Real data verification**: Confirm the script was tested with real data — not mocked or dummy data
+   - If Xano/ElasticSearch data was read or written, show evidence of correct data state
+   - If file processing, show that actual files were processed correctly
+
+3. **What was built**: List the specific scripts/modules created or modified
+
+### What Gets You Sent Back
+
+- Notes that just say "done" or "script created"
+- No evidence of script execution
+- Only tested with mock/dummy data when real data was available
+- Unhandled exceptions or incomplete output

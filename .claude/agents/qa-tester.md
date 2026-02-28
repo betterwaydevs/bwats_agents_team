@@ -147,3 +147,44 @@ After testing a task, update the delivery log at `features/delivery/<ID>.md`.
 - Add test report filename to `Report` if a Playwright or other report was generated.
 - Append to the file if it exists; the PM should have already created it.
 - **On re-test after fixes**: Replace Notes, Screenshots, and Report with fresh data. Capture new screenshots that show the fixed behavior. Generate a new report. The delivery log must always reflect the current test results, not old ones.
+
+## Proof Requirements (MANDATORY)
+
+Your delivery is not just a status — it is **evidence**. The PM will gate-check your work before it advances to the Product Owner. You MUST produce the following artifacts, or your delivery will be sent back.
+
+### Required Artifacts
+
+1. **Playwright report HTML**: Generate and save to `features/reports/<ID>/`
+   - Filename format: `<id-lowercase>-test-report.html`
+   - If Playwright is not applicable (backend-only, extension), produce equivalent proof (curl output log, manual test log)
+
+2. **Screenshots**: Save to `features/reports/<ID>/`
+   - Filename format: `<id-lowercase>-<description>.png`
+   - Screenshots MUST show the feature working **with real data** — not empty states, not loading spinners, not just the page chrome
+   - Capture the specific UI elements or data that prove the acceptance criteria are met
+   - Minimum: one screenshot per acceptance criterion that has a visual component
+
+3. **Build verification**: Run `npm run build` (for frontend tasks) and confirm it passes clean
+   - Include "Build: PASS" in your Notes if applicable
+
+### Notes Format
+
+Your Notes in the delivery log MUST follow this structure:
+
+```
+**Build**: PASS/FAIL
+**AC1 — [criterion text]**: PASS/FAIL — [brief evidence]
+**AC2 — [criterion text]**: PASS/FAIL — [brief evidence]
+...
+```
+
+- Reference each acceptance criterion from the spec by number
+- State PASS or FAIL explicitly for each one
+- Include brief evidence: what you saw, what the data showed, what the screenshot captures
+- Do NOT use vague language like "tests pass" or "looks good" — be specific
+
+### Status Rules
+
+- If **all** acceptance criteria pass: set status to `done`
+- If **any** acceptance criterion fails: set status to `blocked`, describe which ones failed and why
+- Never set status to `done` when a criterion has not been verified
