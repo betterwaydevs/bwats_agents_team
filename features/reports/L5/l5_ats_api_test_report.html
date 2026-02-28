@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>L5: /ats Skill — API Read Test Report</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #1a1a1a; }
+  h1 { border-bottom: 2px solid #2563eb; padding-bottom: 8px; }
+  h2 { color: #1e40af; margin-top: 32px; }
+  h3 { color: #374151; }
+  .summary { background: #f0f9ff; border-left: 4px solid #2563eb; padding: 16px; margin: 16px 0; border-radius: 4px; }
+  .summary strong { color: #1e40af; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+  th { background: #1e40af; color: white; padding: 10px 12px; text-align: left; }
+  td { padding: 8px 12px; border-bottom: 1px solid #e5e7eb; }
+  tr:hover { background: #f9fafb; }
+  .pass { color: #16a34a; font-weight: bold; }
+  .fail { color: #dc2626; font-weight: bold; }
+  .finding { background: #fffbeb; border-left: 4px solid #f59e0b; padding: 12px 16px; margin: 12px 0; border-radius: 4px; }
+  .failure { background: #fef2f2; border-left: 4px solid #dc2626; padding: 12px 16px; margin: 12px 0; border-radius: 4px; }
+  code { background: #f3f4f6; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+  .meta { color: #6b7280; font-size: 0.9em; }
+</style>
+</head>
+<body>
+
+<h1>Test Report: /ats Skill — Read Operations</h1>
+
+<p class="meta">
+  <strong>Date:</strong> 2026-02-27 &nbsp;|&nbsp;
+  <strong>Environment:</strong> Live (<code>x-data-source=live</code>) &nbsp;|&nbsp;
+  <strong>Auth:</strong> Browser token (Karen Polanco, admin+recruiter) &nbsp;|&nbsp;
+  <strong>Skill:</strong> <code>.claude/skills/ats/SKILL.md</code>
+</p>
+
+<div class="summary">
+  <strong>12 of 14 tests passed.</strong> All core read/display operations work correctly. Two edge cases identified and documented as skill gotchas.
+</div>
+
+<h2>Results</h2>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>Test</th><th>Endpoint</th><th>Result</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>Token validation</td><td><code>GET /auth/me</code></td><td class="pass">PASS</td><td>Returns user profile: id=4, name, email, roles</td></tr>
+    <tr><td>2</td><td>List active projects</td><td><code>GET /project?status=active</code></td><td class="pass">PASS</td><td>Returns 16 active projects</td></tr>
+    <tr><td>3</td><td>Project counts</td><td><code>GET /project</code> (all)</td><td class="pass">PASS</td><td>Total: 35, Active: 16, Closed: 19</td></tr>
+    <tr><td>4</td><td>Single project detail</td><td><code>GET /project/5</code></td><td class="pass">PASS</td><td>Full detail incl. description, company_id</td></tr>
+    <tr><td>5</td><td>Prospect stages</td><td><code>GET /project/5/stages?stage_type=prospects</code></td><td class="pass">PASS</td><td>11 stages with id, name, sort_order</td></tr>
+    <tr><td>6</td><td>Stage counts (prospects)</td><td><code>GET /.../people/count</code></td><td class="pass">PASS</td><td>Per-stage counts + total (7,128 prospects)</td></tr>
+    <tr><td>7</td><td>Candidate stages</td><td><code>GET /project/5/stages?stage_type=candidates</code></td><td class="pass">PASS</td><td>11 candidate stages</td></tr>
+    <tr><td>8</td><td>People in stage</td><td><code>GET /.../people?stage_id=55</code></td><td class="pass">PASS</td><td>Pagination works: itemsTotal=9, curPage=1, nextPage=2</td></tr>
+    <tr><td>9</td><td>Search (large project)</td><td><code>POST /association/search</code></td><td class="fail">FAIL</td><td>502 Bad Gateway — timeout on 7k+ prospects</td></tr>
+    <tr><td>10</td><td>Candidate detail (wrong type)</td><td><code>GET /parsed_candidate_info/{esId}</code></td><td class="pass">PASS</td><td>Returns nulls (expected — ES ID was a prospect)</td></tr>
+    <tr><td>11</td><td>Prospect detail</td><td><code>GET /parsed_prospect/{esId}</code></td><td class="pass">PASS</td><td>Full data: Brian Cornielle, DR, LinkedIn</td></tr>
+    <tr><td>12</td><td>Candidate stage counts</td><td><code>GET /.../people/count?stage_type=candidates</code></td><td class="pass">PASS</td><td>11 stages, total: 233</td></tr>
+    <tr><td>13</td><td>Search (smaller project)</td><td><code>POST /association/search</code></td><td class="pass">PASS</td><td>12 matches for "carlos", paginated</td></tr>
+    <tr><td>14</td><td>Person associations</td><td><code>GET /association/person/prospect/{esId}</code></td><td class="fail">FAIL</td><td>404 "Unable to locate request"</td></tr>
+  </tbody>
+</table>
+
+<h2>Failures</h2>
+
+<div class="failure">
+  <h3>Test 9: Search timeout on large project</h3>
+  <p><strong>Issue:</strong> <code>POST /association/search</code> returns 502 when searching across 7,128 prospects in project 5</p>
+  <p><strong>Root cause:</strong> ElasticSearch query timeout on large datasets</p>
+  <p><strong>Workaround:</strong> Filter by stage first to reduce dataset size</p>
+  <p><strong>Severity:</strong> Low — affects only very large projects</p>
+</div>
+
+<div class="failure">
+  <h3>Test 14: Person associations endpoint 404</h3>
+  <p><strong>Issue:</strong> <code>GET /association/person/prospect/{esId}</code> returns 404</p>
+  <p><strong>Possible causes:</strong> Endpoint may require different URL pattern, or user role permissions</p>
+  <p><strong>Severity:</strong> Low — person details available via direct detail endpoints</p>
+</div>
+
+<h2>Key Findings</h2>
+
+<div class="finding">
+  <strong>1. People listing names are blank:</strong> The <code>_person</code> join returns null names for many prospects imported via LinkedIn. Skill must fetch full detail from prospect/candidate endpoint.
+</div>
+
+<div class="finding">
+  <strong>2. Must route by person_type:</strong> Calling candidate endpoint with a prospect's ES ID returns all nulls. Always check <code>person_type</code> from the association first.
+</div>
+
+<div class="finding">
+  <strong>3. Dual auth headers required:</strong> Both <code>Authorization</code> and <code>X-Xano-Authorization</code> must be sent — different endpoints check different ones.
+</div>
+
+<div class="finding">
+  <strong>4. Pagination shape is consistent:</strong> All paginated endpoints return <code>{items, itemsTotal, itemsReceived, curPage, nextPage}</code> as documented.
+</div>
+
+<h2>Conclusion</h2>
+<p>The <code>/ats</code> skill's read operations are functional for all core workflows: dashboard display, project listing, pipeline visualization, stage counts, people listing (with detail fetch for names), and search (on reasonably-sized projects). All findings have been incorporated as gotchas in the skill definition.</p>
+
+</body>
+</html>
