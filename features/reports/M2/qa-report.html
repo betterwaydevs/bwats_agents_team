@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>M2 QA Report — Email Event Tracking</title>
+<title>M2: Email Event Tracking — QA Report (v2)</title>
 <style>
   :root { --pass: #16a34a; --fail: #dc2626; --warn: #d97706; --na: #6b7280; --bg: #f9fafb; --card: #fff; --border: #e5e7eb; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,6 +24,7 @@
   .badge-fail { background: #fee2e2; color: var(--fail); }
   .badge-warn { background: #fef3c7; color: var(--warn); }
   .badge-na { background: #f3f4f6; color: var(--na); }
+  .badge-fixed { background: #dbeafe; color: #1d4ed8; }
   section { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem; }
   section h2 { font-size: 1.15rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
   .test-result { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
@@ -32,22 +33,22 @@
   .test-header h3 { font-size: 0.95rem; }
   pre { background: #1f2937; color: #e5e7eb; padding: 1rem; border-radius: 6px; overflow-x: auto; font-size: 0.8rem; line-height: 1.5; margin: 0.75rem 0; }
   pre .cmd { color: #93c5fd; }
-  pre .comment { color: #9ca3af; }
   .evidence { font-size: 0.85rem; color: #374151; }
   .bug { background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px; padding: 1rem; margin: 0.75rem 0; }
   .bug-title { font-weight: 600; color: var(--fail); margin-bottom: 0.25rem; }
   table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
   th, td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
   th { font-weight: 600; color: #6b7280; font-size: 0.75rem; text-transform: uppercase; }
-  .mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8rem; }
+  .screenshot { max-width: 100%; border: 2px solid var(--border); border-radius: 8px; margin: 1rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .screenshot-caption { font-size: 0.8rem; color: #6b7280; font-style: italic; margin-top: -0.5rem; margin-bottom: 1rem; }
   footer { text-align: center; color: #9ca3af; font-size: 0.75rem; margin-top: 2rem; }
 </style>
 </head>
 <body>
 <div class="container">
 
-<h1>M2: Email Event Tracking — QA Report</h1>
-<p class="subtitle">Date: 2026-02-28 &nbsp;|&nbsp; Agent: qa-tester &nbsp;|&nbsp; Environment: Xano development branch</p>
+<h1>M2: Email Event Tracking — QA Report (v2)</h1>
+<p class="subtitle">Date: 2026-02-28 &nbsp;|&nbsp; Agent: qa-tester &nbsp;|&nbsp; Round 2 (post-bugfix re-test with screenshots)</p>
 
 <!-- Verdict Summary -->
 <div class="summary-grid">
@@ -61,260 +62,306 @@
   </div>
   <div class="summary-card">
     <div class="label">AC3 — Stats Frontend</div>
-    <div class="value warn">PASS*</div>
+    <div class="value fail">FAIL</div>
   </div>
   <div class="summary-card">
     <div class="label">AC4 — Profile Engagement</div>
-    <div class="value na">N/A</div>
+    <div class="value na">DEFERRED</div>
   </div>
   <div class="summary-card">
     <div class="label">Build</div>
     <div class="value pass">PASS</div>
   </div>
+  <div class="summary-card">
+    <div class="label">Overall</div>
+    <div class="value fail">FAIL</div>
+  </div>
 </div>
 
-<!-- AC1: Webhook Event Capture -->
-<section>
-  <h2><span class="badge badge-pass">PASS</span> AC1: All Resend webhook events are captured and stored</h2>
+<!-- Overall Verdict -->
+<section style="background: #fef2f2; border-color: #fecaca;">
+  <h2 style="color: var(--fail);">Overall Verdict: FAIL — 2 blocking backend bugs</h2>
+  <p>Two Xano API endpoints (<code>email_send_log</code> and <code>email_stats_timeseries</code>) were <strong>not published to the <code>:development</code> branch</strong>. They exist and work on the base API, but the frontend builds URLs with the <code>:development</code> suffix, so both return <code>ERROR_CODE_NOT_FOUND</code>. This makes the Sent Emails tab completely non-functional and the Weekly Trends chart empty.</p>
+  <p style="margin-top: 0.75rem;"><strong>Previous bugs (BUG-1, BUG-2) from round 1:</strong> Both fixed in commit <code>ac6b9eb</code>. Code verified.</p>
+  <p style="margin-top: 0.75rem;"><strong>To unblock:</strong> Backend developer must publish <code>email_send_log</code> and <code>email_stats_timeseries</code> to the Xano development branch. No frontend changes needed.</p>
+</section>
 
-  <div class="evidence">
-    <p><strong>Verified infrastructure:</strong></p>
-    <ul>
-      <li><code>email_event</code> table created (ID 202) — stores resend_message_id, event_type, recipient, bounce details, raw payload</li>
-      <li><code>process_email_event</code> function (ID 10829) — parses email.delivered, email.opened, email.clicked, email.bounced, email.complained events</li>
-      <li><code>webhook/resend_inbound</code> endpoint updated — routes delivery events to process_email_event alongside existing opt-out logic</li>
-    </ul>
-    <p style="margin-top:0.75rem; color: #6b7280;">Note: No webhook events received in dev environment yet (expected — Resend webhooks fire in production). Infrastructure is fully in place and will capture events once webhooks are configured to point to this endpoint.</p>
+<!-- Bugs -->
+<section>
+  <h2>Bugs Found This Round</h2>
+
+  <div class="bug">
+    <div class="bug-title">BUG-3 (BLOCKING): email_send_log endpoint not available on :development API branch</div>
+    <p><strong>Impact:</strong> Sent Emails tab is completely empty — no email records display.</p>
+    <p><strong>Root Cause:</strong> The endpoint exists on <code>api:2CPT0xvS/email_send_log</code> (base URL) but was NOT published to <code>api:2CPT0xvS:development/email_send_log</code>. The frontend uses the <code>:development</code> suffix, so the request returns a 404-equivalent error.</p>
+    <pre><span class="cmd"># Works (base URL, 122 records):</span>
+$ curl "https://xano.atlanticsoft.co/api:2CPT0xvS/email_send_log?per_page=5" \
+  -H "Authorization: Bearer $TOKEN" -H "X-Data-Source: development"
+→ {"items": [...], "pagination": {"total": 122, "total_pages": 25}}
+
+<span class="cmd"># Fails (:development — what frontend uses):</span>
+$ curl "https://xano.atlanticsoft.co/api:2CPT0xvS:development/email_send_log?x-data-source=development&per_page=5" \
+  -H "Authorization: Bearer $TOKEN"
+→ {"code":"ERROR_CODE_NOT_FOUND","message":"Unable to locate request."}</pre>
+    <p><strong>Fix:</strong> Publish <code>email_send_log</code> endpoint to the Xano development branch.</p>
+  </div>
+
+  <div class="bug">
+    <div class="bug-title">BUG-4 (BLOCKING): email_stats_timeseries endpoint not available on :development API branch</div>
+    <p><strong>Impact:</strong> Weekly Trends chart on the Overview tab renders empty.</p>
+    <p><strong>Root Cause:</strong> Same as BUG-3 — endpoint exists on base URL but not on <code>:development</code>.</p>
+    <pre><span class="cmd"># Works (base URL):</span>
+$ curl "https://xano.atlanticsoft.co/api:2CPT0xvS/email_stats_timeseries?period=week" \
+  -H "Authorization: Bearer $TOKEN" -H "X-Data-Source: development"
+→ {"period":"week","data":[...5 weekly data points...]}
+
+<span class="cmd"># Fails (:development):</span>
+$ curl "https://xano.atlanticsoft.co/api:2CPT0xvS:development/email_stats_timeseries?x-data-source=development&period=week" \
+  -H "Authorization: Bearer $TOKEN"
+→ {"code":"ERROR_CODE_NOT_FOUND","message":"Unable to locate request."}</pre>
+    <p><strong>Fix:</strong> Publish <code>email_stats_timeseries</code> endpoint to the Xano development branch.</p>
+  </div>
+
+  <h3 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Previous Bugs (Round 1) — Status</h3>
+
+  <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 1rem; margin: 0.75rem 0;">
+    <div style="font-weight: 600; color: #15803d; margin-bottom: 0.25rem;">BUG-1: FIXED (commit ac6b9eb)</div>
+    <p>Field name mismatch between API and frontend breakdown. Fixed with <code>normalizeBreakdownItem()</code> mapping in <code>emailStatsApi.ts</code>.</p>
+  </div>
+
+  <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 1rem; margin: 0.75rem 0;">
+    <div style="font-weight: 600; color: #15803d; margin-bottom: 0.25rem;">BUG-2: FIXED (commit ac6b9eb)</div>
+    <p>Account filter not applied to breakdown query. Fixed with client-side filtering in <code>emailStatsApi.ts</code>.</p>
   </div>
 </section>
 
-<!-- AC2: email_send_log Delivery Status -->
+<!-- Screenshots -->
 <section>
-  <h2><span class="badge badge-pass">PASS</span> AC2: email_send_log reflects latest delivery status</h2>
+  <h2>Screenshots</h2>
 
+  <div class="test-result">
+    <div class="test-header">
+      <h3>Overview Tab</h3>
+      <span class="badge badge-pass">UI RENDERS</span>
+    </div>
+    <p class="evidence">Page loads at <code>/email-stats</code>. Summary cards show correct data: Sent (93), Delivered (0), Opened (0), Clicked (0), Bounced (0) — all 0.0% rates (expected: no webhook events received in dev). Filters panel renders all 5 controls. Tab navigation works.</p>
+    <p class="evidence" style="color: var(--warn);">Chart area present but empty due to BUG-4 (timeseries endpoint not found on :development).</p>
+    <img src="01-overview-tab.png" alt="Overview tab with summary cards and filters" class="screenshot">
+    <p class="screenshot-caption">Overview tab: summary cards render with live data, filters visible, chart area empty</p>
+  </div>
+
+  <div class="test-result">
+    <div class="test-header">
+      <h3>Sent Emails Tab</h3>
+      <span class="badge badge-fail">NO DATA</span>
+    </div>
+    <p class="evidence">Tab switches correctly. Filter controls render (Recipient search, Status dropdown, Account dropdown, From/To date pickers). However, <strong>no email records display</strong> — the table is entirely absent due to BUG-3.</p>
+    <img src="02-sent-emails-table.png" alt="Sent Emails tab - empty table" class="screenshot">
+    <p class="screenshot-caption">Sent Emails tab: filter controls work, but no data loads (BUG-3: endpoint 404 on :development)</p>
+  </div>
+
+  <div class="test-result">
+    <div class="test-header">
+      <h3>Recipient Filter</h3>
+      <span class="badge badge-pass">UI WORKS</span>
+    </div>
+    <p class="evidence">Recipient search input accepts text. Cannot verify filtering behavior since no data loads.</p>
+    <img src="04-filtered-view.png" alt="Filtered view with recipient search active" class="screenshot">
+    <p class="screenshot-caption">Recipient filter accepts input, but no data to filter (BUG-3)</p>
+  </div>
+</section>
+
+<!-- Detailed AC Testing -->
+<section>
+  <h2><span class="badge badge-pass">PASS</span> AC1: Webhook Event Capture</h2>
   <div class="evidence">
-    <p><strong>Verified fields added to email_send_log:</strong></p>
+    <p><strong>Verified infrastructure (from round 1):</strong></p>
+    <ul>
+      <li><code>email_event</code> table — stores resend_message_id, event_type, recipient, bounce details, raw payload</li>
+      <li><code>process_email_event</code> function — parses email.delivered/opened/clicked/bounced/complained events</li>
+      <li><code>webhook/resend_inbound</code> endpoint — routes delivery events to process_email_event alongside existing opt-out logic</li>
+    </ul>
+    <p style="margin-top:0.75rem; color: #6b7280;">No live webhook data in dev environment (expected — Resend webhooks fire in production).</p>
+  </div>
+</section>
+
+<section>
+  <h2><span class="badge badge-pass">PASS</span> AC2: Delivery Status Tracking</h2>
+  <div class="evidence">
     <ul>
       <li><code>delivery_status</code> — progressive update: sent → delivered → opened → clicked</li>
       <li><code>delivered_at</code>, <code>opened_at</code>, <code>clicked_at</code> — timestamp tracking</li>
       <li><code>open_count</code>, <code>click_count</code> — engagement counters</li>
     </ul>
-    <p style="margin-top:0.75rem;">The <code>process_email_event</code> function links events to email_send_log via <code>resend_message_id</code> and updates these fields progressively. Bounces and complaints receive both tracking treatment and opt-out processing.</p>
   </div>
 </section>
 
-<!-- AC3: Frontend Stats -->
 <section>
-  <h2><span class="badge badge-warn">PASS*</span> AC3: Frontend shows per-account and per-project email statistics</h2>
-  <p style="margin-bottom:1rem; color: #6b7280;">* Pass with 2 non-blocking bugs noted below</p>
+  <h2><span class="badge badge-fail">FAIL</span> AC3: Frontend Stats Page</h2>
 
-  <!-- Test 1: No filters -->
   <div class="test-result">
     <div class="test-header">
-      <h3>Test 1: email_stats — No filters</h3>
+      <h3>email_stats API (overview data)</h3>
       <span class="badge badge-pass">PASS</span>
     </div>
-    <pre><span class="cmd">$ curl -s "https://xano.atlanticsoft.co/api:2CPT0xvS:development/email_stats" \
-  -H "Authorization: Bearer $TOKEN" -H "X-Data-Source: development" | jq .</span></pre>
-    <pre>{
-  "summary": {
-    "total_sent": 93,
-    "total_delivered": 0,
-    "total_opened": 0,
-    "total_clicked": 0,
-    "total_bounced": 0,
-    "total_complained": 0,
-    "total_failed": 29,
-    "delivery_rate": 0,
-    "open_rate": 0,
-    "click_rate": 0,
-    "bounce_rate": 0,
-    "complaint_rate": 0,
-    "click_to_open_rate": 0
-  },
-  "filters": {
-    "email_account_id": null,
-    "project_id": null,
-    "start_date": null,
-    "end_date": null,
-    "group_by": "none"
-  }
-}</pre>
-    <p class="evidence">Correct structure. 93 emails sent, 29 failed. Delivery/open/click counts are 0 because no webhook events have been received in dev yet (expected).</p>
+    <pre><span class="cmd">$ curl "https://xano.atlanticsoft.co/api:2CPT0xvS:development/email_stats?x-data-source=development" \
+  -H "Authorization: Bearer $TOKEN"</span>
+
+{"summary":{"total_sent":93,"total_delivered":0,"total_opened":0,
+ "total_clicked":0,"total_bounced":0,"delivery_rate":0,
+ "open_rate":0,"click_rate":0,"bounce_rate":0},
+ "filters":{...},"breakdown":[]}</pre>
+    <p class="evidence">Works on :development branch. Returns correct summary data.</p>
   </div>
 
-  <!-- Test 2: Group by account -->
   <div class="test-result">
     <div class="test-header">
-      <h3>Test 2: email_stats — Group by account</h3>
-      <span class="badge badge-pass">PASS</span>
+      <h3>email_send_log API (sent emails table)</h3>
+      <span class="badge badge-fail">FAIL on :development</span>
     </div>
-    <pre><span class="cmd">$ curl -s "https://xano.atlanticsoft.co/api:2CPT0xvS:development/email_stats?group_by=account" \
-  -H "Authorization: Bearer $TOKEN" -H "X-Data-Source: development" | jq .breakdown</span></pre>
-    <pre>[
-  { "email_account_id": 20, "email_address": "jobs@betterwaysdevs.com",
-    "display_name": "BetterWay Devs Hiring", "total_sent": 9, ... },
-  { "email_account_id": 21, "email_address": "opportunities@betterwaysdevs.com",
-    "display_name": "BetterWay Devs Open Roles", "total_sent": 5, ... },
-  { "email_account_id": 27, "email_address": "opportunities@better-way-devs.com",
-    "display_name": "BetterWay Devs Open Roles", "total_sent": 6, ... },
-  { "email_account_id": 25, "email_address": "positions@better-way-devs.com",
-    "display_name": "BetterWay Devs Talent Team", "total_sent": 11, ... },
-  { "email_account_id": 24, "email_address": "opportunities@betterwaydevs.net",
-    "display_name": "BetterWay Devs Open Roles", "total_sent": 5, ... },
-  { "email_account_id": 19, "email_address": "positions@betterwaysdevs.com",
-    "display_name": "BetterWay Devs Talent Team", "total_sent": 4, ... },
-  { "email_account_id": 26, "email_address": "jobs@better-way-devs.com",
-    "display_name": "BetterWay Devs Hiring", "total_sent": 6, ... },
-  { "email_account_id": 22, "email_address": "positions@betterwaydevs.net",
-    "display_name": "BetterWay Devs Talent Team", "total_sent": 13, ... },
-  { "email_account_id": 23, "email_address": "jobs@betterwaydevs.net",
-    "display_name": "BetterWay Devs Hiring", "total_sent": 5, ... }
-]</pre>
-    <p class="evidence">Returns 9 email accounts with per-account stats. All expected fields present. Sum of per-account sent (9+5+6+11+5+4+6+13+5 = 64) is less than total 93 — remaining 29 are likely from accounts with no matching project or are failed sends not counted per-account.</p>
+    <pre><span class="cmd"># Base URL — works (122 records):</span>
+$ curl "https://xano.atlanticsoft.co/api:2CPT0xvS/email_send_log?per_page=5" \
+  -H "Authorization: Bearer $TOKEN" -H "X-Data-Source: development"
+
+{"items":[{"id":122,"recipient":"pablo@betterway.dev",
+ "subject":"M1 Sticky Test v3 - Email B (should be sticky)",
+ "status":"sent","delivery_status":"","sent_at":1772294289094,...},...],
+ "pagination":{"page":1,"per_page":5,"total":122,"total_pages":25}}
+
+<span class="cmd"># :development URL — FAILS:</span>
+$ curl "https://xano.atlanticsoft.co/api:2CPT0xvS:development/email_send_log?x-data-source=development"
+→ {"code":"ERROR_CODE_NOT_FOUND","message":"Unable to locate request."}</pre>
   </div>
 
-  <!-- Test 3: Group by project -->
   <div class="test-result">
     <div class="test-header">
-      <h3>Test 3: email_stats — Group by project</h3>
-      <span class="badge badge-pass">PASS</span>
+      <h3>email_stats_timeseries API (weekly chart)</h3>
+      <span class="badge badge-fail">FAIL on :development</span>
     </div>
-    <pre><span class="cmd">$ curl -s "https://xano.atlanticsoft.co/api:2CPT0xvS:development/email_stats?group_by=project" \
-  -H "Authorization: Bearer $TOKEN" -H "X-Data-Source: development" | jq .breakdown</span></pre>
-    <pre>[
-  { "project_id": 27, "project_title": null,
-    "total_sent": 43, "total_delivered": 0, "total_opened": 0,
-    "total_clicked": 0, "total_bounced": 0,
-    "open_rate": 0, "click_rate": 0, "bounce_rate": 0 }
-]</pre>
-    <p class="evidence">Returns 1 project with 43 sent. <code>project_title</code> is null — likely a join issue where the project record doesn't have a title or the join didn't resolve. Non-blocking.</p>
+    <pre><span class="cmd"># Base URL — works:</span>
+$ curl "https://xano.atlanticsoft.co/api:2CPT0xvS/email_stats_timeseries?period=week" \
+  -H "Authorization: Bearer $TOKEN" -H "X-Data-Source: development"
+
+{"period":"week","data":[
+  {"period_start":"2026-01-26","total_sent":0,...},
+  {"period_start":"2026-02-16","total_sent":18,...},
+  {"period_start":"2026-02-23","total_sent":75,...}
+]}
+
+<span class="cmd"># :development URL — FAILS:</span>
+→ {"code":"ERROR_CODE_NOT_FOUND","message":"Unable to locate request."}</pre>
   </div>
 
-  <!-- Test 4: Date range filter -->
   <div class="test-result">
     <div class="test-header">
-      <h3>Test 4: email_stats — Date range filter</h3>
+      <h3>Auth Enforcement</h3>
       <span class="badge badge-pass">PASS</span>
     </div>
-    <pre><span class="cmd">$ curl -s "https://xano.atlanticsoft.co/api:2CPT0xvS:development/email_stats?start_date=2026-01-01&amp;end_date=2026-02-28" \
-  -H "Authorization: Bearer $TOKEN" -H "X-Data-Source: development" | jq .summary.total_sent</span></pre>
-    <pre>82</pre>
-    <p class="evidence">Date filtering works correctly. Returns 82 sent (vs 93 total) — 11 emails fall outside Jan-Feb 2026 range. Filters object correctly shows timestamps.</p>
+    <pre><span class="cmd">$ curl -s -o /dev/null -w "%{http_code}" \
+  "https://xano.atlanticsoft.co/api:2CPT0xvS:development/email_stats?x-data-source=development"</span>
+→ 401
+
+<span class="cmd">$ curl -s -o /dev/null -w "%{http_code}" \
+  "https://xano.atlanticsoft.co/api:2CPT0xvS/email_send_log" -H "X-Data-Source: development"</span>
+→ 401</pre>
   </div>
 
-  <!-- Test 5: Auth enforcement -->
   <div class="test-result">
     <div class="test-header">
-      <h3>Test 5: Auth enforcement (no token)</h3>
+      <h3>Frontend Build</h3>
       <span class="badge badge-pass">PASS</span>
     </div>
-    <pre><span class="cmd">$ curl -s "https://xano.atlanticsoft.co/api:2CPT0xvS:development/email_stats" \
-  -H "X-Data-Source: development" | jq .</span></pre>
-    <pre>{ "code": "ERROR_CODE_UNAUTHORIZED", "message": "Unauthorized - Authentication Required" }</pre>
-    <p class="evidence">Correctly returns 401 when no auth token is provided.</p>
-  </div>
-
-  <!-- Test 6: Frontend build -->
-  <div class="test-result">
-    <div class="test-header">
-      <h3>Test 6: Frontend build</h3>
-      <span class="badge badge-pass">PASS</span>
-    </div>
-    <pre><span class="cmd">$ cd nearshore-talent-compass && npm run build</span></pre>
-    <pre>vite v5.4.10 building for production...
-&#x2713; 4174 modules transformed.
-dist/index.html                        3.34 kB
-dist/assets/index-CQRNbshY.css       156.48 kB
-dist/assets/index-DdoQwUo-.js      2,879.18 kB
-&#x2713; built in 22.30s</pre>
-    <p class="evidence">Build completes clean. No TypeScript errors. Email stats page and service compiled successfully.</p>
-  </div>
-
-  <!-- Bugs -->
-  <h3 style="margin-top: 1.5rem; margin-bottom: 0.75rem;">Bugs Found (non-blocking)</h3>
-
-  <div class="bug">
-    <div class="bug-title">BUG-1: Breakdown field name mismatch (backend ↔ frontend)</div>
-    <p>The API returns <code>email_account_id</code>/<code>email_address</code> for account breakdown and <code>project_id</code>/<code>project_title</code> for project breakdown. The frontend expects <code>group_id</code> and <code>group_label</code>. The breakdown table's Name column will render empty.</p>
-    <p style="margin-top:0.5rem;"><strong>Fix:</strong> Either normalize field names in the backend to use <code>group_id</code>/<code>group_label</code>, or add a mapping layer in the frontend service (<code>emailStatsApi.ts</code>).</p>
-  </div>
-
-  <div class="bug">
-    <div class="bug-title">BUG-2: Account filter not applied to breakdown query</div>
-    <p>When filtering by <code>email_account_id=22</code>, the summary correctly shows 13 sent (matching account 22), but the breakdown still returns all 9 accounts instead of just account 22.</p>
-    <p style="margin-top:0.5rem;"><strong>Fix:</strong> Apply the <code>email_account_id</code> filter to the breakdown aggregation query in the backend.</p>
-  </div>
-</section>
-
-<!-- AC4: Person Profile Engagement -->
-<section>
-  <h2><span class="badge badge-na">NOT IMPLEMENTED</span> AC4: Person profile shows engagement history</h2>
-  <div class="evidence">
-    <p>The spec lists person profile engagement history as a requirement, but the current implementation focused on the standalone stats page first. No profile-level engagement UI has been built yet.</p>
-    <p style="margin-top:0.5rem; color: #6b7280;">This is expected — the frontend developer built the stats page as the primary deliverable. Profile engagement can be added in a follow-up iteration once webhook data starts flowing.</p>
+    <pre>$ npx vite build
+✓ built in 27.24s
+dist/assets/index-Cn7I_eah.js  3,281.87 kB │ gzip: 900.08 kB
+No errors.</pre>
   </div>
 </section>
 
 <!-- Verdict Table -->
 <section>
-  <h2>Verdict Summary</h2>
+  <h2>Full Verdict Table</h2>
   <table>
     <thead>
-      <tr>
-        <th>Criterion</th>
-        <th>Verdict</th>
-        <th>Notes</th>
-      </tr>
+      <tr><th>Test Case</th><th>Result</th><th>Notes</th></tr>
     </thead>
     <tbody>
       <tr>
-        <td>AC1: Webhook events captured & stored</td>
+        <td>AC1: Webhook event capture</td>
         <td><span class="badge badge-pass">PASS</span></td>
-        <td>Infrastructure in place: table, function, webhook routing. No live data in dev (expected).</td>
+        <td>email_event table, process_email_event function, webhook routing all in place</td>
       </tr>
       <tr>
-        <td>AC2: email_send_log delivery status</td>
+        <td>AC2: Delivery status tracking</td>
         <td><span class="badge badge-pass">PASS</span></td>
-        <td>All tracking fields added. Progressive update logic built. Will populate with webhook events.</td>
+        <td>delivery_status, timestamps, counters all added to email_send_log</td>
       </tr>
       <tr>
-        <td>AC3: Frontend per-account/project stats</td>
-        <td><span class="badge badge-warn">PASS*</span></td>
-        <td>API works, frontend builds. 2 bugs: field name mismatch (BUG-1), filter leak (BUG-2).</td>
-      </tr>
-      <tr>
-        <td>AC4: Person profile engagement</td>
-        <td><span class="badge badge-na">NOT IMPL</span></td>
-        <td>Not built yet. Planned for follow-up iteration.</td>
-      </tr>
-      <tr>
-        <td>Frontend build</td>
+        <td>AC3a: Overview summary cards</td>
         <td><span class="badge badge-pass">PASS</span></td>
-        <td>Clean build, 4174 modules, no errors.</td>
+        <td>5 cards render with correct data (93 sent, 0 delivered/opened/clicked/bounced)</td>
+      </tr>
+      <tr>
+        <td>AC3b: Weekly trends chart</td>
+        <td><span class="badge badge-fail">FAIL</span></td>
+        <td>BUG-4: timeseries endpoint not on :development branch</td>
+      </tr>
+      <tr>
+        <td>AC3c: Sent emails table</td>
+        <td><span class="badge badge-fail">FAIL</span></td>
+        <td>BUG-3: email_send_log endpoint not on :development branch</td>
+      </tr>
+      <tr>
+        <td>AC3d: Filters UI</td>
+        <td><span class="badge badge-pass">PASS</span></td>
+        <td>All filter controls render correctly on both tabs</td>
+      </tr>
+      <tr>
+        <td>AC3e: Status badges</td>
+        <td><span class="badge badge-na">BLOCKED</span></td>
+        <td>Cannot test — no data in table (BUG-3)</td>
+      </tr>
+      <tr>
+        <td>AC3f: Pagination</td>
+        <td><span class="badge badge-na">BLOCKED</span></td>
+        <td>Cannot test — no data in table (BUG-3)</td>
+      </tr>
+      <tr>
+        <td>AC3g: Row expansion</td>
+        <td><span class="badge badge-na">BLOCKED</span></td>
+        <td>Cannot test — no data in table (BUG-3)</td>
+      </tr>
+      <tr>
+        <td>AC4: Profile engagement</td>
+        <td><span class="badge badge-na">DEFERRED</span></td>
+        <td>Not implemented — accepted as deferred scope</td>
+      </tr>
+      <tr>
+        <td>BUG-1 fix (field mapping)</td>
+        <td><span class="badge badge-fixed">FIXED</span></td>
+        <td>normalizeBreakdownItem() in emailStatsApi.ts (commit ac6b9eb)</td>
+      </tr>
+      <tr>
+        <td>BUG-2 fix (filter leak)</td>
+        <td><span class="badge badge-fixed">FIXED</span></td>
+        <td>Client-side filtering in emailStatsApi.ts (commit ac6b9eb)</td>
       </tr>
       <tr>
         <td>Auth enforcement</td>
         <td><span class="badge badge-pass">PASS</span></td>
-        <td>401 returned without token.</td>
+        <td>401 returned without auth token on all endpoints</td>
+      </tr>
+      <tr>
+        <td>Frontend build</td>
+        <td><span class="badge badge-pass">PASS</span></td>
+        <td>Clean build, 27.24s, no errors</td>
       </tr>
     </tbody>
   </table>
 </section>
 
-<section>
-  <h2>Overall Verdict: <span class="pass">PASS</span> (with noted bugs)</h2>
-  <p>M2 Email Event Tracking is functionally complete for its core scope. The backend infrastructure for capturing and processing Resend webhook events is fully in place. The statistics API works correctly with proper auth, filtering, and grouping. The frontend stats page builds clean and has the right UI structure.</p>
-  <p style="margin-top:0.75rem;"><strong>Recommended before production:</strong></p>
-  <ul style="margin-top:0.5rem;">
-    <li>Fix BUG-1 (field name mapping) — breakdown table Name column will be empty without this</li>
-    <li>Fix BUG-2 (filter applied to breakdown) — minor usability issue</li>
-    <li>AC4 (profile engagement) can be deferred to a later iteration</li>
-  </ul>
-</section>
-
 <footer>
-  Generated by qa-tester agent &nbsp;|&nbsp; BWATS Multi-Agent Team &nbsp;|&nbsp; 2026-02-28
+  Generated by qa-tester agent &nbsp;|&nbsp; BWATS Multi-Agent Team &nbsp;|&nbsp; 2026-02-28 (Round 2)
 </footer>
 
 </div>
