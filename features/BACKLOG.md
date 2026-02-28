@@ -16,6 +16,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 
 | ID | Title | Type | Status | Owner | Spec |
 |----|-------|------|--------|-------|------|
+| **D1** | **Deploy M1, M2, L6 & Pending Changes to Production** | **DEPLOY** | **pending** | — | [spec](specs/D1-deploy-m1-m2.md) |
 | **P4** | **Profile Not Loading — Source Mismatch Fallback** | **FRONT** | **done** | — | [spec](specs/P4-profile-source-fallback.md) |
 | P1 | Prospects Grid Freezing After Actions | FRONT | pending | — | [spec](specs/P1-prospects-grid-freeze.md) |
 | P2 | Auto-Organize Housekeeper Failing to Move People | BACK | pending | — | [spec](specs/P2-auto-organize-housekeeper.md) |
@@ -29,7 +30,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 |----|-------|------|--------|-------|------|
 | M1 | Email Account Stickiness Per Person | BACK | **done** | backend-developer | [spec](specs/M1-email-account-stickiness.md) |
 | M2 | Email Event Tracking (Opens, Clicks, Bounces) | BOTH | **done** | backend-developer | [spec](specs/M2-email-event-tracking.md) |
-| M3 | Auto-Reply Email for Job Applications | BOTH | pending | — | [spec](specs/M3-auto-reply-email.md) |
+| M3 | Auto-Reply Email for Job Applications | BOTH | **done** | backend-developer | [spec](specs/M3-auto-reply-email.md) |
 | M4 | Filter People by Last Outreach Date | BOTH | in-progress | — | [spec](specs/M4-filter-last-outreach.md) |
 | M5 | Frontend Permission UI Changes | FRONT | pending | — | [spec](specs/M5-frontend-permissions.md) |
 | M6 | Frontend LinkedIn "My Connections" Filter | FRONT | **done** | — | [spec](specs/M6-linkedin-connections-filter.md) |
@@ -46,7 +47,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 | L3 | LinkedIn Matching Optimization | BACK | pending | — | [spec](specs/L3-linkedin-matching.md) |
 | L4 | CoreSignal Enrichment — Manual Fix | BACK | pending | — | [spec](specs/L4-coresignal-enrichment.md) |
 | L5 | /ats CLI Skill — Interactive ATS from CLI | TOOL | **done** | — | [spec](specs/L5-ats-cli-skill.md) |
-| L6 | CLI Token Page — Browser-based auth for /ats | FRONT | pending | — | [spec](specs/L6-cli-token-page.md) |
+| L6 | CLI Token Page — Browser-based auth for /ats | FRONT | **done** | frontend-developer | [spec](specs/L6-cli-token-page.md) |
 
 ## Quick Fixes (< 15 min each)
 
