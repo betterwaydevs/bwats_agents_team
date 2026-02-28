@@ -158,6 +158,29 @@ When working on a task, update the delivery log at `features/delivery/<ID>.md`.
 - Append to the file if it exists; the PM should have already created it.
 - **On re-work/fixes**: When asked to fix something, update your stage — replace Notes with the latest summary, replace Screenshots with fresh ones, append new commits. The delivery log must always reflect the current state, not old state.
 
+## Deployment (MANDATORY)
+
+**Local file edits are NOT deployment.** Editing `.xs` files in the git repo does not update what Xano runs. You MUST deploy changes to Xano via MCP before marking DEV as done.
+
+### Required deployment steps:
+1. **Branch guard**: Verify you are on the correct Xano branch (development for dev work, v1 for production) BEFORE any MCP writes
+2. **Deploy via MCP**: Use MCP tools to push updated functions, API endpoints, and table schemas to Xano
+3. **Verify deployment**: Read the function/endpoint back via MCP to confirm the update took effect
+4. **Test on Xano**: Run curl commands against the deployed endpoint to verify it works with real data on the target branch
+
+### What counts as "deployed":
+- Function updated via MCP AND verified with a read-back
+- New table created via MCP (not just a local schema file)
+- New API endpoint created via MCP and responding to curl
+- Table schema changes applied via MCP
+
+### What does NOT count:
+- Editing local `.xs` files only
+- Committing to git without MCP deployment
+- "The code looks correct" without a live test
+
+**If MCP is unavailable**: Do NOT mark DEV as done. Mark as `blocked` with a note explaining that MCP deployment is pending. The orchestrator will handle it.
+
 ## Self-Verification (MANDATORY)
 
 Before marking your delivery stage as `done`, you MUST include concrete proof that the work functions correctly. The PM will gate-check your delivery log — if proof is missing, you will be sent back.
