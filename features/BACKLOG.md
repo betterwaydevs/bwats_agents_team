@@ -27,8 +27,8 @@ When picking up a task, agents MUST read both the spec and progress files before
 
 | ID | Title | Type | Status | Owner | Spec |
 |----|-------|------|--------|-------|------|
-| M1 | Email Account Stickiness Per Person | BACK | in-progress | backend-developer | [spec](specs/M1-email-account-stickiness.md) |
-| M2 | Email Event Tracking (Opens, Clicks, Bounces) | BOTH | in-progress | backend-developer | [spec](specs/M2-email-event-tracking.md) |
+| M1 | Email Account Stickiness Per Person | BACK | **done** | backend-developer | [spec](specs/M1-email-account-stickiness.md) |
+| M2 | Email Event Tracking (Opens, Clicks, Bounces) | BOTH | **done** | backend-developer | [spec](specs/M2-email-event-tracking.md) |
 | M3 | Auto-Reply Email for Job Applications | BOTH | pending | — | [spec](specs/M3-auto-reply-email.md) |
 | M4 | Filter People by Last Outreach Date | BOTH | in-progress | — | [spec](specs/M4-filter-last-outreach.md) |
 | M5 | Frontend Permission UI Changes | FRONT | pending | — | [spec](specs/M5-frontend-permissions.md) |
