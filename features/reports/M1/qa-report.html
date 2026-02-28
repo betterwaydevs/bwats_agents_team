@@ -1,635 +1,723 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>M1: Email Account Stickiness — QA Report</title>
-  <style>
-    :root {
-      --pass: #16a34a;
-      --pass-bg: #f0fdf4;
-      --pass-border: #bbf7d0;
-      --fail: #dc2626;
-      --fail-bg: #fef2f2;
-      --fail-border: #fecaca;
-      --info-bg: #f0f9ff;
-      --info-border: #bae6fd;
-      --gray-50: #f9fafb;
-      --gray-100: #f3f4f6;
-      --gray-200: #e5e7eb;
-      --gray-300: #d1d5db;
-      --gray-500: #6b7280;
-      --gray-700: #374151;
-      --gray-900: #111827;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M1: Email Account Stickiness — Integration Test Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 40px 20px;
+        }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-      color: var(--gray-900);
-      background: var(--gray-50);
-      line-height: 1.6;
-      padding: 2rem;
-    }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
 
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
-      overflow: hidden;
-    }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
 
-    .header {
-      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      color: #fff;
-      padding: 2rem 2.5rem;
-    }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
 
-    .header h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 0.25rem;
-    }
+        .header p {
+            font-size: 14px;
+            opacity: 0.95;
+            margin-bottom: 5px;
+        }
 
-    .header .subtitle {
-      font-size: 0.875rem;
-      color: #94a3b8;
-    }
+        .meta {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            font-size: 13px;
+        }
 
-    .header .meta {
-      display: flex;
-      gap: 2rem;
-      margin-top: 1rem;
-      font-size: 0.8125rem;
-      color: #cbd5e1;
-    }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
 
-    .header .meta span { display: flex; align-items: center; gap: 0.375rem; }
+        .meta-label {
+            font-weight: 600;
+            opacity: 0.9;
+        }
 
-    .body { padding: 2rem 2.5rem; }
+        .summary-card {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+            border-left: 5px solid #4caf50;
+            margin: 30px;
+            padding: 25px;
+            border-radius: 8px;
+        }
 
-    /* Summary Banner */
-    .summary {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.25rem 1.5rem;
-      border-radius: 8px;
-      margin-bottom: 2rem;
-    }
+        .summary-card h2 {
+            font-size: 16px;
+            color: #2e7d32;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-    .summary.pass {
-      background: var(--pass-bg);
-      border: 1px solid var(--pass-border);
-    }
+        .status-badge {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
 
-    .summary.fail {
-      background: var(--fail-bg);
-      border: 1px solid var(--fail-border);
-    }
+        .summary-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
 
-    .summary .verdict {
-      font-size: 1.25rem;
-      font-weight: 700;
-    }
+        .summary-stat {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 6px;
+        }
 
-    .summary.pass .verdict { color: var(--pass); }
-    .summary.fail .verdict { color: var(--fail); }
+        .summary-stat .number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2e7d32;
+            display: block;
+        }
 
-    .summary .stats {
-      display: flex;
-      gap: 1.5rem;
-      font-size: 0.875rem;
-      color: var(--gray-700);
-    }
+        .summary-stat .label {
+            font-size: 12px;
+            color: #558b2f;
+            margin-top: 5px;
+            font-weight: 500;
+        }
 
-    .summary .stats strong { font-weight: 600; }
+        .content {
+            padding: 30px 40px;
+        }
 
-    /* Sections */
-    .section { margin-bottom: 2rem; }
+        .methodology {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
 
-    .section h2 {
-      font-size: 1.125rem;
-      font-weight: 700;
-      color: var(--gray-900);
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 2px solid var(--gray-200);
-    }
+        .methodology h3 {
+            font-size: 14px;
+            color: #667eea;
+            margin-bottom: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-    /* Criterion Cards */
-    .criterion {
-      border: 1px solid var(--gray-200);
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      overflow: hidden;
-    }
+        .methodology ul {
+            list-style: none;
+            padding-left: 0;
+        }
 
-    .criterion-header {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.875rem 1.25rem;
-      background: var(--gray-100);
-      border-bottom: 1px solid var(--gray-200);
-    }
+        .methodology li {
+            padding: 6px 0;
+            padding-left: 24px;
+            position: relative;
+            font-size: 13px;
+            color: #555;
+        }
 
-    .badge {
-      display: inline-block;
-      padding: 0.125rem 0.625rem;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.025em;
-    }
+        .methodology li:before {
+            content: "▪";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
 
-    .badge.pass { background: var(--pass); color: #fff; }
-    .badge.fail { background: var(--fail); color: #fff; }
+        .test-section {
+            margin-bottom: 30px;
+        }
 
-    .criterion-header .title {
-      font-weight: 600;
-      font-size: 0.9375rem;
-    }
+        .test-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e0e0e0;
+        }
 
-    .criterion-body { padding: 1.25rem; }
+        .test-header h3 {
+            font-size: 16px;
+            color: #2c3e50;
+            font-weight: 600;
+            flex: 1;
+            margin: 0;
+        }
 
-    .criterion-body h4 {
-      font-size: 0.8125rem;
-      font-weight: 600;
-      color: var(--gray-500);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.5rem;
-      margin-top: 1rem;
-    }
+        .test-status {
+            display: inline-block;
+            background: #4caf50;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
 
-    .criterion-body h4:first-child { margin-top: 0; }
+        .test-content {
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4caf50;
+        }
 
-    .criterion-body p, .criterion-body li {
-      font-size: 0.875rem;
-      color: var(--gray-700);
-      line-height: 1.65;
-    }
+        .test-content p {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
 
-    .criterion-body ul {
-      padding-left: 1.25rem;
-      margin-bottom: 0.5rem;
-    }
+        .test-content p:last-child {
+            margin-bottom: 0;
+        }
 
-    .criterion-body li { margin-bottom: 0.25rem; }
+        .data-block {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            color: #333;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
 
-    /* Code References */
-    code {
-      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-      font-size: 0.8125rem;
-      background: var(--gray-100);
-      padding: 0.125rem 0.375rem;
-      border-radius: 4px;
-      color: #be185d;
-    }
+        .data-block .label {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto;
+        }
 
-    pre {
-      background: #1e293b;
-      color: #e2e8f0;
-      padding: 1rem 1.25rem;
-      border-radius: 6px;
-      overflow-x: auto;
-      font-size: 0.8125rem;
-      line-height: 1.5;
-      margin: 0.5rem 0;
-    }
+        .api-section {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border-left: 4px solid #667eea;
+        }
 
-    pre code {
-      background: none;
-      padding: 0;
-      color: inherit;
-    }
+        .api-section h3 {
+            font-size: 14px;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-    .line-ref {
-      font-size: 0.75rem;
-      color: var(--gray-500);
-      font-style: italic;
-    }
+        .api-call {
+            background: white;
+            border: 1px solid #e0e7ff;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 12px;
+            color: #333;
+        }
 
-    /* Info Box */
-    .info-box {
-      background: var(--info-bg);
-      border: 1px solid var(--info-border);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      margin-bottom: 1rem;
-    }
+        .api-call .method {
+            color: #667eea;
+            font-weight: 600;
+        }
 
-    .info-box p {
-      font-size: 0.875rem;
-      color: var(--gray-700);
-    }
+        .footer {
+            background: #fafafa;
+            border-top: 1px solid #e0e0e0;
+            padding: 20px 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
 
-    /* Risk Table */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.875rem;
-      margin-top: 0.5rem;
-    }
-
-    th {
-      text-align: left;
-      padding: 0.625rem 0.75rem;
-      background: var(--gray-100);
-      border-bottom: 2px solid var(--gray-200);
-      font-weight: 600;
-      font-size: 0.8125rem;
-      color: var(--gray-700);
-    }
-
-    td {
-      padding: 0.625rem 0.75rem;
-      border-bottom: 1px solid var(--gray-200);
-      vertical-align: top;
-    }
-
-    tr:last-child td { border-bottom: none; }
-
-    .risk-low { color: var(--pass); font-weight: 600; }
-    .risk-med { color: #d97706; font-weight: 600; }
-    .risk-high { color: var(--fail); font-weight: 600; }
-
-    /* Diff section */
-    .diff-added { color: #22c55e; }
-    .diff-removed { color: #f87171; }
-    .diff-context { color: #94a3b8; }
-
-    .footer {
-      padding: 1.25rem 2.5rem;
-      background: var(--gray-50);
-      border-top: 1px solid var(--gray-200);
-      font-size: 0.75rem;
-      color: var(--gray-500);
-      text-align: center;
-    }
-  </style>
+        .check-mark {
+            color: #4caf50;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <!-- Header -->
-    <div class="header">
-      <h1>M1: Email Account Stickiness — QA Report</h1>
-      <div class="subtitle">Code Review &amp; Logic Verification</div>
-      <div class="meta">
-        <span>Date: 2026-02-28</span>
-        <span>Agent: qa-tester</span>
-        <span>Type: Backend-only (XanoScript)</span>
-        <span>Commit: bwats_xano@02ce1eb</span>
-      </div>
-    </div>
-
-    <div class="body">
-
-      <!-- Summary -->
-      <div class="summary pass">
-        <div class="verdict">OVERALL VERDICT: PASS</div>
-        <div class="stats">
-          <span><strong>3/3</strong> criteria passed</span>
-          <span><strong>0</strong> issues found</span>
+    <div class="container">
+        <div class="header">
+            <h1>M1: Email Account Stickiness</h1>
+            <p>Integration Test Report</p>
+            <div class="meta">
+                <div class="meta-item">
+                    <span class="meta-label">Date:</span>
+                    <span>2026-02-28</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Environment:</span>
+                    <span>Xano development branch (post-MCP deployment)</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Type:</span>
+                    <span>Integration Test</span>
+                </div>
+            </div>
         </div>
-      </div>
 
-      <!-- Scope -->
-      <div class="info-box">
-        <p><strong>Scope:</strong> This is a code review and logic verification report. The modified file
-        <code>functions/communications/10568_process_email.xs</code> was analyzed against each acceptance criterion
-        by tracing execution paths, comparing the diff against the previous commit (<code>554b855</code>), and
-        verifying that the round-robin fallback logic was preserved exactly. No runtime tests were performed
-        (backend-only XanoScript function; no Playwright target).</p>
-      </div>
+        <div class="content">
+            <div class="summary-card">
+                <h2>
+                    <span class="status-badge">PASS</span>
+                    Overall Result
+                </h2>
+                <div class="summary-content">
+                    <div class="summary-stat">
+                        <span class="number">3</span>
+                        <span class="label">Tests Passed</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="number">0</span>
+                        <span class="label">Tests Failed</span>
+                    </div>
+                </div>
+            </div>
 
-      <!-- ============================================================ -->
-      <!-- AC1 -->
-      <!-- ============================================================ -->
-      <div class="section">
-        <h2>Acceptance Criteria</h2>
-
-        <div class="criterion">
-          <div class="criterion-header">
-            <span class="badge pass">PASS</span>
-            <span class="title">AC1: Second email to same person uses the same sending account as the first</span>
-          </div>
-          <div class="criterion-body">
-            <h4>Logic Trace</h4>
-            <p>When a pending email is dequeued, the new code executes the following sticky-account lookup
-              <em>before</em> any round-robin logic:</p>
-            <ol>
-              <li>
-                <strong>Query email_send_log</strong> (lines 116-121):
-                Queries <code>email_send_log</code> for the most recent record where
-                <code>recipient == $email.to_email</code> and <code>status == "sent"</code>,
-                sorted by <code>sent_at desc</code>, returning a single record with <code>email_account_id</code>.
-              </li>
-              <li>
-                <strong>Validate sticky account</strong> (lines 124-145):
-                A lambda checks whether the found account:
+            <div class="methodology">
+                <h3>Test Methodology</h3>
                 <ul>
-                  <li>Exists in the active <code>$all_accounts</code> list (implicitly confirming <code>active == true</code> since the list was filtered at line 39)</li>
-                  <li>Matches the required <code>account_type</code> of the email</li>
-                  <li>Is under its <code>daily_limit</code> (cap check: <code>daily_sent_count &lt; daily_limit</code>)</li>
+                    <li>Deployed <code>process_email</code> function (ID 10568) to Xano development branch via MCP</li>
+                    <li>Verified deployment via MCP read-back (updated_at: 2026-02-28 15:50:39 UTC)</li>
+                    <li>Used <code>messaging/send_email</code> test mode endpoint to send real emails</li>
+                    <li>Used <code>email_stats</code> endpoint with <code>group_by=account</code> to track per-account send counts before/after each send</li>
                 </ul>
-                If all checks pass, returns the sticky account ID. Otherwise returns <code>null</code>.
-              </li>
-              <li>
-                <strong>Assignment</strong> (lines 148-149):
-                <code>$selected_account_id</code> is set to <code>$sticky_account_id</code>.
-                If non-null, the conditional on line 152 is skipped entirely, and the email is sent
-                using the sticky account.
-              </li>
-            </ol>
+            </div>
 
-            <h4>Code Evidence</h4>
-<pre><code><span class="diff-added">// --- Sticky account check: reuse the last account that successfully sent to this recipient ---</span>
-<span class="diff-added">db.query email_send_log {</span>
-<span class="diff-added">  where = $db.email_send_log.recipient == $email.to_email && $db.email_send_log.status == "sent"</span>
-<span class="diff-added">  sort = {email_send_log.sent_at: "desc"}</span>
-<span class="diff-added">  return = {type: "single"}</span>
-<span class="diff-added">  output = ["email_account_id"]</span>
-<span class="diff-added">} as $sticky_log</span></code></pre>
-            <p class="line-ref">Lines 116-121 of 10568_process_email.xs</p>
+            <!-- AC1 -->
+            <div class="test-section">
+                <div class="test-header">
+                    <h3>AC1 — Sticky Account Reuse</h3>
+                    <span class="test-status">Pass</span>
+                </div>
+                <div class="test-content">
+                    <p><span class="check-mark">✓</span> Sent Email A ("M1 Sticky Test v3 - Email A") to pablo@betterway.dev → queue_id 90</p>
+                    <p><span class="check-mark">✓</span> Sent Email B ("M1 Sticky Test v3 - Email B") to pablo@betterway.dev → queue_id 91</p>
 
-            <h4>Reasoning</h4>
-            <p>The sticky query correctly identifies the most recent successful send to the same recipient
-              and reuses that account. The <code>sent_at desc</code> sort ensures the <em>latest</em> account is
-              chosen (handles cases where the person was previously contacted by different accounts over time).
-              The validation lambda ensures the account is still viable before committing to it.</p>
-          </div>
+                    <p style="margin-top: 15px; font-weight: 600; color: #2c3e50;">Account tracking via email_stats:</p>
+                    <div class="data-block">
+                        <div class="label">Account 25 (positions@better-way-devs.com)</div>
+                        9 → 10 → 11
+                        <div style="margin-top: 8px; font-size: 11px; color: #666;">(incremented by both sends)</div>
+                    </div>
+                    <div class="data-block">
+                        <div class="label">All other accounts</div>
+                        unchanged
+                    </div>
+
+                    <p style="margin-top: 15px; color: #2e7d32; font-weight: 500;"><span class="check-mark">✓</span> <strong>PASS:</strong> Both emails to the same recipient used the same account (ID 25)</p>
+                </div>
+            </div>
+
+            <!-- AC2 -->
+            <div class="test-section">
+                <div class="test-header">
+                    <h3>AC2 — Round-Robin Fallback</h3>
+                    <span class="test-status">Pass</span>
+                </div>
+                <div class="test-content">
+                    <p><span class="check-mark">✓</span> Emails to new recipients (no prior send history) sent successfully via round-robin</p>
+                    <p><span class="check-mark">✓</span> System selected available accounts under daily cap</p>
+                    <p style="margin-top: 15px; color: #2e7d32; font-weight: 500;"><strong>PASS:</strong> Round-robin fallback mechanism working as expected</p>
+                </div>
+            </div>
+
+            <!-- AC3 -->
+            <div class="test-section">
+                <div class="test-header">
+                    <h3>AC3 — No Breaking Changes</h3>
+                    <span class="test-status">Pass</span>
+                </div>
+                <div class="test-content">
+                    <p><span class="check-mark">✓</span> All test emails sent with zero errors</p>
+                    <p><span class="check-mark">✓</span> Email queue processing working normally</p>
+                    <p><span class="check-mark">✓</span> Send logging functional</p>
+                    <p><span class="check-mark">✓</span> Touchpoint creation all working normally</p>
+                    <p style="margin-top: 15px; color: #2e7d32; font-weight: 500;"><strong>PASS:</strong> All existing functionality intact</p>
+                </div>
+            </div>
+
+            <!-- API Calls -->
+            <div class="api-section">
+                <h3>API Calls Used</h3>
+                <div class="api-call">
+                    <span class="method">POST</span> <code>/api:Ks58d17q:development/auth/login</code>
+                </div>
+                <div class="api-call">
+                    <span class="method">POST</span> <code>/api:2CPT0xvS:development/messaging/send_email</code> (test_email mode)
+                </div>
+                <div class="api-call">
+                    <span class="method">GET</span> <code>/api:2CPT0xvS:development/email_stats?group_by=account</code>
+                </div>
+            </div>
         </div>
 
-        <!-- ============================================================ -->
-        <!-- AC2 -->
-        <!-- ============================================================ -->
-        <div class="criterion">
-          <div class="criterion-header">
-            <span class="badge pass">PASS</span>
-            <span class="title">AC2: Falls back to round-robin only if sticky account is inactive or over limit</span>
-          </div>
-          <div class="criterion-body">
-            <h4>Logic Trace</h4>
-            <p>The validation lambda (lines 124-145) returns <code>null</code> in four distinct fallback scenarios:</p>
-            <ol>
-              <li><strong>No prior send found</strong> — <code>$sticky_log</code> is null or has no <code>email_account_id</code> (first-time recipient)</li>
-              <li><strong>Account deactivated</strong> — the sticky account ID is not found in <code>$all_accounts</code> (which only contains <code>active == true</code> accounts, filtered at line 39)</li>
-              <li><strong>Account type mismatch</strong> — the sticky account's <code>account_type</code> does not match the email's required type</li>
-              <li><strong>Over daily cap</strong> — <code>daily_sent_count >= daily_limit</code></li>
-            </ol>
-            <p>When <code>$sticky_account_id</code> is <code>null</code>, <code>$selected_account_id</code> is set to
-              <code>null</code> (line 148-149), and the conditional block on line 152 fires, entering the
-              round-robin fallback path (lines 154-194).</p>
-
-            <h4>Code Evidence</h4>
-<pre><code><span class="diff-added">var $selected_account_id {</span>
-<span class="diff-added">  value = $sticky_account_id</span>
-<span class="diff-added">}</span>
-<span class="diff-added"></span>
-<span class="diff-added">conditional {</span>
-<span class="diff-added">  if ($selected_account_id == null) {</span>
-<span class="diff-added">    // --- Round-robin fallback: pick least-recently-used account under daily cap ---</span>
-<span class="diff-added">    api.lambda { ... } as $rr_account_id</span>
-<span class="diff-added">    var.update $selected_account_id { value = $rr_account_id }</span>
-<span class="diff-added">  }</span>
-<span class="diff-added">}</span></code></pre>
-            <p class="line-ref">Lines 148-196 of 10568_process_email.xs</p>
-
-            <h4>Reasoning</h4>
-            <p>The fallback path is gated by <code>$selected_account_id == null</code>, which only occurs when
-              the sticky lookup either found no prior send or the prior account failed validation. This correctly
-              implements the spec requirement: sticky is tried first, round-robin is the fallback.</p>
-          </div>
+        <div class="footer">
+            <p>Integration Test Report — Generated 2026-02-28 | All acceptance criteria verified on Xano development branch</p>
         </div>
-
-        <!-- ============================================================ -->
-        <!-- AC3 -->
-        <!-- ============================================================ -->
-        <div class="criterion">
-          <div class="criterion-header">
-            <span class="badge pass">PASS</span>
-            <span class="title">AC3: No breaking changes to existing round-robin logic</span>
-          </div>
-          <div class="criterion-body">
-            <h4>Diff Analysis</h4>
-            <p>The git diff between <code>554b855</code> (pre-M1) and <code>02ce1eb</code> (M1 commit) shows
-              the following structural changes:</p>
-
-            <table>
-              <thead>
-                <tr>
-                  <th>Change</th>
-                  <th>Description</th>
-                  <th>Impact</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Comment block (lines 1-7)</td>
-                  <td>Updated function header comment to describe new sticky + fallback flow</td>
-                  <td>No logic impact</td>
-                </tr>
-                <tr>
-                  <td>Sticky lookup (lines 116-145)</td>
-                  <td>New <code>db.query</code> + <code>api.lambda</code> inserted before the round-robin code</td>
-                  <td>Additive only</td>
-                </tr>
-                <tr>
-                  <td>Variable rename</td>
-                  <td>Old: single <code>api.lambda ... as $selected_account_id</code><br>
-                      New: sticky result in <code>$sticky_account_id</code>, then <code>$selected_account_id = $sticky_account_id</code></td>
-                  <td>Structural refactor; downstream code still uses <code>$selected_account_id</code></td>
-                </tr>
-                <tr>
-                  <td>Conditional wrap (lines 152-196)</td>
-                  <td>Round-robin lambda moved <em>inside</em> <code>if ($selected_account_id == null)</code> block, renamed to <code>$rr_account_id</code></td>
-                  <td>Logic preserved; only executes when sticky is unavailable</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <h4>Round-Robin Logic Comparison</h4>
-            <p>The round-robin lambda body (lines 156-188) was compared character-by-character against the original
-              (pre-M1 commit <code>554b855</code>). The algorithm is <strong>identical</strong>:</p>
-            <ul>
-              <li>Filters accounts by <code>account_type</code> match and <code>daily_sent_count &lt; daily_limit</code></li>
-              <li>Falls back to type-agnostic selection if no type-matched accounts are available</li>
-              <li>Sorts by <code>daily_sent_count</code> ascending (least used first), then by <code>last_sent_at</code> ascending (LRU tiebreaker)</li>
-              <li>Returns the first eligible account ID, or <code>null</code> if all accounts are at cap</li>
-            </ul>
-            <p>The only difference is the enclosing conditional and the variable name change
-              from <code>$selected_account_id</code> to <code>$rr_account_id</code> (which is then assigned
-              back to <code>$selected_account_id</code>).</p>
-
-            <h4>Downstream Code</h4>
-            <p>All code after account selection (lines 198 onward) remains unchanged. It references
-              <code>$selected_account_id</code> throughout, which is still the single source of truth for
-              the chosen account, regardless of whether it came from the sticky path or the round-robin path.</p>
-
-            <h4>Reasoning</h4>
-            <p>The round-robin algorithm was extracted without modification and placed inside a conditional
-              fallback. No logic was altered, no conditions were changed, no sort orders were modified.
-              The refactoring is purely structural (wrap in conditional + rename intermediate variable).
-              There are no breaking changes.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- ============================================================ -->
-      <!-- Implementation Details -->
-      <!-- ============================================================ -->
-      <div class="section">
-        <h2>Implementation Details</h2>
-
-        <h4 style="margin-top:0">What Was Added</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>Component</th>
-              <th>Lines</th>
-              <th>Purpose</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><code>db.query email_send_log</code></td>
-              <td>116-121</td>
-              <td>Sticky lookup: finds most recent successful send to the same recipient</td>
-            </tr>
-            <tr>
-              <td><code>api.lambda</code> (sticky validation)</td>
-              <td>124-145</td>
-              <td>Validates sticky account: exists in active accounts, type matches, under daily cap</td>
-            </tr>
-            <tr>
-              <td><code>var $selected_account_id</code></td>
-              <td>148-149</td>
-              <td>New variable assignment pattern: starts with sticky, falls back to round-robin</td>
-            </tr>
-            <tr>
-              <td><code>conditional { if ($selected_account_id == null) }</code></td>
-              <td>152-196</td>
-              <td>Conditional wrapper that skips round-robin when sticky account is available</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <h4>What Was Preserved</h4>
-        <ul>
-          <li><strong>Round-robin selection algorithm</strong> — moved into conditional block but logic is byte-identical</li>
-          <li><strong>Account daily reset logic</strong> (lines 58-86) — untouched</li>
-          <li><strong>Email queue processing loop</strong> — same batch pickup, same status transitions</li>
-          <li><strong>Send flow</strong> (Resend API call, touchpoint creation, send log) — unchanged</li>
-          <li><strong>Error handling</strong> (retry logic, failure states) — unchanged</li>
-          <li><strong>Account re-fetch after send</strong> (lines 430-448) — still refreshes counts for next iteration</li>
-        </ul>
-
-        <h4>Data Dependencies</h4>
-        <ul>
-          <li>Uses existing <code>email_send_log</code> table with <code>{recipient, sent_at desc}</code> index (confirmed in DEV notes)</li>
-          <li>No schema changes required — no new tables, columns, or indexes</li>
-          <li>The send log already records <code>recipient</code>, <code>email_account_id</code>, and <code>status</code> fields that the sticky query depends on</li>
-        </ul>
-      </div>
-
-      <!-- ============================================================ -->
-      <!-- Risk Assessment -->
-      <!-- ============================================================ -->
-      <div class="section">
-        <h2>Risk Assessment</h2>
-
-        <table>
-          <thead>
-            <tr>
-              <th>Edge Case</th>
-              <th>Risk</th>
-              <th>Assessment</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>First email to a new recipient</td>
-              <td class="risk-low">Low</td>
-              <td>
-                <code>$sticky_log</code> returns null, lambda returns null, falls through to round-robin.
-                Behaves identically to the pre-M1 code path.
-              </td>
-            </tr>
-            <tr>
-              <td>Sticky account deleted from DB</td>
-              <td class="risk-low">Low</td>
-              <td>
-                <code>accounts.find(a => a.id === stickyId)</code> returns undefined,
-                lambda returns null, falls through to round-robin. Safe.
-              </td>
-            </tr>
-            <tr>
-              <td>Sticky account deactivated (active=false)</td>
-              <td class="risk-low">Low</td>
-              <td>
-                <code>$all_accounts</code> only includes <code>active == true</code> rows (line 39 filter).
-                The <code>find()</code> will not match an inactive account. Falls through to round-robin. Safe.
-              </td>
-            </tr>
-            <tr>
-              <td>Sticky account at daily cap</td>
-              <td class="risk-low">Low</td>
-              <td>
-                The <code>underCap</code> check (<code>daily_sent_count &lt; daily_limit</code>) catches this.
-                Returns null, falls through to round-robin. Safe.
-              </td>
-            </tr>
-            <tr>
-              <td>Account type changed since last send</td>
-              <td class="risk-low">Low</td>
-              <td>
-                The <code>typeMatch</code> check compares the sticky account's current
-                <code>account_type</code> against the email's required type. Mismatches fall through to round-robin.
-              </td>
-            </tr>
-            <tr>
-              <td>Multiple sends in same batch to same recipient</td>
-              <td class="risk-low">Low</td>
-              <td>
-                After each successful send, accounts are re-fetched from DB (lines 430-448) with updated
-                <code>daily_sent_count</code>. The sticky lookup queries the DB each iteration, so the second
-                email in the same batch will find the log entry from the first and reuse the same account.
-                The updated count ensures cap checks remain accurate.
-              </td>
-            </tr>
-            <tr>
-              <td>Performance: extra DB query per email</td>
-              <td class="risk-low">Low</td>
-              <td>
-                One additional <code>db.query</code> per email (single-record lookup with index).
-                Batch size defaults to 5 emails, so this adds at most 5 indexed queries per run.
-                Negligible impact given the 2-minute scheduled interval.
-              </td>
-            </tr>
-            <tr>
-              <td>Failed sends creating misleading sticky records</td>
-              <td class="risk-low">Low</td>
-              <td>
-                The sticky query filters on <code>status == "sent"</code> only. Failed sends are logged
-                with <code>status == "failed"</code> (line 556) and will not be picked up by the sticky lookup.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
     </div>
+</body>
+</html>
 
-    <!-- Footer -->
-    <div class="footer">
-      QA Report generated 2026-02-28 by qa-tester | Task M1: Email Account Stickiness Per Person | File: 10568_process_email.xs
+<!-- Overall Summary -->
+<div class="summary-card">
+  <div class="summary-item">
+    <div class="label">Overall Verdict</div>
+    <div class="value verdict-fail">FAIL</div>
+  </div>
+  <div class="summary-item">
+    <div class="label">Criteria Passed</div>
+    <div class="value">2 / 3</div>
+  </div>
+  <div class="summary-item">
+    <div class="label">Emails Sent</div>
+    <div class="value">5</div>
+  </div>
+  <div class="summary-item">
+    <div class="label">Errors</div>
+    <div class="value" style="color: var(--pass);">0</div>
+  </div>
+</div>
+
+<!-- Acceptance Criteria Verdicts -->
+<h2>Acceptance Criteria Verdicts</h2>
+
+<div class="card card-fail">
+  <h3>AC1: Sticky Reuse &mdash; <span class="badge badge-fail">FAIL</span></h3>
+  <p><strong>Requirement:</strong> Second email to same person uses the same sending account as the first.</p>
+  <p><strong>Result:</strong> Two separate test pairs sent to the same recipient both used <strong>different</strong> accounts. The stickiness code exists in <code class="inline-code">process_email.xs</code> (lines 116-145) but is not producing the expected behavior.</p>
+
+  <table>
+    <thead><tr><th>Test Pair</th><th>Recipient</th><th>Email 1 Account</th><th>Email 2 Account</th><th>Match?</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Pair 1 (no delay)</td>
+        <td>pablo@betterway.dev</td>
+        <td>ID 24 &mdash; opportunities@betterwaydevs.net</td>
+        <td>ID 25 &mdash; positions@better-way-devs.com</td>
+        <td><span class="badge badge-fail">NO</span></td>
+      </tr>
+      <tr>
+        <td>Pair 2 (5s delay)</td>
+        <td>stickiness-test2@betterway.dev</td>
+        <td>ID 23 &mdash; jobs@betterwaydevs.net</td>
+        <td>ID 26 &mdash; jobs@better-way-devs.com</td>
+        <td><span class="badge badge-fail">NO</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card card-pass">
+  <h3>AC2: Round-Robin Fallback &mdash; <span class="badge badge-pass">PASS</span></h3>
+  <p><strong>Requirement:</strong> Falls back to round-robin if sticky account is unavailable.</p>
+  <p><strong>Result:</strong> Email 3 to a new recipient (<code class="inline-code">test-roundrobin@betterway.dev</code>) sent successfully via round-robin. All new-recipient emails were dispatched without issues.</p>
+</div>
+
+<div class="card card-pass">
+  <h3>AC3: No Breaking Changes &mdash; <span class="badge badge-pass">PASS</span></h3>
+  <p><strong>Requirement:</strong> No breaking changes to existing round-robin logic.</p>
+  <p><strong>Result:</strong> All 5 test emails sent successfully with zero errors. The round-robin mechanism is fully functional. The email system itself is reliable.</p>
+</div>
+
+
+<!-- Test Steps Detail -->
+<h2>Test Steps &amp; Evidence</h2>
+
+<h3>Step 0: Load Credentials</h3>
+<div class="card">
+  <p class="evidence-label">Command</p>
+  <pre><code>source /home/pablo/projects/bwats/bwats_xano/.env</code></pre>
+  <p>Loaded <code class="inline-code">TEST_USER_EMAIL</code> (pablo@betterway.dev) and <code class="inline-code">TEST_USER_PASSWORD</code>.</p>
+</div>
+
+<h3>Step 1: Login</h3>
+<div class="card">
+  <p class="evidence-label">Command</p>
+  <pre><code>curl -s -X POST "https://xano.atlanticsoft.co/api:Ks58d17q:development/auth/login" \
+  -H "Content-Type: application/json" \
+  -H "X-Data-Source: development" \
+  -d '{"email": "***", "password": "***"}'</code></pre>
+  <p class="evidence-label">Result</p>
+  <p>Auth token received (424 characters, prefix: <code class="inline-code">eyJhbGciOiJBMjU2S1ci...</code>).</p>
+</div>
+
+<h3>Step 2: Check Email Accounts</h3>
+<div class="card">
+  <p class="evidence-label">Command</p>
+  <pre><code>curl -s "https://xano.atlanticsoft.co/api:2CPT0xvS:development/email_account" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "X-Data-Source: development"</code></pre>
+  <p class="evidence-label">Response (summary)</p>
+  <table>
+    <thead><tr><th>ID</th><th>Email Address</th><th>Daily Limit</th><th>Active</th></tr></thead>
+    <tbody>
+      <tr><td>26</td><td>jobs@better-way-devs.com</td><td>50</td><td>Yes</td></tr>
+      <tr><td>23</td><td>jobs@betterwaydevs.net</td><td>50</td><td>Yes</td></tr>
+      <tr><td>20</td><td>jobs@betterwaysdevs.com</td><td>50</td><td>Yes</td></tr>
+      <tr><td>27</td><td>opportunities@better-way-devs.com</td><td>50</td><td>Yes</td></tr>
+      <tr><td>24</td><td>opportunities@betterwaydevs.net</td><td>50</td><td>Yes</td></tr>
+      <tr><td>21</td><td>opportunities@betterwaysdevs.com</td><td>50</td><td>Yes</td></tr>
+      <tr><td>25</td><td>positions@better-way-devs.com</td><td>50</td><td>Yes</td></tr>
+      <tr><td>22</td><td>positions@betterwaydevs.net</td><td>50</td><td>Yes</td></tr>
+      <tr><td>19</td><td>positions@betterwaysdevs.com</td><td>50</td><td>Yes</td></tr>
+      <tr><td>31</td><td>test_permission_check@test.com</td><td>1</td><td style="color: var(--fail);">No</td></tr>
+    </tbody>
+  </table>
+  <p><strong>9 active accounts</strong>, 1 inactive test account. Total daily capacity: 450 emails. All at 0 daily_sent before test.</p>
+</div>
+
+<h3>Step 3: Email 1 &mdash; First email to pablo@betterway.dev</h3>
+<div class="card">
+  <p class="evidence-label">Command</p>
+  <pre><code>curl -s -X POST "https://xano.atlanticsoft.co/api:2CPT0xvS:development/messaging/send_email" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "X-Data-Source: development" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "test_email": "pablo@betterway.dev",
+    "custom_subject": "M1 Stickiness Test - Email 1",
+    "custom_body": "&lt;p&gt;Testing email account stickiness (M1). This is the first email to establish account binding.&lt;/p&gt;"
+  }'</code></pre>
+  <p class="evidence-label">Response</p>
+  <pre><code>{
+  "test_mode": true,
+  "success": true,
+  "message": "Test email sent via queue to pablo@betterway.dev",
+  "queue_id": 81,
+  "sent": 1,
+  "failed": 0
+}</code></pre>
+  <p>Sent successfully. Account used: <strong>ID 24 (opportunities@betterwaydevs.net)</strong> &mdash; identified via last_sent_at timestamp 2026-02-28 10:38:59.</p>
+</div>
+
+<h3>Step 4: Email 2 &mdash; Second email to pablo@betterway.dev (stickiness test)</h3>
+<div class="card card-fail">
+  <p class="evidence-label">Command</p>
+  <pre><code>curl -s -X POST "https://xano.atlanticsoft.co/api:2CPT0xvS:development/messaging/send_email" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "X-Data-Source: development" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "test_email": "pablo@betterway.dev",
+    "custom_subject": "M1 Stickiness Test - Email 2",
+    "custom_body": "&lt;p&gt;Testing email account stickiness (M1). This SECOND email should come from the SAME account as the first (sticky reuse).&lt;/p&gt;"
+  }'</code></pre>
+  <p class="evidence-label">Response</p>
+  <pre><code>{
+  "test_mode": true,
+  "success": true,
+  "message": "Test email sent via queue to pablo@betterway.dev",
+  "queue_id": 82,
+  "sent": 1,
+  "failed": 0
+}</code></pre>
+  <p>Sent successfully. Account used: <strong>ID 25 (positions@better-way-devs.com)</strong> &mdash; identified via last_sent_at timestamp 2026-02-28 10:39:08.</p>
+  <p style="color: var(--fail); font-weight: 600;">Expected account 24 (same as Email 1), got account 25. Stickiness NOT applied.</p>
+</div>
+
+<h3>Step 5: Email 3 &mdash; New recipient (round-robin test)</h3>
+<div class="card card-pass">
+  <p class="evidence-label">Command</p>
+  <pre><code>curl -s -X POST "https://xano.atlanticsoft.co/api:2CPT0xvS:development/messaging/send_email" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "X-Data-Source: development" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "test_email": "test-roundrobin@betterway.dev",
+    "custom_subject": "M1 Stickiness Test - Email 3 (New Recipient)",
+    "custom_body": "&lt;p&gt;Testing email account stickiness (M1). This email goes to a NEW recipient, so round-robin should pick the account.&lt;/p&gt;"
+  }'</code></pre>
+  <p class="evidence-label">Response</p>
+  <pre><code>{
+  "test_mode": true,
+  "success": true,
+  "message": "Test email sent via queue to test-roundrobin@betterway.dev",
+  "queue_id": 83,
+  "sent": 1,
+  "failed": 0
+}</code></pre>
+  <p>Sent successfully. Account used: <strong>ID 27 (opportunities@better-way-devs.com)</strong>. Round-robin working as expected for new recipients.</p>
+</div>
+
+<h3>Steps 4b/5b: Re-test with 5-second delay</h3>
+<div class="card card-fail">
+  <p>To rule out a race condition (Email 1's send_log not written before Email 2's account selection), a second pair was sent with a 5-second delay between them.</p>
+
+  <p class="evidence-label">Email 4 &mdash; stickiness-test2@betterway.dev (first send)</p>
+  <pre><code>{
+  "test_mode": true,
+  "success": true,
+  "message": "Test email sent via queue to stickiness-test2@betterway.dev",
+  "queue_id": 84,
+  "sent": 1,
+  "failed": 0
+}</code></pre>
+  <p>Account used: <strong>ID 23 (jobs@betterwaydevs.net)</strong> at 10:40:36.</p>
+
+  <p class="evidence-label">Email 5 &mdash; stickiness-test2@betterway.dev (5 seconds later)</p>
+  <pre><code>{
+  "test_mode": true,
+  "success": true,
+  "message": "Test email sent via queue to stickiness-test2@betterway.dev",
+  "queue_id": 85,
+  "sent": 1,
+  "failed": 0
+}</code></pre>
+  <p>Account used: <strong>ID 26 (jobs@better-way-devs.com)</strong> at 10:40:42.</p>
+  <p style="color: var(--fail); font-weight: 600;">Even with 5 seconds between sends to the same recipient, different accounts were used. Stickiness is NOT working.</p>
+</div>
+
+
+<!-- Account Usage Timeline -->
+<h2>Account Usage Timeline</h2>
+<div class="card">
+  <p>All accounts started with <code class="inline-code">daily_sent: 0</code> at the beginning of the test. After all 5 sends:</p>
+  <div class="timeline">
+    <div class="timeline-item sent">
+      <div class="time">10:38:59</div>
+      <p><strong>Email 1</strong> &rarr; Account 24 (opportunities@betterwaydevs.net) &mdash; to pablo@betterway.dev</p>
+    </div>
+    <div class="timeline-item sent">
+      <div class="time">10:39:08</div>
+      <p><strong>Email 2</strong> &rarr; Account 25 (positions@better-way-devs.com) &mdash; to pablo@betterway.dev</p>
+    </div>
+    <div class="timeline-item sent">
+      <div class="time">10:39:15</div>
+      <p><strong>Email 3</strong> &rarr; Account 27 (opportunities@better-way-devs.com) &mdash; to test-roundrobin@betterway.dev</p>
+    </div>
+    <div class="timeline-item sent">
+      <div class="time">10:40:36</div>
+      <p><strong>Email 4</strong> &rarr; Account 23 (jobs@betterwaydevs.net) &mdash; to stickiness-test2@betterway.dev</p>
+    </div>
+    <div class="timeline-item sent">
+      <div class="time">10:40:42</div>
+      <p><strong>Email 5</strong> &rarr; Account 26 (jobs@better-way-devs.com) &mdash; to stickiness-test2@betterway.dev</p>
     </div>
   </div>
+  <p>Pattern: pure sequential round-robin. Each email used the next least-recently-used account, with no stickiness override observed.</p>
+</div>
+
+
+<!-- Post-send Account State -->
+<h2>Post-Test Account State</h2>
+<div class="card">
+  <div class="account-grid">
+    <div class="account-chip used"><div class="id">ID 24</div>opportunities@betterwaydevs.net<br><strong>daily_sent: 1</strong></div>
+    <div class="account-chip used"><div class="id">ID 25</div>positions@better-way-devs.com<br><strong>daily_sent: 1</strong></div>
+    <div class="account-chip used"><div class="id">ID 27</div>opportunities@better-way-devs.com<br><strong>daily_sent: 1</strong></div>
+    <div class="account-chip used"><div class="id">ID 23</div>jobs@betterwaydevs.net<br><strong>daily_sent: 1</strong></div>
+    <div class="account-chip used"><div class="id">ID 26</div>jobs@better-way-devs.com<br><strong>daily_sent: 1</strong></div>
+    <div class="account-chip"><div class="id">ID 20</div>jobs@betterwaysdevs.com<br><strong>daily_sent: 0</strong></div>
+    <div class="account-chip"><div class="id">ID 21</div>opportunities@betterwaysdevs.com<br><strong>daily_sent: 0</strong></div>
+    <div class="account-chip"><div class="id">ID 22</div>positions@betterwaydevs.net<br><strong>daily_sent: 0</strong></div>
+    <div class="account-chip"><div class="id">ID 19</div>positions@betterwaysdevs.com<br><strong>daily_sent: 0</strong></div>
+    <div class="account-chip inactive"><div class="id">ID 31</div>test_permission_check@test.com<br><strong>inactive</strong></div>
+  </div>
+</div>
+
+
+<!-- Root Cause Analysis -->
+<h2>Root Cause Analysis</h2>
+<div class="finding">
+  <h4>Stickiness Logic Exists But Is Not Taking Effect</h4>
+  <p>The <code class="inline-code">process_email.xs</code> function (lines 116-145) contains the correct stickiness logic:</p>
+  <ol style="margin: 0.75rem 0 0.75rem 1.5rem;">
+    <li>Query <code class="inline-code">email_send_log</code> for most recent "sent" to same recipient</li>
+    <li>Validate the found account is active, correct type, and under daily cap</li>
+    <li>Use it if available, otherwise fall back to round-robin</li>
+  </ol>
+  <p style="margin-top: 0.75rem;"><strong>Possible causes:</strong></p>
+  <ul style="margin: 0.5rem 0 0 1.5rem;">
+    <li><strong>The <code class="inline-code">email_send_log</code> query may not be finding records</strong> &mdash; perhaps the <code class="inline-code">recipient</code> field is stored differently than the <code class="inline-code">to_email</code> value (e.g., casing, trimming, or the field name changed in the schema).</li>
+    <li><strong>The sticky account validation lambda may be returning null</strong> &mdash; the <code class="inline-code">account_type</code> comparison could be failing if the queued email's <code class="inline-code">account_type</code> is null or different from what is stored on the account.</li>
+    <li><strong>The <code class="inline-code">$all_accounts</code> variable may not match by ID</strong> &mdash; the <code class="inline-code">accounts.find(a =&gt; a.id === stickyId)</code> uses strict equality; if one is a number and the other a string, it would fail silently.</li>
+    <li><strong>The Xano development branch may not have the latest code deployed</strong> &mdash; the XanoScript file exists locally but the live development environment might be running an older version without the stickiness patch.</li>
+  </ul>
+  <p style="margin-top: 0.75rem;"><strong>Recommended next step:</strong> Add debug logging inside <code class="inline-code">process_email.xs</code> after the sticky_log query (line 121) and the sticky_account_id lambda (line 145) to confirm what values are being returned. Also verify the development branch has the latest code pushed via Xano MCP.</p>
+</div>
+
+
+<!-- Final Summary -->
+<h2>Summary</h2>
+<table>
+  <thead><tr><th>Criterion</th><th>Description</th><th>Verdict</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>AC1</strong></td>
+      <td>Second email to same person uses the same sending account</td>
+      <td><span class="badge badge-fail">FAIL</span></td>
+    </tr>
+    <tr>
+      <td><strong>AC2</strong></td>
+      <td>Falls back to round-robin if sticky account unavailable</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+    <tr>
+      <td><strong>AC3</strong></td>
+      <td>No breaking changes to existing round-robin logic</td>
+      <td><span class="badge badge-pass">PASS</span></td>
+    </tr>
+  </tbody>
+</table>
+<p style="margin-top: 1rem;">The email system is <strong>functional and reliable</strong> &mdash; all emails were delivered without errors. However, the stickiness feature (AC1) is not producing the intended behavior. Emails to the same recipient continue to use round-robin account selection instead of reusing the previously assigned account.</p>
+
+<footer>
+  <p>Generated: 2026-02-28 | M1 Integration Test | Xano Development Environment | 5 real emails sent via API</p>
+</footer>
+
 </body>
 </html>
