@@ -42,17 +42,34 @@ Haiku-based cost-saving agents for routine Xano tasks. Located in `../bwats_xano
 
 The `backend-developer` team agent invokes tier-2 subagents when doing Xano work.
 
-## Agent Teams — Default Work Mode
+## Agent Teams — ALWAYS Use Teams for Delivery
 
-When a task involves **2+ independent workstreams** (e.g., backend + frontend, multiple files in different projects, research + implementation), **always use Claude agent teams** via `TeamCreate` to parallelize the work. Do not serialize work that can be done concurrently.
+**Every task delivery pipeline MUST use `TeamCreate`.** This is non-negotiable. Teams enable agents to communicate with each other via `SendMessage`, which produces better results than isolated `Task` calls.
 
-Examples of when to spawn a team:
-- A feature that spans backend (Xano) + frontend (React) — spawn `backend-developer` + `frontend-developer`
-- Multiple independent bug fixes — assign each to the appropriate developer agent
-- Research + implementation — one agent explores while another builds
-- Testing while developing — `qa-tester` validates as developers deliver
+### When to create a team:
+- **Every delivery pipeline** (PM → DEV → QA → PO) — always
+- Multi-project features (backend + frontend) — always
+- Any task involving 2+ agents — always
 
-Only work single-threaded when the task is truly sequential or trivial (single file edit, quick lookup, one-liner fix).
+### How it works:
+1. Orchestrator creates a team via `TeamCreate`
+2. Spawns agents as teammates with `Task` tool using `team_name`
+3. Agents communicate via `SendMessage` — PM assigns, DEV delivers, QA tests, PO accepts
+4. Each agent signs off on their stage in the delivery log
+5. Orchestrator shuts down team when pipeline completes
+
+### Sign-off chain (all mandatory):
+1. **PM signs off** on assignment (verifies spec is clear, assigns agents)
+2. **DEV signs off** on implementation (self-tested, deployed, proof in notes)
+3. **QA signs off** on testing (REAL execution tests, report with date/time, per-AC results)
+4. **PO signs off** on acceptance (reviewed QA artifacts, per-AC verdict)
+5. **User approves** via dashboard
+
+### What NOT to do:
+- Do NOT use individual `Task` calls for delivery pipeline steps — use teams
+- Do NOT skip any sign-off stage
+- Do NOT mark a task done until User: Approval is complete
+- Do NOT accept code-review-only QA — tests must be real execution against the development environment
 
 ## Cross-Project Rules
 

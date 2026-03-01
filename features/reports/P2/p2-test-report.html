@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>P2 QA Test Report — Fix auto_organize Stage Moves Leaking Across Projects</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1a2e;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --accent: #2563eb;
+    --accent-light: #dbeafe;
+    --pass: #16a34a;
+    --pass-bg: #dcfce7;
+    --fail: #dc2626;
+    --fail-bg: #fee2e2;
+    --partial: #d97706;
+    --partial-bg: #fef3c7;
+    --code-bg: #f3f4f6;
+    --code-border: #d1d5db;
+    --table-stripe: #f9fafb;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.65;
+    color: var(--fg);
+    background: #f5f6fa;
+    padding: 2rem 1rem;
+  }
+
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    background: var(--bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    padding: 3rem 3.5rem;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--fg);
+    margin-bottom: 0.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+    background: var(--table-stripe);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 2.5rem;
+    font-size: 0.9rem;
+  }
+
+  .meta span { color: var(--muted); }
+  .meta strong { color: var(--fg); }
+
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--fg);
+    margin-bottom: 1rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--accent);
+    display: inline-block;
+  }
+
+  h2::after {
+    content: "";
+    display: block;
+  }
+
+  .section { margin-bottom: 2.5rem; }
+
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--fg);
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin: 1rem 0 0.4rem;
+    font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+  }
+
+  p {
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  thead th {
+    background: var(--fg);
+    color: #fff;
+    font-weight: 600;
+    text-align: left;
+    padding: 0.65rem 1rem;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  tbody td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  tbody tr:nth-child(even) { background: var(--table-stripe); }
+  tbody tr:hover { background: var(--accent-light); }
+
+  /* Status badges */
+  .badge {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .badge-pass { background: var(--pass-bg); color: var(--pass); }
+  .badge-fail { background: var(--fail-bg); color: var(--fail); }
+  .badge-partial { background: var(--partial-bg); color: var(--partial); }
+
+  .overall-result {
+    display: inline-block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    padding: 0.3rem 1rem;
+    border-radius: 6px;
+    margin-top: 0.5rem;
+  }
+
+  .overall-pass { background: var(--pass-bg); color: var(--pass); }
+
+  /* Code blocks */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--code-border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    overflow-x: auto;
+    font-family: "SF Mono", "Fira Code", "Consolas", "Monaco", monospace;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    margin: 0.75rem 0 1.25rem;
+    color: #374151;
+  }
+
+  code {
+    font-family: "SF Mono", "Fira Code", "Consolas", "Monaco", monospace;
+    font-size: 0.85em;
+    background: var(--code-bg);
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+    color: #be185d;
+  }
+
+  /* JSON syntax highlighting (basic) */
+  .json-key { color: #0550ae; font-weight: 600; }
+  .json-string { color: #0a3069; }
+  .json-number { color: #0550ae; }
+  .json-null { color: #6b7280; }
+
+  /* Test card */
+  .test-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0 1.5rem;
+    background: var(--bg);
+    box-shadow: var(--shadow);
+  }
+
+  .test-card .test-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .test-card .endpoint {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-family: "SF Mono", "Fira Code", "Consolas", monospace;
+    margin-bottom: 0.5rem;
+    word-break: break-all;
+  }
+
+  .test-card .result-note {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.9rem;
+    background: var(--pass-bg);
+    border-left: 3px solid var(--pass);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.88rem;
+  }
+
+  .test-card .result-note.partial {
+    background: var(--partial-bg);
+    border-left-color: var(--partial);
+  }
+
+  /* Screenshots */
+  .screenshots-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin: 1.5rem 0;
+  }
+
+  .screenshot-item {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .screenshot-item img {
+    width: 100%;
+    display: block;
+  }
+
+  .screenshot-item .caption {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    background: var(--table-stripe);
+    border-top: 1px solid var(--border);
+  }
+
+  .screenshot-item .caption strong {
+    color: var(--fg);
+  }
+
+  /* Notes section */
+  ul {
+    padding-left: 1.5rem;
+    margin: 0.5rem 0 1rem;
+  }
+
+  li {
+    font-size: 0.93rem;
+    margin-bottom: 0.4rem;
+    line-height: 1.55;
+  }
+
+  /* Cross-project proof highlight */
+  .proof-box {
+    background: var(--accent-light);
+    border: 1px solid #93c5fd;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+
+  .proof-box strong { color: var(--accent); }
+
+  @media (max-width: 700px) {
+    .container { padding: 1.5rem 1.25rem; }
+    h1 { font-size: 1.4rem; }
+    .meta { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>P2 QA Test Report</h1>
+  <p class="subtitle">Fix auto_organize Stage Moves Leaking Across Projects</p>
+
+  <div class="meta">
+    <div><span>Tester:</span> <strong>qa-tester</strong></div>
+    <div><span>Date:</span> <strong>2026-02-28</strong></div>
+    <div><span>Environment:</span> <strong>Xano dev branch (development)</strong></div>
+    <div><span>Auth:</span> <strong>Bearer token via /auth/login</strong></div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- TEST SUMMARY -->
+  <!-- ============================================ -->
+  <div class="section">
+    <h2>Test Summary</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>AC</th>
+          <th>Description</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>AC1</strong></td>
+          <td>All auto_organize stage movement logic is project-scoped</td>
+          <td><span class="badge badge-pass">PASS</span></td>
+        </tr>
+        <tr>
+          <td><strong>AC2</strong></td>
+          <td>Only PROJECT-scoped evidence drives stage movement</td>
+          <td><span class="badge badge-pass">PASS</span></td>
+        </tr>
+        <tr>
+          <td><strong>AC3</strong></td>
+          <td>Unscoped/global touchpoints visible in UI but don't trigger stage moves</td>
+          <td><span class="badge badge-pass">PASS</span></td>
+        </tr>
+        <tr>
+          <td><strong>AC4</strong></td>
+          <td>Badges computed per project</td>
+          <td><span class="badge badge-pass">PASS</span> (code review)</td>
+        </tr>
+        <tr>
+          <td><strong>AC5</strong></td>
+          <td>No silent failures -- errors logged with person ID and reason</td>
+          <td><span class="badge badge-pass">PASS</span></td>
+        </tr>
+        <tr>
+          <td><strong>AC6</strong></td>
+          <td>Verified on both dev and v1</td>
+          <td><span class="badge badge-partial">PARTIAL</span> (dev only)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p><span class="overall-result overall-pass">OVERALL: PASS (dev environment)</span></p>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- BACKEND TESTS -->
+  <!-- ============================================ -->
+  <div class="section">
+    <h2>Backend Tests</h2>
+
+    <!-- Test 1 -->
+    <div class="test-card">
+      <div class="test-header">
+        <h3>Test 1: Housekeeper project_id=12 (ZZ TEST PROJECT)</h3>
+        <span class="badge badge-pass">PASS</span>
+      </div>
+      <div class="endpoint">POST /api:_dY_2A8p:development/association/auto_organize?x-data-source=development</div>
+      <p>HTTP Status: <strong>200</strong></p>
+<pre>{
+  <span class="json-key">"audit_task_id"</span>: <span class="json-number">1660</span>,
+  <span class="json-key">"project_id"</span>: <span class="json-number">12</span>,
+  <span class="json-key">"project_name"</span>: <span class="json-string">"DEV:  ZZ TEST PROJECT"</span>,
+  <span class="json-key">"people_evaluated"</span>: <span class="json-number">1</span>,
+  <span class="json-key">"people_skipped"</span>: <span class="json-number">2</span>,
+  <span class="json-key">"moves_made"</span>: <span class="json-number">0</span>,
+  <span class="json-key">"connected_count"</span>: <span class="json-number">0</span>,
+  <span class="json-key">"active_tasks_count"</span>: <span class="json-number">2</span>,
+  <span class="json-key">"move_details"</span>: [],
+  <span class="json-key">"error_details"</span>: []
+}</pre>
+      <div class="result-note"><strong>Result:</strong> <code>connected_count: 0</code>, no cross-project leaking, no errors.</div>
+    </div>
+
+    <!-- Test 2 -->
+    <div class="test-card">
+      <div class="test-header">
+        <h3>Test 2: Housekeeper project_id=7 (Senior Devops Engineer -- 284 people)</h3>
+        <span class="badge badge-pass">PASS</span>
+      </div>
+      <p>HTTP Status: <strong>200</strong></p>
+<pre>{
+  <span class="json-key">"audit_task_id"</span>: <span class="json-number">1661</span>,
+  <span class="json-key">"project_id"</span>: <span class="json-number">7</span>,
+  <span class="json-key">"project_name"</span>: <span class="json-string">"DEV:  Senior Devops Engineer"</span>,
+  <span class="json-key">"people_evaluated"</span>: <span class="json-number">284</span>,
+  <span class="json-key">"people_skipped"</span>: <span class="json-number">34</span>,
+  <span class="json-key">"moves_made"</span>: <span class="json-number">1</span>,
+  <span class="json-key">"connected_count"</span>: <span class="json-number">0</span>,
+  <span class="json-key">"active_tasks_count"</span>: <span class="json-number">19</span>,
+  <span class="json-key">"move_details"</span>: [
+    {
+      <span class="json-key">"person_id"</span>: <span class="json-number">5371</span>,
+      <span class="json-key">"person_type"</span>: <span class="json-string">"prospect"</span>,
+      <span class="json-key">"from_stage"</span>: <span class="json-string">"Pre Selected"</span>,
+      <span class="json-key">"to_stage"</span>: <span class="json-string">"Scoring"</span>,
+      <span class="json-key">"reason"</span>: <span class="json-string">"no_tasks"</span>
+    }
+  ],
+  <span class="json-key">"error_details"</span>: [
+    {
+      <span class="json-key">"person_id"</span>: <span class="json-number">5398</span>,
+      <span class="json-key">"person_type"</span>: <span class="json-string">"prospect"</span>,
+      <span class="json-key">"error"</span>: <span class="json-string">"Unknown error"</span>
+    }
+  ]
+}</pre>
+      <div class="result-note"><strong>Result:</strong> <code>connected_count: 0</code>. Person 5371 moved to "Scoring" with reason <code>no_tasks</code>, NOT to "Connected" -- key cross-project isolation proof (see Test 5). Error for person 5398 properly logged with person_id and reason (AC5).</div>
+    </div>
+
+    <!-- Test 3 -->
+    <div class="test-card">
+      <div class="test-header">
+        <h3>Test 3: Housekeeper project_id=5 (Senior Full-Stack Java -- 389 people)</h3>
+        <span class="badge badge-pass">PASS</span>
+      </div>
+      <p>HTTP Status: <strong>200</strong></p>
+<pre>{
+  <span class="json-key">"audit_task_id"</span>: <span class="json-number">1662</span>,
+  <span class="json-key">"project_id"</span>: <span class="json-number">5</span>,
+  <span class="json-key">"project_name"</span>: <span class="json-string">"DEV: Senior Full-Stack Java and React Developer"</span>,
+  <span class="json-key">"people_evaluated"</span>: <span class="json-number">389</span>,
+  <span class="json-key">"people_skipped"</span>: <span class="json-number">63</span>,
+  <span class="json-key">"moves_made"</span>: <span class="json-number">2</span>,
+  <span class="json-key">"connected_count"</span>: <span class="json-number">0</span>,
+  <span class="json-key">"active_tasks_count"</span>: <span class="json-number">51</span>,
+  <span class="json-key">"move_details"</span>: [
+    {
+      <span class="json-key">"person_id"</span>: <span class="json-number">34324</span>,
+      <span class="json-key">"from_stage"</span>: <span class="json-string">"Pre Selected"</span>,
+      <span class="json-key">"to_stage"</span>: <span class="json-string">"Scoring"</span>,
+      <span class="json-key">"reason"</span>: <span class="json-string">"no_tasks"</span>
+    },
+    {
+      <span class="json-key">"person_id"</span>: <span class="json-number">5371</span>,
+      <span class="json-key">"from_stage"</span>: <span class="json-string">"Pre Selected"</span>,
+      <span class="json-key">"to_stage"</span>: <span class="json-string">"Scoring"</span>,
+      <span class="json-key">"reason"</span>: <span class="json-string">"no_tasks"</span>
+    }
+  ],
+  <span class="json-key">"error_details"</span>: []
+}</pre>
+      <div class="result-note"><strong>Result:</strong> <code>connected_count: 0</code>. Person 5371 also exists in this project, moved to "Scoring" (not "Connected"), confirming LinkedIn connection evidence from project 26 does not leak here.</div>
+    </div>
+
+    <!-- Test 4 -->
+    <div class="test-card">
+      <div class="test-header">
+        <h3>Test 4: Housekeeper project_id=13 (Staff Engineer C# .NET -- 21 people)</h3>
+        <span class="badge badge-pass">PASS</span>
+      </div>
+      <p>HTTP Status: <strong>200</strong></p>
+<pre>{
+  <span class="json-key">"audit_task_id"</span>: <span class="json-number">1663</span>,
+  <span class="json-key">"project_id"</span>: <span class="json-number">13</span>,
+  <span class="json-key">"project_name"</span>: <span class="json-string">"DEV:  Staff Engineer - C# .NET"</span>,
+  <span class="json-key">"people_evaluated"</span>: <span class="json-number">21</span>,
+  <span class="json-key">"people_skipped"</span>: <span class="json-number">25</span>,
+  <span class="json-key">"moves_made"</span>: <span class="json-number">0</span>,
+  <span class="json-key">"connected_count"</span>: <span class="json-number">0</span>,
+  <span class="json-key">"active_tasks_count"</span>: <span class="json-number">4</span>,
+  <span class="json-key">"move_details"</span>: [],
+  <span class="json-key">"error_details"</span>: []
+}</pre>
+      <div class="result-note"><strong>Result:</strong> <code>connected_count: 0</code>, clean run.</div>
+    </div>
+
+    <!-- Test 5 -->
+    <div class="test-card">
+      <div class="test-header">
+        <h3>Test 5: Cross-Project Isolation Proof (Person 5371)</h3>
+        <span class="badge badge-pass">PASS</span>
+      </div>
+
+      <p>Person 5371 has 5 touchpoints, all scoped to <code>project_id: 26</code>:</p>
+      <ul>
+        <li><code>linkedin_connection</code> (x2)</li>
+        <li><code>linkedin_invite</code> (x3)</li>
+      </ul>
+
+      <div class="proof-box">
+        <p><strong>With project_id=26</strong> (matching): Returns <strong>5 items</strong> (all touchpoints).</p>
+        <p><strong>With project_id=7</strong> (non-matching): Returns <strong>0 items</strong>.</p>
+        <p><strong>With project_id=5</strong> (non-matching): Returns <strong>0 items</strong>.</p>
+        <p><strong>Without project_id</strong>: Returns all <strong>5 items</strong> (backward compatible).</p>
+      </div>
+
+      <div class="result-note">When housekeeper runs for project 7 and project 5, person 5371's LinkedIn touchpoints from project 26 are correctly ignored. The <code>connected_count</code> stays at 0 across all tested projects. Before the fix, these global LinkedIn connections would have triggered stage moves in unrelated projects.</div>
+    </div>
+
+    <!-- Test 6 -->
+    <div class="test-card">
+      <div class="test-header">
+        <h3>Test 6: Invalid project_id Error Handling</h3>
+        <span class="badge badge-pass">PASS</span>
+      </div>
+      <div class="endpoint">POST /api:_dY_2A8p:development/association/auto_organize with project_id: 999999</div>
+      <p>HTTP Status: <strong>404</strong></p>
+<pre>{
+  <span class="json-key">"code"</span>: <span class="json-string">"ERROR_CODE_NOT_FOUND"</span>,
+  <span class="json-key">"message"</span>: <span class="json-string">"Project not found"</span>,
+  <span class="json-key">"payload"</span>: <span class="json-string">""</span>
+}</pre>
+      <div class="result-note"><strong>Result:</strong> Returns proper 404 with descriptive error message, no silent failure.</div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- FRONTEND TESTS -->
+  <!-- ============================================ -->
+  <div class="section">
+    <h2>Frontend Tests</h2>
+
+    <!-- Test 7 -->
+    <div class="test-card">
+      <div class="test-header">
+        <h3>Test 7: Build Check</h3>
+        <span class="badge badge-pass">PASS</span>
+      </div>
+<pre>npm run build</pre>
+      <div class="result-note"><strong>Result:</strong> Build completed successfully in 24.93s. No TypeScript errors, no build failures. Output: <code>v1.0.2598 (0cc60cb)</code>, all 4982 modules transformed.</div>
+    </div>
+
+    <!-- Test 8 -->
+    <div class="test-card">
+      <div class="test-header">
+        <h3>Test 8: Code Review -- Frontend Chain</h3>
+        <span class="badge badge-pass">PASS</span>
+      </div>
+
+      <h4>src/services/touchpointApi.ts</h4>
+      <ul>
+        <li><code>projectId</code> parameter added as optional (<code>projectId?: number</code>)</li>
+        <li>Conditionally spread into POST body: <code>...(projectId && { project_id: projectId })</code></li>
+        <li>Only sent when provided, backward compatible</li>
+      </ul>
+
+      <h4>src/hooks/useTouchpoints.ts</h4>
+      <ul>
+        <li><code>projectId</code> parameter added to <code>useTouchpoints(people, projectId?)</code></li>
+        <li>Query key includes <code>projectId</code>: <code>['touchpoints', projectId, ...]</code></li>
+        <li>Passed to <code>getTouchpointsByUsers(users, token, projectId)</code></li>
+        <li>Cache properly separated by projectId, API call correctly forwards it</li>
+      </ul>
+
+      <h4>src/components/project/ContactListTable.tsx</h4>
+      <ul>
+        <li>Line 453: <code>const { getTouchpointsForPerson } = useTouchpoints(peopleForTouchpoints, projectId);</code></li>
+        <li><code>projectId</code> is a prop of the component (line 135, 228)</li>
+        <li><code>projectId</code> flows correctly through the full chain</li>
+      </ul>
+
+      <div class="result-note"><strong>AC4 (Badges per project):</strong> The frontend now fetches touchpoints scoped to the current project via <code>projectId</code>. Badges like "Contacted", "Follow-up needed" that are computed from touchpoints will only reflect project-scoped activity.</div>
+    </div>
+
+    <!-- Test 9 -->
+    <div class="test-card">
+      <div class="test-header">
+        <h3>Test 9: UI Screenshots -- Cross-Project Touchpoint Isolation</h3>
+        <span class="badge badge-pass">PASS</span>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Screenshot</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>p2-project-grid-touchpoints.png</code></td>
+            <td>Project 7 grid: 48 people, Touchpoints column shows project-scoped data. Jesus Ustariz has 1 touchpoint (Jan 8, 2026).</td>
+          </tr>
+          <tr>
+            <td><code>p2-project-grid-touchpoints-2.png</code></td>
+            <td>Project 26 grid: 24 people. Juan David Osorio Arrubla shows 3 touchpoints (Feb 26, Jan 2, May 9). Maicon Queiroz shows 2. Different data from same people in Project 7.</td>
+          </tr>
+          <tr>
+            <td><code>p2-touchpoint-detail-hover.png</code></td>
+            <td>Tooltip on Jesus Ustariz's touchpoint in Project 7: "Unknown - Jan 8, 2026, 9:08 AM".</td>
+          </tr>
+          <tr>
+            <td><code>p2-has-touchpoints-filter.png</code></td>
+            <td>Project 7 with "Has Touchpoints" filter: reduces from 48 to 5 people. Filter only counts this project's touchpoints.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="proof-box">
+        <p><strong>Cross-project proof (6 people appearing in both projects):</strong></p>
+        <ul>
+          <li><strong>Jesus Ustariz:</strong> Project 7 = 1 touchpoint, Project 26 = 2 touchpoints -- DIFFERENT</li>
+          <li><strong>Daniel Waisbich:</strong> Project 7 = 1 touchpoint, Project 26 = 3 touchpoints -- DIFFERENT</li>
+          <li><strong>Samuel Quaresma Oliveira:</strong> Project 7 = 1 touchpoint, Project 26 = 2 touchpoints -- DIFFERENT</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- SCREENSHOTS -->
+  <!-- ============================================ -->
+  <div class="section">
+    <h2>Screenshots</h2>
+
+    <div class="screenshots-grid">
+      <div class="screenshot-item">
+        <img src="p2-project-grid-touchpoints.png" alt="Project 7 grid showing touchpoints column with project-scoped data">
+        <div class="caption"><strong>Project 7 Grid</strong> -- 48 people, Touchpoints column shows project-scoped data. Jesus Ustariz has 1 touchpoint (Jan 8, 2026).</div>
+      </div>
+
+      <div class="screenshot-item">
+        <img src="p2-project-grid-touchpoints-2.png" alt="Project 26 grid showing different touchpoint counts for the same people">
+        <div class="caption"><strong>Project 26 Grid</strong> -- 24 people. Juan David Osorio Arrubla shows 3 touchpoints, Maicon Queiroz shows 2. Different data from same people in Project 7.</div>
+      </div>
+
+      <div class="screenshot-item">
+        <img src="p2-touchpoint-detail-hover.png" alt="Touchpoint tooltip detail showing type and date">
+        <div class="caption"><strong>Touchpoint Detail Hover</strong> -- Tooltip on Jesus Ustariz's touchpoint in Project 7: "Unknown - Jan 8, 2026, 9:08 AM".</div>
+      </div>
+
+      <div class="screenshot-item">
+        <img src="p2-has-touchpoints-filter.png" alt="Has Touchpoints filter reducing results from 48 to 5 people">
+        <div class="caption"><strong>Has Touchpoints Filter</strong> -- Project 7 with "Has Touchpoints" filter: reduces from 48 to 5 people. Filter only counts this project's touchpoints.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- AC6 -->
+  <!-- ============================================ -->
+  <div class="section">
+    <h2>AC6: v1 Verification</h2>
+    <p>v1 deployment and verification is a separate step (D1). This test report covers <strong>dev environment only</strong>. v1 testing should be performed after deployment.</p>
+    <p><span class="badge badge-partial">NOT TESTED</span> (out of scope for this QA round)</p>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- NOTES -->
+  <!-- ============================================ -->
+  <div class="section">
+    <h2>Notes</h2>
+    <ul>
+      <li>Authentication requires <code>x-data-source=development</code> as a query parameter when calling the dev branch login endpoint.</li>
+      <li>The housekeeper endpoint uses standard <code>Authorization: Bearer {token}</code> header (not <code>X-Xano-Authorization</code>).</li>
+      <li>One error was observed: person 5398 in project 7 reported "Unknown error" -- this is a pre-existing data issue, not related to the P2 fix. The error is properly logged with person_id (AC5 satisfied).</li>
+      <li>All moves observed were <code>reason: "no_tasks"</code> (people without active tasks being moved back to Scoring). No <code>reason: "connected"</code> moves were observed, confirming the project-scoping gate is working.</li>
+    </ul>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -168,16 +168,28 @@ After verifying a delivered feature against acceptance criteria, update the deli
 
 ## Acceptance Verification (MANDATORY)
 
-Your acceptance verification is the final quality gate before the user sees results. The PM will check that you performed a thorough, per-criterion review. You MUST follow this process — superficial approvals will be sent back.
+Your acceptance verification is the final quality gate before the user sees results. **Your job is NOT to re-run QA tests.** QA already verified technical functionality. Your job is to verify that **the feature solves the user's actual need** — the end-to-end flow works from a product perspective.
+
+### QA vs PO — Different Roles
+
+| | QA | PO (You) |
+|---|---|---|
+| **Question** | Does it work technically? | Does it solve the user's problem? |
+| **Tests** | API returns 200, UI renders, no errors | The flow makes sense, the feature achieves its goal |
+| **Evidence** | Curl responses, Playwright screenshots, build pass | User story is fulfilled, acceptance criteria met from product perspective |
+| **Example** | "Email sends successfully, status=sent in DB" | "When someone applies, they get a confirmation email that tells them a recruiter will be in touch — the user need is met" |
 
 ### Verification Process
 
-1. **Read the spec**: Open `features/specs/<ID>.md` and extract every acceptance criterion
+1. **Read the spec**: Open `features/specs/<ID>.md` — understand the original problem and user need, not just the acceptance criteria
 2. **Review QA artifacts**: Open the QA screenshots and report in `features/reports/<ID>/`
    - If the report file does not exist or screenshots are missing, set status to `blocked` and notify PM
-3. **Per-criterion evaluation**: For each acceptance criterion:
-   - Find the corresponding QA screenshot or test result that proves it
-   - Determine: does the evidence demonstrate this criterion is met?
+3. **Verify the user flow**: For each acceptance criterion, ask: "Does this solve what the user actually needed?"
+   - Don't just check if the technical test passed — verify the feature makes sense as a product
+   - Check: is the flow complete? Are there gaps the spec didn't cover? Would a real user be satisfied?
+4. **Per-criterion evaluation**: For each acceptance criterion:
+   - Find the corresponding QA evidence that proves it
+   - Determine: does this criterion being met actually solve the user's need?
    - Mark it PASS or FAIL
 
 ### Notes Format
@@ -186,14 +198,18 @@ Your Notes in the delivery log MUST follow this structure:
 
 ```
 **Artifacts reviewed**: [list of screenshots and report files examined]
-**AC1 — [criterion text]**: PASS/FAIL — [what evidence confirmed or denied this]
-**AC2 — [criterion text]**: PASS/FAIL — [what evidence confirmed or denied this]
+**User need**: [one sentence — what problem this feature solves for the user]
+**AC1 — [criterion text]**: PASS/FAIL — [does this meet the user's need? what evidence?]
+**AC2 — [criterion text]**: PASS/FAIL — [does this meet the user's need? what evidence?]
 ...
+**Flow complete?**: YES/NO — [is the end-to-end user flow working? any gaps?]
 **Verdict**: APPROVED / REJECTED
 ```
 
 - Every AC must have its own line with an explicit PASS/FAIL
+- Evaluate from the **user's perspective**, not just technical correctness
 - Reference which screenshot or report section provided the evidence
+- Flag any gaps in the user flow even if all ACs technically pass
 - Do NOT approve without having reviewed the QA artifacts — if they are missing, that is an automatic REJECT
 
 ### Status Rules

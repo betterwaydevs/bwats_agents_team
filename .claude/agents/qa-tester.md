@@ -148,6 +148,28 @@ After testing a task, update the delivery log at `features/delivery/<ID>.md`.
 - Append to the file if it exists; the PM should have already created it.
 - **On re-test after fixes**: Replace Notes, Screenshots, and Report with fresh data. Capture new screenshots that show the fixed behavior. Generate a new report. The delivery log must always reflect the current test results, not old ones.
 
+## REAL EXECUTION ONLY (MANDATORY)
+
+**Code review is NOT testing.** Reading source files and confirming "the code looks correct" is never acceptable as QA. Every test must involve real execution:
+
+- **Backend tasks**: Real curl/API calls against the Xano development branch with actual responses
+- **Frontend tasks**: Real Playwright browser tests or manual browser verification with screenshots of real rendered pages
+- **Integration tasks**: End-to-end flow execution — trigger the action, verify the result in the database/UI
+- **Data tasks**: Real script execution with actual output
+
+**What counts as a real test:**
+- `curl POST /api:canonical:development/endpoint` → show the actual HTTP response with data
+- Playwright test that navigates to a page and asserts content
+- Triggering a workflow and querying the database for the expected result
+
+**What does NOT count:**
+- Reading `.xs` files and saying "the logic is correct"
+- "Code review + static analysis" — this is NEVER sufficient
+- Confirming that lines of code exist or were changed
+- Theoretical analysis of what the code should do
+
+**If you cannot execute real tests** (e.g., no access to the environment, credentials missing): set status to `blocked` and explain why. Do NOT substitute code review for testing.
+
 ## Proof Requirements (MANDATORY)
 
 Your delivery is not just a status — it is **evidence**. The PM will gate-check your work before it advances to the Product Owner. You MUST produce the following artifacts, or your delivery will be sent back.
@@ -173,15 +195,17 @@ Your Notes in the delivery log MUST follow this structure:
 
 ```
 **Build**: PASS/FAIL
-**AC1 — [criterion text]**: PASS/FAIL — [brief evidence]
-**AC2 — [criterion text]**: PASS/FAIL — [brief evidence]
+**AC1 — [criterion text]**: PASS/FAIL — [brief evidence with actual data from real execution]
+**AC2 — [criterion text]**: PASS/FAIL — [brief evidence with actual data from real execution]
 ...
 ```
 
 - Reference each acceptance criterion from the spec by number
 - State PASS or FAIL explicitly for each one
 - Include brief evidence: what you saw, what the data showed, what the screenshot captures
+- Evidence MUST reference real execution results: actual API responses, actual browser screenshots, actual database records
 - Do NOT use vague language like "tests pass" or "looks good" — be specific
+- Do NOT reference code analysis as evidence — only real execution results
 
 ### Status Rules
 

@@ -16,13 +16,16 @@ When picking up a task, agents MUST read both the spec and progress files before
 
 | ID | Title | Type | Status | Owner | Spec |
 |----|-------|------|--------|-------|------|
-| **D1** | **Deploy M1, M2, L6 & Pending Changes to Production** | **DEPLOY** | **pending** | — | [spec](specs/D1-deploy-m1-m2.md) |
+| **D1** | **Deploy M1, M2, M3, L6 & Pending Changes to Production** | **DEPLOY** | **pending** | — | [spec](specs/D1-deploy-m1-m2.md) |
 | **P4** | **Profile Not Loading — Source Mismatch Fallback** | **FRONT** | **done** | — | [spec](specs/P4-profile-source-fallback.md) |
 | P1 | Prospects Grid Freezing After Actions | FRONT | pending | — | [spec](specs/P1-prospects-grid-freeze.md) |
 | P2 | Auto-Organize Housekeeper Failing to Move People | BACK | pending | — | [spec](specs/P2-auto-organize-housekeeper.md) |
 | P3 | Add Prospect — Manual E2E Test | TEST | pending | — | [spec](specs/P3-add-prospect-e2e-test.md) |
 
 | **W1** | **Multi-Agent Team Delivery Workflow** | **PROCESS** | **in-progress** | — | [spec](specs/W1-multi-agent-delivery-workflow.md) |
+| **S1** | **Shark Helpers — Multi-Tenant Support & Deployment** | **BOTH** | **pending** | — | [spec](specs/S1-shark-helpers-multi-tenant.md) |
+| **S2** | **Extension Automation Detection Test Rig** | **EXT** | **pending** | — | [spec](specs/S2-automation-detection.md) |
+| **S3** | **Sales Outreach Campaign (V1)** | **BOTH** | **pending** | — | [spec](specs/S3-sales-campaign.md) |
 
 ## Medium Priority
 
@@ -36,6 +39,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 | M6 | Frontend LinkedIn "My Connections" Filter | FRONT | **done** | — | [spec](specs/M6-linkedin-connections-filter.md) |
 | M7 | Replace Hardcoded "Laura Pulgarin" in Templates | BACK | **done** | — | [spec](specs/M7-replace-hardcoded-name.md) |
 | M8 | Task Supervisor Agent | BACK | pending | — | [spec](specs/M8-task-supervisor-agent.md) |
+| M10 | LinkedIn AI Reply — E2E Verification & Conversation Analyzer Fix | EXT/BACK | pending | — | — |
 | M9 | Incoming WhatsApp Messages & Notifications | BOTH | **monitoring** | — | [spec](specs/M9-whatsapp-incoming-notifications.md) |
 
 ## Low Priority / Future

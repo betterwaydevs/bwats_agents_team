@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P2 Cross-Project Touchpoints - QA Report</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f8fafc; color: #1e293b; line-height: 1.6; padding: 2rem; }
+    .container { max-width: 960px; margin: 0 auto; }
+    h1 { font-size: 1.75rem; margin-bottom: 0.25rem; }
+    .subtitle { color: #64748b; margin-bottom: 2rem; font-size: 0.95rem; }
+    .meta { display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; }
+    .meta-item { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem 1.25rem; min-width: 180px; }
+    .meta-label { font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-weight: 600; letter-spacing: 0.05em; }
+    .meta-value { font-size: 1.1rem; font-weight: 600; margin-top: 0.25rem; }
+    .pass { color: #16a34a; }
+    .fail { color: #dc2626; }
+    .inconclusive { color: #d97706; }
+
+    table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 2rem; }
+    th { background: #f1f5f9; text-align: left; padding: 0.75rem 1rem; font-size: 0.8rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em; font-weight: 600; }
+    td { padding: 0.75rem 1rem; border-top: 1px solid #e2e8f0; vertical-align: top; }
+    tr:hover td { background: #f8fafc; }
+
+    .badge { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+    .badge-pass { background: #dcfce7; color: #166534; }
+    .badge-fail { background: #fef2f2; color: #991b1b; }
+    .badge-inconclusive { background: #fef9c3; color: #854d0e; }
+
+    .screenshots { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+    .screenshot-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+    .screenshot-card img { width: 100%; display: block; border-bottom: 1px solid #e2e8f0; }
+    .screenshot-card .caption { padding: 0.75rem 1rem; font-size: 0.85rem; color: #475569; }
+    .screenshot-card .caption strong { color: #1e293b; }
+
+    .section-title { font-size: 1.1rem; font-weight: 600; margin: 2rem 0 0.75rem; padding-bottom: 0.5rem; border-bottom: 2px solid #e2e8f0; }
+    .notes { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; font-size: 0.9rem; }
+    .notes ul { padding-left: 1.25rem; }
+    .notes li { margin-bottom: 0.5rem; }
+    .overall-result { text-align: center; padding: 1.5rem; background: white; border: 2px solid #16a34a; border-radius: 12px; margin-bottom: 2rem; }
+    .overall-result.fail-border { border-color: #dc2626; }
+    .overall-result h2 { font-size: 1.5rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>P2 Cross-Project Touchpoints Enhancement</h1>
+    <p class="subtitle">QA Verification Report &mdash; Auto-Organize Housekeeper: Cross-Project Touchpoint Visibility</p>
+
+    <div class="meta">
+      <div class="meta-item">
+        <div class="meta-label">Test Date</div>
+        <div class="meta-value">2026-02-28</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Build</div>
+        <div class="meta-value pass">PASS</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Environment</div>
+        <div class="meta-value">Dev (localhost:8080)</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Playwright</div>
+        <div class="meta-value">v1.58.2</div>
+      </div>
+    </div>
+
+    <div class="overall-result">
+      <h2 class="pass">OVERALL: PASS</h2>
+      <p style="margin-top:0.5rem; color:#64748b;">All 5 acceptance criteria verified. 5/5 pass.</p>
+    </div>
+
+    <h3 class="section-title">Acceptance Criteria Results</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:60px;">ID</th>
+          <th>Criterion</th>
+          <th style="width:110px;">Result</th>
+          <th>Evidence</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>AC1</strong></td>
+          <td>Touchpoints column renders without regression &mdash; current-project touchpoints still show correctly</td>
+          <td><span class="badge badge-pass">PASS</span></td>
+          <td>
+            Project 7 (Senior Devops Engineer) loaded 48 rows. Touchpoints column at index 8 renders icons with dates for current-project touchpoints (e.g., WhatsApp, email, LinkedIn icons with "Jan 8, 2026"). Regular touchpoint tooltip shows activity detail on hover. No visual regressions observed.
+          </td>
+        </tr>
+        <tr>
+          <td><strong>AC2</strong></td>
+          <td>Globe icon appears when a person has cross-project touchpoints</td>
+          <td><span class="badge badge-pass">PASS</span></td>
+          <td>
+            5 Globe icons found in Project 7. Example: Jesus Ustariz shows a Globe icon with count "5" indicating 5 touchpoints in other projects. The Globe icon is rendered with reduced opacity (opacity-50) and muted color, clearly distinguishable from current-project touchpoint icons.
+          </td>
+        </tr>
+        <tr>
+          <td><strong>AC3</strong></td>
+          <td>Globe tooltip shows touchpoints grouped by project name</td>
+          <td><span class="badge badge-pass">PASS</span></td>
+          <td>
+            Hovering over the Globe icon on Jesus Ustariz reveals a tooltip titled <strong>"Contacted in other projects"</strong>. The tooltip groups touchpoints by project name ("Another project") and lists: LinkedIn Connection (Jan 8, 2026), LinkedIn Invitation Sent (Jan 8, 2026), LinkedIn Invitation Sent (Jan 6, 2026), +2 more. See globe-hover screenshot below.
+          </td>
+        </tr>
+        <tr>
+          <td><strong>AC4</strong></td>
+          <td>Person with NO touchpoints anywhere shows dash (&mdash;)</td>
+          <td><span class="badge badge-pass">PASS</span></td>
+          <td>
+            36 out of 48 people in Project 7 display a dash (&mdash;) in the Touchpoints column, confirming that people with no touchpoints (neither current-project nor cross-project) correctly show the em-dash placeholder. Visible for Juan Bojaca, Marco Paiva, Jose Leonardo Marin in the hover screenshot.
+          </td>
+        </tr>
+        <tr>
+          <td><strong>AC5</strong></td>
+          <td>Build passes clean</td>
+          <td><span class="badge badge-pass">PASS</span></td>
+          <td>
+            <code>npm run build</code> completed successfully in 25.50s. Output: 3 chunks (index.html 3.34KB, CSS 156.74KB, JS 3,287.89KB). No TypeScript errors. Only standard Vite warnings about chunk size and dynamic imports (pre-existing, not related to P2 changes).
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="section-title">Screenshots</h3>
+    <div class="screenshots">
+      <div class="screenshot-card">
+        <img src="../../../nearshore-talent-compass/tests/screenshots/p2-cross-project-grid.png" alt="Project 7 grid with Touchpoints column">
+        <div class="caption">
+          <strong>Project 7 &mdash; Senior Devops Engineer (Grid View)</strong><br>
+          Touchpoints column visible in the grid. 48 people loaded across all stages. Filter panel shows the Touchpoints filter dropdown. Current-project touchpoints render with activity icons and dates.
+        </div>
+      </div>
+      <div class="screenshot-card">
+        <img src="../../../nearshore-talent-compass/tests/screenshots/p2-cross-project-globe-hover.png" alt="Globe icon hover tooltip showing cross-project touchpoints">
+        <div class="caption">
+          <strong>Globe Icon Hover &mdash; Cross-Project Touchpoints Tooltip</strong><br>
+          Jesus Ustariz row: Globe icon with "5" count. Tooltip shows "Contacted in other projects" grouped by project name with activity type, icon, and date. Also visible: multiple people with dash (&mdash;) indicating no touchpoints.
+        </div>
+      </div>
+      <div class="screenshot-card">
+        <img src="../../../nearshore-talent-compass/tests/screenshots/p2-cross-project-grid-2.png" alt="Project 26 (demo project) grid for comparison">
+        <div class="caption">
+          <strong>Project 26 &mdash; Demo Project (Grid View for Comparison)</strong><br>
+          Different project showing its own touchpoints data. 9 people loaded. Touchpoints column displays project-specific touchpoints (e.g., LinkedIn invitation sent on Feb 26, 2026). Confirms touchpoints are correctly scoped per project.
+        </div>
+      </div>
+    </div>
+
+    <h3 class="section-title">Test Data Summary</h3>
+    <div class="notes">
+      <ul>
+        <li><strong>Project 7 (Senior Devops Engineer):</strong> 48 people, 12 with current-project touchpoints, 5 with cross-project Globe indicators, 36 showing dash</li>
+        <li><strong>Project 26 (demo project):</strong> 9 people, used for comparison &mdash; shows its own project-specific touchpoints</li>
+        <li><strong>Globe icon instances:</strong> Row 0 (Jesus Ustariz: 5 cross-project), Row 9 (4), Row 11 (2), Row 14 (1), Row 16 (1)</li>
+        <li><strong>Tooltip content verified:</strong> "Contacted in other projects" header, grouped by project name, lists activity type + date, "+N more" truncation for &gt;3 entries</li>
+      </ul>
+    </div>
+
+    <h3 class="section-title">Implementation Notes</h3>
+    <div class="notes">
+      <ul>
+        <li>The <code>useTouchpoints</code> hook fetches ALL touchpoints for each person (no projectId filter in the API call), then splits them client-side into current-project vs other-project sets.</li>
+        <li><code>getTouchpointsForPerson()</code> filters by <code>project_id === currentProjectId</code> for the main touchpoints display.</li>
+        <li><code>getOtherProjectTouchpointsForPerson()</code> filters by <code>project_id !== currentProjectId</code> for the Globe indicator.</li>
+        <li>The Globe icon uses <code>opacity-50</code> and <code>text-muted-foreground</code> to visually distinguish it from active touchpoints.</li>
+        <li>Tooltip groups by <code>project_name</code> (resolved from the projects query cache via <code>projectNameMap</code>), falls back to "Another project" if name not found.</li>
+        <li>The dash (&mdash;) displays when: no current-project touchpoints, no VideoAsk response, no applicant matches, AND no other-project touchpoints.</li>
+      </ul>
+    </div>
+
+    <p style="margin-top:2rem; color:#94a3b8; font-size:0.8rem; text-align:center;">
+      Generated by QA Tester agent &bull; Playwright v1.58.2 &bull; 2026-02-28
+    </p>
+  </div>
+</body>
+</html>

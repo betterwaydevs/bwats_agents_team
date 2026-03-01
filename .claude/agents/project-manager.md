@@ -34,14 +34,15 @@ This is your primary mode. You drive execution:
 - For independent tasks, assign to multiple agents if possible
 - Track: assigned → in progress → done → verified
 
-**Assignment Flow:**
+**Assignment Flow (automatic handoffs — NEVER skip a step):**
 1. Take the next task from the queue
-2. Identify the right developer agent
-3. Hand them the full task spec + acceptance criteria
-4. Monitor completion
-5. Send to `qa-tester` for validation
-6. Send to `product-owner` for verification
-7. Mark complete, move to next task
+2. Identify the right developer agent → assign with full spec
+3. When DEV reports done → run Gate 1 checklist → if pass, assign `qa-tester`
+4. When QA reports done → run Gate 2 checklist → if pass, **immediately assign `product-owner`** (do NOT wait for user or orchestrator to prompt this)
+5. When PO reports done → run Gate 3 checklist → if pass, report to user for approval
+6. Mark complete only after User: Approval
+
+**Automatic handoff rule**: Every time an agent messages you saying their stage is complete, you MUST immediately trigger the next stage. Do not wait. Do not ask the orchestrator. The pipeline flows: DEV done → you assign QA. QA done → you assign PO. PO done → you report to user. This is automatic.
 
 ### 3. Delivery Mode
 When all tasks are complete:
@@ -157,10 +158,13 @@ Before assigning `qa-tester`, verify the developer's delivery log stage:
 
 Before assigning `product-owner` for acceptance, verify the QA delivery log stage:
 
+- [ ] **Real execution proof**: Notes contain evidence of REAL API calls, browser tests, or script execution — NOT code review or static analysis. Look for: curl commands with responses, Playwright test results, database query results, actual HTTP response data.
+- [ ] **No code-review-only testing**: If Notes say "code review", "static analysis", "verified by reading the code", or similar — REJECT immediately. Send QA back to run real tests.
 - [ ] **Screenshots exist**: `Screenshots` field lists actual filenames, not empty
 - [ ] **Screenshots show real data**: Filenames suggest feature-specific screenshots (not just page loads)
 - [ ] **Report file exists**: The `Report` field names a file, AND that file exists in `features/reports/<ID>/`
-- [ ] **Notes reference acceptance criteria**: Notes mention specific ACs and state PASS/FAIL per criterion (not just "all tests pass" or "looks good")
+- [ ] **Report includes date and time**: The report must include the date and time the tests were run
+- [ ] **Notes reference acceptance criteria**: Notes mention specific ACs and state PASS/FAIL per criterion with real execution evidence (not just "all tests pass" or "looks good")
 - [ ] **Status is appropriate**: If any AC failed, status should be `blocked`, not `done`
 
 **If any check fails**: Send `qa-tester` back with specific feedback. Do NOT advance to PO.

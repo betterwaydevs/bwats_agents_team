@@ -14,7 +14,9 @@ Once we email someone from a specific account, we should reuse that account for 
 
 ## Acceptance Criteria
 - Second email to same person uses the same sending account as the first
+- Stickiness applies regardless of account_type — once a recipient is associated with a sender account, that account is reused for ALL email types (e.g., an `application_thank_you` sender becomes sticky for subsequent `outbound_general` emails to the same person)
 - Falls back to round-robin only if sticky account is inactive or over limit
+- Round-robin fallback still prefers accounts matching the email's account_type, with a secondary fallback to any under-cap account
 - No breaking changes to existing round-robin logic
 
 ## References

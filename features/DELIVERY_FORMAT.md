@@ -91,8 +91,10 @@ Each stage type has specific proof artifacts that agents MUST provide when marki
 | Field | Required? | Details |
 |---|---|---|
 | **Screenshots** | Required | Visual proof of tested functionality |
-| **Report** | Required | Test report file stored in `features/reports/<ID>/` (e.g., `features/reports/M9/test-report.html`). Can be any format (HTML, JSON, text). |
-| **Notes** | Required | Must include per-criterion PASS/FAIL results mapped to the acceptance criteria from the spec. Example: "AC1: Badge shows count — PASS", "AC2: Dropdown lists notifications — PASS" |
+| **Report** | Required | Test report file stored in `features/reports/<ID>/` (e.g., `features/reports/M9/test-report.html`). Can be any format (HTML, JSON, text). **Must include date and time of test execution.** |
+| **Notes** | Required | Must include per-criterion PASS/FAIL results mapped to the acceptance criteria from the spec. Evidence must come from **real execution** (API calls, browser tests, script runs) — NOT code review or static analysis. Example: "AC1: Badge shows count — PASS (curl returned count: 3)", "AC2: Dropdown lists notifications — PASS (Playwright screenshot shows 5 items)" |
+
+**CRITICAL: Code review is NOT testing.** QA must always execute real tests against the development environment. Reading source code and confirming "the logic looks correct" is never acceptable. If real execution is not possible, QA must set status to `blocked` and explain why.
 
 ### PO: Acceptance
 
