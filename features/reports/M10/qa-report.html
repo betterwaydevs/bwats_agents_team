@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>M10 QA Report — LinkedIn AI Reply (Phase 1)</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #1a1a1a; }
+    h1 { border-bottom: 2px solid #2563eb; padding-bottom: 10px; }
+    h2 { margin-top: 32px; }
+    .meta { background: #f1f5f9; padding: 12px 16px; border-radius: 8px; margin-bottom: 24px; }
+    .meta span { display: inline-block; margin-right: 24px; }
+    .pass { color: #16a34a; font-weight: bold; }
+    .partial { color: #d97706; font-weight: bold; }
+    .fail { color: #dc2626; font-weight: bold; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    th, td { padding: 10px 14px; text-align: left; border: 1px solid #e2e8f0; }
+    th { background: #f8fafc; }
+    .section { margin: 32px 0; }
+    code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
+    pre { background: #f1f5f9; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 0.85em; }
+    .summary-box { border-radius: 8px; padding: 16px; margin: 24px 0; }
+    .summary-pass { background: #ecfdf5; border: 1px solid #86efac; }
+    .finding { background: #ecfdf5; border: 1px solid #86efac; border-radius: 8px; padding: 16px; margin: 16px 0; }
+    .file-ref { color: #6366f1; font-family: monospace; font-size: 0.9em; }
+    .round-label { background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 4px; font-size: 0.85em; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <h1>M10 QA Report — LinkedIn AI Reply (Phase 1: Reply Assistant)</h1>
+
+  <div class="meta">
+    <span><strong>Task:</strong> M10 Phase 1</span>
+    <span><strong>Tester:</strong> orchestrator</span>
+    <span><strong>Date:</strong> 2026-03-01</span>
+    <span><strong>Time:</strong> 17:55 UTC (Round 2, after bug fix)</span>
+  </div>
+
+  <div class="summary-box summary-pass">
+    <strong>Overall Result: <span class="pass">ALL PASS (5/5)</span></strong> — Extension UI verified via code review. Backend endpoint verified via curl E2E testing on dev branch. Bug fixed: <code>first_notnull</code> filter replaced with JavaScript null coalescing.
+  </div>
+
+  <div class="section">
+    <h2>Acceptance Criteria Results</h2>
+    <table>
+      <tr><th>AC</th><th>Criterion</th><th>Round 1</th><th>Round 2</th><th>Method</th></tr>
+      <tr>
+        <td>AC1</td>
+        <td>Reply Assistant visible in extension popup on LinkedIn messaging page</td>
+        <td><span class="pass">PASS</span></td>
+        <td><span class="pass">PASS</span></td>
+        <td>Code review</td>
+      </tr>
+      <tr>
+        <td>AC2</td>
+        <td>Project dropdown populates with user's projects</td>
+        <td><span class="pass">PASS</span></td>
+        <td><span class="pass">PASS</span></td>
+        <td>Code review</td>
+      </tr>
+      <tr>
+        <td>AC3</td>
+        <td>"Build Reply" calls suggest_reply endpoint and returns a response</td>
+        <td><span class="partial">BLOCKED</span></td>
+        <td><span class="pass">PASS</span></td>
+        <td>Curl E2E (dev branch)</td>
+      </tr>
+      <tr>
+        <td>AC4</td>
+        <td>Suggested reply displays in result area and can be copied</td>
+        <td><span class="pass">PASS</span></td>
+        <td><span class="pass">PASS</span></td>
+        <td>Code review</td>
+      </tr>
+      <tr>
+        <td>AC5</td>
+        <td>Error states handled gracefully</td>
+        <td><span class="pass">PASS</span></td>
+        <td><span class="pass">PASS</span></td>
+        <td>Code review</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Bug Fix: <code>first_notnull</code> Filter <span class="round-label">Round 2</span></h2>
+    <div class="finding">
+      <strong>Root Cause Found &amp; Fixed:</strong> The XanoScript <code>first_notnull</code> pipe filter throws <code>"Not numeric."</code> when applied to text fields on the development data source. The filter internally attempts a numeric conversion that fails on string values.
+      <p><strong>Fix:</strong> Replaced all <code>first_notnull</code> usages with JavaScript <code>||</code> null coalescing inside <code>api.lambda</code> blocks. Functionally identical, but avoids Xano's internal type coercion bug.</p>
+      <p><strong>Occurrences fixed:</strong></p>
+      <ul>
+        <li><code>$person.first_name|first_notnull:""</code> &rarr; <code>p.first_name || ''</code></li>
+        <li><code>$person.last_name|first_notnull:""</code> &rarr; <code>p.last_name || ''</code></li>
+        <li><code>$person.headline_role|first_notnull:""</code> &rarr; <code>p.headline_role || ''</code></li>
+        <li><code>$project.name|first_notnull:""</code> &rarr; <code>$var.project.name || ''</code></li>
+      </ul>
+      <p><strong>Deployed via:</strong> MCP <code>updateAPI</code> to workspace 6, API group 1470, endpoint 43105, with <code>publish: true</code>.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>AC3: Build Reply API Call — E2E Test Results <span class="round-label">Round 2</span></h2>
+    <p><span class="pass">PASS</span> — Full E2E flow verified on development branch after bug fix.</p>
+    <table>
+      <tr><th>Test</th><th>Result</th><th>Response</th></tr>
+      <tr>
+        <td>Normal flow: candidate + project context</td>
+        <td><span class="pass">PASS</span></td>
+        <td>AI reply with project link: <em>"...Senior DevOps Engineer role...apply here: https://jobs.betterway.dev/job/dev-senior-devops-engineer-7"</em></td>
+      </tr>
+      <tr>
+        <td>Without project context (salary inquiry)</td>
+        <td><span class="pass">PASS</span></td>
+        <td>AI reply: <em>"The salary...is competitive and will depend on your experience..."</em></td>
+      </tr>
+      <tr>
+        <td>Nonexistent person (person_id=1)</td>
+        <td><span class="pass">PASS</span></td>
+        <td>404: <code>"Candidate not found"</code></td>
+      </tr>
+      <tr>
+        <td>Empty instructions</td>
+        <td><span class="pass">PASS</span></td>
+        <td>400: <code>"Missing param: instructions"</code></td>
+      </tr>
+      <tr>
+        <td>Empty messages array</td>
+        <td><span class="pass">PASS</span></td>
+        <td>400: <code>"conversation.messages must be a non-empty array"</code></td>
+      </tr>
+    </table>
+
+    <h3>Full Curl Evidence</h3>
+    <pre># Test 1: Normal flow — candidate 515 with project 7
+POST /auto_agents/suggest_reply?x-data-source=development
+Body: {"person_id":515,"person_type":"candidate","instructions":"Invite to project",
+       "project_id":7,"conversation":{"messages":[
+         {"sender":"Pablo","direction":"outgoing","body":"Hi Harold, how are you?"},
+         {"sender":"Harold","direction":"incoming","body":"I am good thanks, looking for new opportunities"}]}}
+Response: 200
+{
+  "suggested_reply": "That's great to hear, Harold. I wanted to share a Senior DevOps
+    Engineer role we're working on, which is fully remote for candidates in Latam, Ireland,
+    or Spain. The position focuses on managing complex AWS environments and improving DevOps
+    processes for a modern tech team.\n\nYou can check out the details and apply here:
+    https://jobs.betterway.dev/job/dev-senior-devops-engineer-7\n\nLet me know if you have
+    any questions or would like to discuss the role further!",
+  "person_name": "Harold Jardanny Rodríguez Durán",
+  "project_name": "DEV:  Senior Devops Engineer"
+}
+
+# Test 2: Without project
+Body: {"person_id":515,...,"project_id":null,...,"instructions":"Ask about salary expectations",
+       "conversation":{"messages":[{"sender":"Harold","direction":"incoming","body":"What is the salary range?"}]}}
+Response: 200
+{
+  "suggested_reply": "Thanks for your question, Harold. The salary for this opportunity is
+    competitive and will depend on your experience and skills. Could you please share your
+    salary expectations so we can ensure alignment?",
+  "person_name": "Harold Jardanny Rodríguez Durán",
+  "project_name": ""
+}
+
+# Test 3: Nonexistent person
+Body: {"person_id":1,...}
+Response: 404 {"code":"ERROR_CODE_NOT_FOUND","message":"Candidate not found"}
+
+# Test 4: Empty instructions
+Body: {"instructions":"",...}
+Response: 400 {"code":"ERROR_CODE_INPUT_ERROR","message":"Missing param: instructions"}
+
+# Test 5: Empty messages
+Body: {"conversation":{"messages":[]},...}
+Response: 400 {"code":"ERROR_CODE_BAD_REQUEST","message":"conversation.messages must be a non-empty array"}</pre>
+  </div>
+
+  <div class="section">
+    <h2>AC1: Reply Assistant Visible in Popup</h2>
+    <p><span class="pass">PASS</span> — Feature present in both popup and sidepanel.</p>
+    <ul>
+      <li><span class="file-ref">popup.html:256-276</span> — HTML section <code>#chat-reply-section</code> with title, project dropdown, instructions textarea, Build Reply button, and result area</li>
+      <li><span class="file-ref">popup.js:2869-2871</span> — Section shown when ATS associations found</li>
+      <li>Same implementation in <span class="file-ref">sidepanel.html</span> and <span class="file-ref">sidepanel.js</span></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>AC2: Project Dropdown Populates</h2>
+    <p><span class="pass">PASS</span> — Dropdown populated from person's project associations.</p>
+    <ul>
+      <li><span class="file-ref">popup.js:2879-2893</span> — <code>populateReplyProjectDropdown(associations)</code> iterates associations, creates <code>&lt;option&gt;</code> per project</li>
+      <li>Auto-selects if only one project exists</li>
+      <li>Projects cached in <code>projectsCache</code> to avoid repeated API calls</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>AC4: Reply Display and Copy</h2>
+    <p><span class="pass">PASS</span> — Result area and copy functionality implemented correctly.</p>
+    <ul>
+      <li><span class="file-ref">popup.js:3246-3256</span> — <code>result.suggested_reply</code> displayed in <code>#chat-reply-text</code> div</li>
+      <li><span class="file-ref">popup.js:3273-3293</span> — Copy button uses <code>navigator.clipboard.writeText()</code> with fallback</li>
+      <li><span class="file-ref">sidepanel.js:3200-3235</span> — Sidepanel uses editable <code>&lt;textarea&gt;</code></li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>AC5: Error State Handling</h2>
+    <p><span class="pass">PASS</span> — All error scenarios handled with user-friendly messages.</p>
+    <table>
+      <tr><th>Scenario</th><th>Handler</th><th>User Message</th></tr>
+      <tr><td>No instructions</td><td><span class="file-ref">popup.js:3242</span></td><td>"Enter instructions for the reply"</td></tr>
+      <tr><td>No ATS match</td><td><span class="file-ref">popup.js:3243</span></td><td>"No ATS match found"</td></tr>
+      <tr><td>No chat captured</td><td><span class="file-ref">popup.js:3244</span></td><td>"No chat captured yet. Click Capture Chat first."</td></tr>
+      <tr><td>Auth expired (401)</td><td><span class="file-ref">popup.js:3261</span></td><td>"Session expired. Please log in again."</td></tr>
+      <tr><td>API failure</td><td><span class="file-ref">popup.js:3263</span></td><td>"Reply generation failed: [error]"</td></tr>
+      <tr><td>Nothing to copy</td><td><span class="file-ref">popup.js:3276</span></td><td>"No reply to copy"</td></tr>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>Environment</h2>
+    <table>
+      <tr><td>Endpoint</td><td><code>POST /api:8MRsSZQv/auto_agents/suggest_reply</code></td></tr>
+      <tr><td>Data source tested</td><td>development</td></tr>
+      <tr><td>Auth method</td><td>User login token via <code>POST /api:Ks58d17q/auth/login?x-data-source=development</code></td></tr>
+      <tr><td>AI Agent</td><td>Reply Suggestion Agent (GPT-4.1, sync)</td></tr>
+      <tr><td>Extension files</td><td><code>linked_communication/extension/</code> (popup.html, popup.js, sidepanel.html, sidepanel.js, services/XanoClient.js)</td></tr>
+      <tr><td>Backend files</td><td><code>bwats_xano/apis/auto_agents/suggest_reply_POST.xs</code></td></tr>
+    </table>
+  </div>
+</body>
+</html>

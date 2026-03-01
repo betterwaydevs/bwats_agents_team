@@ -103,6 +103,26 @@ _(Add entries as patterns are discovered)_
 - **Solution**: Read credentials from `bwats_xano/.env`. After navigating to grid, click `button[role="tab"]:has-text("All Stages")` to show all people.
 - **Date**: 2026-02-27
 
+### Team agents spawned from team/ cannot use Xano MCP
+- **Issue**: The backend-developer agent, when spawned as a teammate from the `team/` directory, does not have MCP access. MCP connections are established at session startup based on the `.mcp.json` in the working directory. Since `team/` has no `.mcp.json`, spawned teammates inherit no MCP. The agent got stuck trying to use MCP tools that didn't exist.
+- **Solution**: For tasks requiring Xano MCP, either: (1) Use tier-2 subagents defined in `bwats_xano/.claude/agents/prompts/` which are designed to work from that directory, or (2) Have the backend-developer agent work purely via curl/REST API without MCP, or (3) Run a separate Claude Code session from `bwats_xano/` directory for MCP-dependent investigations.
+- **Date**: 2026-03-01
+
+### XANO_TOKEN is admin-only (audience: xano:meta), not for REST API auth
+- **Issue**: Tried to use `XANO_TOKEN` (service account JWT) as a Bearer token for REST API calls. Returns "Invalid token" on all data sources. The token's audience is `xano:meta` — it's designed for the Xano Metadata API (MCP), NOT for application API endpoints.
+- **Solution**: For REST API auth, always login via `POST /api:Ks58d17q/auth/login` to get a user JWE token. Dev credentials only work with `?x-data-source=development`. Live credentials must be obtained from Pablo separately.
+- **Date**: 2026-03-01
+
+### XanoScript `first_notnull` filter throws "Not numeric" on text fields
+- **Issue**: The `|first_notnull:""` pipe filter in XanoScript throws `{"code":"ERROR_FATAL","message":"Not numeric."}` when applied to text fields (like `first_name`, `last_name`, `headline_role`) on the development data source. The filter internally attempts a numeric conversion before the null check, which fails on string values. This caused the M10 `suggest_reply` endpoint to crash after a successful person lookup.
+- **Solution**: Replace `$value|first_notnull:""` with JavaScript null coalescing in an `api.lambda` block: `return $var.person.field_name || '';`. This is functionally identical but avoids the internal type coercion bug. Also discovered: `updateAPI` via MCP publishes to the default branch (v1) only — use the correct `apigroup_id` (not `appId` from workspace context) and the correct `api_id` (listed under the API group, not from the workspace-level queries list).
+- **Date**: 2026-03-01
+
+### MCP updateAPI uses default branch (v1), not development
+- **Issue**: The `updateAPI` MCP tool does NOT accept a `branch` parameter. All updates go to the default branch (v1). When testing on `?x-data-source=development`, the development branch's CODE runs, not v1's. Debug modifications to v1 had no effect on dev testing.
+- **Solution**: To update the development branch's API code, you need to either (1) merge v1 to development, or (2) use a branch-specific mechanism. The `X-Branch: development` header on MCP requests did NOT reliably target the development branch. For testing fixes, publish to v1, then verify on v1 (which requires live credentials), or ask the user to merge v1 to development via the Xano UI.
+- **Date**: 2026-03-01
+
 ## How to Add Learnings
 
 Append new entries to the appropriate category using this format:
