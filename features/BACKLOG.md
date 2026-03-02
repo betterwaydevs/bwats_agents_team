@@ -22,6 +22,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 | **S1** | **Shark Helpers — Multi-Tenant Support & Deployment** | **BOTH** | **pending** | — | [spec](specs/S1-shark-helpers-multi-tenant.md) |
 | **S2** | **Extension Automation Detection Test Rig** | **EXT** | **pending** | — | [spec](specs/S2-automation-detection.md) |
 | **S3** | **Sales Outreach Campaign (V1)** | **BOTH** | **pending** | — | [spec](specs/S3-sales-campaign.md) |
+| **R1** | **Job Board API Research** | **RESEARCH** | **done** | python-developer | [spec](specs/R1-job-board-api-research.md) | [delivery](delivery/R1.md) |
 
 ## Dev-Complete (awaiting D1 deploy + live verification)
 
@@ -92,6 +93,10 @@ When picking up a task, agents MUST read both the spec and progress files before
 - **EXT** — Browser extension
 - **BOTH** — Backend + Frontend
 - **TEST** — Testing/validation
+- **RESEARCH** — Research/investigation task (no production code)
+- **PROCESS** — Workflow/team process improvement
+- **TEAM** — Agent/team configuration
+- **DEPLOY** — Deployment task
 - **DEVCOMPLETE** — Coded, tested on dev, QA passed. Awaiting deploy to production + live verification.
 - **Status**: `pending` → `in-progress` → `dev-complete` → `done`
 - **done** = deployed to live + verified working in production.
