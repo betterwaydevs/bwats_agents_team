@@ -133,6 +133,11 @@ _(Add entries as patterns are discovered)_
 - **Solution**: Until the backend is updated to support embedded person data (via addons/joins), the frontend MUST use the N+1 fetch pattern. Any future optimization must first confirm the API actually returns the data before removing the individual fetches.
 - **Date**: 2026-03-01
 
+### Xano: New files must be scaffolded and merged to live BEFORE development
+- **Issue**: Xano assigns internal IDs when files (tables, endpoints, functions) are created. If you create everything on dev during development and merge to live later, IDs can shift and break cross-references between endpoints, functions, and tables.
+- **Solution**: Added mandatory "Phase 0: Scaffold & Merge" to backend-developer agent. Before any development: (1) identify all new files needed, (2) create empty skeletons on dev via MCP, (3) merge skeletons to live immediately so IDs are locked in, (4) then proceed with development. Updated both `team/.claude/agents/backend-developer.md` and `bwats_xano/CLAUDE.md`.
+- **Date**: 2026-03-02
+
 ## How to Add Learnings
 
 Append new entries to the appropriate category using this format:

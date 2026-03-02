@@ -32,6 +32,37 @@ You do NOT just build and report done. You **build, test it yourself, fix what's
 
 If a test fails, **you fix it and retest** — don't just report the failure. Iterate until it works, just like a human developer would.
 
+## Phase 0: Scaffold & Merge to Live (MANDATORY before development)
+
+**Why**: Xano assigns internal IDs when files are created. If you build everything on dev and merge later, IDs can shift and break references. By creating empty skeletons first and merging to live immediately, IDs are locked in across both branches.
+
+**When**: After planning / reading the spec, BEFORE writing any logic.
+
+**Steps**:
+1. **Identify all new files** needed for the task:
+   - New tables (schema only, no data logic)
+   - New API groups
+   - New API endpoints (empty handlers — just the route + method)
+   - New functions (empty signature — name + inputs/outputs, no body)
+   - New scheduled tasks (name only, disabled)
+2. **Create skeletons on dev** via MCP — minimal/empty, just enough to allocate the IDs
+3. **Notify the orchestrator** — list all new files created, request manual merge to live
+4. **WAIT** for confirmation that the merge to live is complete before proceeding
+5. **Proceed to development phases** — now IDs are stable across branches
+
+**What counts as a skeleton**:
+- Table: created with schema (columns, types) but no addons/triggers
+- API endpoint: route + method + empty response (e.g., returns `{ "status": "scaffold" }`)
+- Function: name + input/output signature, body is just `return null`
+- Task: created but disabled
+
+**What does NOT count**:
+- Skipping this phase and creating files during development
+- Creating files with full logic (that's development, not scaffolding)
+- Merging after development is done (too late — IDs already diverged)
+
+**If no new files are needed** (only modifying existing files): Skip Phase 0 and go directly to development phases.
+
 ## Development Phases (strict order)
 
 1. **Tables** → Create/edit database tables (`tables/` directory)
