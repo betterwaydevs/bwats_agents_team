@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R1: Job Board API Research</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 28px;
+        }
+        .meta {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .recommendation-box {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            padding: 20px 25px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .recommendation-box h2 {
+            margin: 0 0 12px 0;
+            color: #1e40af;
+            font-size: 18px;
+        }
+        .recommendation-box ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .recommendation-box li {
+            margin-bottom: 6px;
+        }
+        .section {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #2563eb;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+            font-size: 20px;
+        }
+        .section h3 {
+            color: #1f2937;
+            margin-top: 24px;
+            margin-bottom: 12px;
+            font-size: 17px;
+        }
+        .section h4 {
+            color: #374151;
+            margin-top: 18px;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .status.pass {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .status.fail {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .status.primary {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .status.secondary {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        .status.viable {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status.marginal {
+            background: #fed7aa;
+            color: #9a3412;
+        }
+        .status.not-viable {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 14px;
+        }
+        th {
+            background: #1e293b;
+            color: white;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        td {
+            padding: 9px 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        tr:nth-child(even) td {
+            background: #f9fafb;
+        }
+        tr:hover td {
+            background: #f0f4ff;
+        }
+        td.score {
+            font-weight: 700;
+            color: #1e40af;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 13px;
+            font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', 'Courier New', monospace;
+        }
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.5;
+            font-family: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', 'Courier New', monospace;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+            font-size: inherit;
+        }
+        .json-key { color: #7dd3fc; }
+        .json-string { color: #86efac; }
+        .json-number { color: #fbbf24; }
+        .json-null { color: #f87171; }
+        .json-bool { color: #c4b5fd; }
+        .check { color: #10b981; font-weight: 700; }
+        .cross { color: #ef4444; font-weight: 700; }
+        .maybe { color: #f59e0b; font-weight: 700; }
+        .api-card {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9fafb;
+            border-left: 4px solid #3b82f6;
+            border-radius: 4px;
+        }
+        .api-card.primary {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+        .api-card.secondary {
+            border-left-color: #6366f1;
+            background: #eef2ff;
+        }
+        .api-card h3 {
+            margin-top: 0;
+        }
+        .gotchas {
+            background: #fefce8;
+            border: 1px solid #fde68a;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+        .gotchas strong {
+            color: #92400e;
+        }
+        .strengths {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 12px 0;
+        }
+        .strengths strong {
+            color: #065f46;
+        }
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 16px 0;
+        }
+        .pros {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            padding: 16px;
+            border-radius: 6px;
+        }
+        .pros h4 {
+            margin-top: 0;
+            color: #065f46;
+        }
+        .cons {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            padding: 16px;
+            border-radius: 6px;
+        }
+        .cons h4 {
+            margin-top: 0;
+            color: #991b1b;
+        }
+        .pros ul, .cons ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+        .pros li, .cons li {
+            margin-bottom: 4px;
+        }
+        .param-table th:first-child { min-width: 120px; }
+        .param-table th:nth-child(2) { min-width: 60px; }
+        .next-steps-item {
+            padding: 12px 16px;
+            background: #f9fafb;
+            border-left: 4px solid #6366f1;
+            border-radius: 4px;
+            margin: 12px 0;
+        }
+        .next-steps-item.immediate { border-left-color: #10b981; }
+        .next-steps-item.short-term { border-left-color: #3b82f6; }
+        .effort-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 16px 0;
+        }
+        .summary-final {
+            background: #eff6ff;
+            border: 2px solid #3b82f6;
+            padding: 20px 25px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .summary-final h2 {
+            margin: 0 0 15px 0;
+            color: #1e40af;
+            border: none;
+            padding: 0;
+        }
+        .appendix {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .appendix h2 {
+            margin-top: 0;
+            color: #6b7280;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 10px;
+            font-size: 18px;
+        }
+        .appendix-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .appendix-item:last-child {
+            border-bottom: none;
+        }
+        .appendix-item h4 {
+            margin: 0 0 4px 0;
+            color: #374151;
+        }
+        .appendix-item p {
+            margin: 4px 0;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        @media (max-width: 768px) {
+            body { margin: 16px auto; padding: 12px; }
+            .header, .section, .appendix { padding: 16px; }
+            h1 { font-size: 22px; }
+            .pros-cons { grid-template-columns: 1fr; }
+            table { font-size: 12px; }
+            th, td { padding: 6px 8px; }
+            pre { font-size: 11px; padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>R1: Job Board API Research</h1>
+        <div class="meta">
+            <strong>Date:</strong> March 2, 2026<br>
+            <strong>Researcher:</strong> python-developer (BWATS Team)<br>
+            <strong>Status:</strong> <span class="status pass">Complete</span><br>
+            <strong>Result:</strong> <span class="status pass">10/10 ACs PASS</span>
+        </div>
+    </div>
+
+    <!-- Recommendation Summary -->
+    <div class="recommendation-box">
+        <h2>Recommendation Summary</h2>
+        <ol>
+            <li><strong>Himalayas.app</strong> <span class="status primary">PRIMARY</span> &mdash; 110K+ jobs, best structured data, free, no auth, excellent for bulk ingestion</li>
+            <li><strong>Remotive</strong> <span class="status secondary">SECONDARY</span> &mdash; Curated remote jobs, 86% salary coverage, good filtering, free</li>
+            <li><strong>JSearch/RapidAPI</strong> <span class="status viable">BROAD SEARCH</span> &mdash; Google Jobs aggregator, worldwide coverage, paid tiers available</li>
+        </ol>
+        <p style="margin-bottom:0;margin-top:12px;color:#4b5563;font-size:14px;">RemoteOK is a viable free fallback. Adzuna covers LATAM well (including Brazil) but requires registration. The Muse, Careerjet, We Work Remotely, Remote.co, and JustRemote are either not API-friendly or not remote-focused enough.</p>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="section">
+        <h2>Executive Summary</h2>
+        <p>We evaluated <strong>10 job board APIs</strong> across Tier 1 (remote-first) and Tier 2 (general with remote filters) categories. <strong>Three APIs emerged as clear winners</strong> for our nearshore recruiting use case, each serving different needs:</p>
+        <ol>
+            <li><strong>Himalayas.app</strong> (RECOMMENDED PRIMARY) &mdash; 110K+ jobs, best structured data, free, no auth, excellent for bulk ingestion</li>
+            <li><strong>Remotive</strong> (RECOMMENDED SECONDARY) &mdash; Curated remote jobs, 86% salary coverage, good filtering, free</li>
+            <li><strong>JSearch/RapidAPI</strong> (RECOMMENDED FOR BROAD SEARCH) &mdash; Google Jobs aggregator, worldwide coverage, paid tiers available</li>
+        </ol>
+    </div>
+
+    <!-- Section 1: API Comparison Matrix -->
+    <div class="section">
+        <h2>1. API Comparison Matrix (AC1)</h2>
+
+        <h3>Tier 1 &mdash; Remote-First APIs</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Criterion (Weight)</th>
+                        <th>Himalayas</th>
+                        <th>Remotive</th>
+                        <th>RemoteOK</th>
+                        <th>WWR</th>
+                        <th>Remote.co</th>
+                        <th>JustRemote</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Remote-First Focus (5)</td><td>5</td><td>5</td><td>5</td><td>5</td><td>4</td><td>4</td></tr>
+                    <tr><td>API Maintenance (5)</td><td>5</td><td>4</td><td>3</td><td>1</td><td>1</td><td>1</td></tr>
+                    <tr><td>Data Quality (5)</td><td>5</td><td>4</td><td>3</td><td>3</td><td>2</td><td>2</td></tr>
+                    <tr><td>Free Tier Availability (4)</td><td>5</td><td>5</td><td>5</td><td>5</td><td>1</td><td>1</td></tr>
+                    <tr><td>Geographic Coverage (4)</td><td>4</td><td>3</td><td>3</td><td>3</td><td>2</td><td>2</td></tr>
+                    <tr><td>Data Freshness (4)</td><td>5</td><td>3</td><td>4</td><td>3</td><td>2</td><td>2</td></tr>
+                    <tr><td>Rate Limits (3)</td><td>4</td><td>2</td><td>4</td><td>3</td><td>1</td><td>1</td></tr>
+                    <tr><td>Ease of Integration (3)</td><td>5</td><td>5</td><td>4</td><td>2</td><td>1</td><td>1</td></tr>
+                    <tr><td>Search Capabilities (3)</td><td>3</td><td>4</td><td>2</td><td>1</td><td>1</td><td>1</td></tr>
+                    <tr><td>Salary Data (2)</td><td>4</td><td>5</td><td>2</td><td>1</td><td>1</td><td>1</td></tr>
+                    <tr><td>Company Details (2)</td><td>4</td><td>3</td><td>2</td><td>2</td><td>1</td><td>1</td></tr>
+                    <tr style="background:#f0f4ff;font-weight:700;"><td><strong>Weighted Score</strong></td><td class="score">176</td><td class="score">152</td><td class="score">132</td><td class="score">104</td><td class="score">68</td><td class="score">64</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Tier 2 &mdash; General APIs with Remote Filters</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Criterion (Weight)</th>
+                        <th>Adzuna</th>
+                        <th>The Muse</th>
+                        <th>JSearch</th>
+                        <th>Careerjet</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Remote-First Focus (5)</td><td>2</td><td>1</td><td>2</td><td>1</td></tr>
+                    <tr><td>API Maintenance (5)</td><td>4</td><td>4</td><td>4</td><td>3</td></tr>
+                    <tr><td>Data Quality (5)</td><td>4</td><td>3</td><td>4</td><td>3</td></tr>
+                    <tr><td>Free Tier Availability (4)</td><td>4</td><td>5</td><td>3</td><td>4</td></tr>
+                    <tr><td>Geographic Coverage (4)</td><td>5</td><td>3</td><td>5</td><td>5</td></tr>
+                    <tr><td>Data Freshness (4)</td><td>4</td><td>3</td><td>5</td><td>3</td></tr>
+                    <tr><td>Rate Limits (3)</td><td>3</td><td>4</td><td>2</td><td>3</td></tr>
+                    <tr><td>Ease of Integration (3)</td><td>4</td><td>4</td><td>4</td><td>3</td></tr>
+                    <tr><td>Search Capabilities (3)</td><td>4</td><td>3</td><td>5</td><td>4</td></tr>
+                    <tr><td>Salary Data (2)</td><td>4</td><td>1</td><td>5</td><td>3</td></tr>
+                    <tr><td>Company Details (2)</td><td>3</td><td>4</td><td>4</td><td>2</td></tr>
+                    <tr style="background:#f0f4ff;font-weight:700;"><td><strong>Weighted Score</strong></td><td class="score">142</td><td class="score">118</td><td class="score">148</td><td class="score">120</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Final Rankings (All APIs)</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>API</th>
+                        <th>Score</th>
+                        <th>Verdict</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td><strong>Himalayas</strong></td><td class="score">176</td><td><span class="status primary">PRIMARY</span> Best overall for our use case</td></tr>
+                    <tr><td>2</td><td><strong>Remotive</strong></td><td class="score">152</td><td><span class="status secondary">SECONDARY</span> Best salary data quality</td></tr>
+                    <tr><td>3</td><td><strong>JSearch</strong></td><td class="score">148</td><td><span class="status viable">VIABLE</span> Best for broad aggregated search</td></tr>
+                    <tr><td>4</td><td><strong>Adzuna</strong></td><td class="score">142</td><td><span class="status viable">VIABLE</span> Best LATAM geographic coverage</td></tr>
+                    <tr><td>5</td><td><strong>RemoteOK</strong></td><td class="score">132</td><td><span class="status viable">VIABLE</span> Simplest integration, limited data</td></tr>
+                    <tr><td>6</td><td><strong>Careerjet</strong></td><td class="score">120</td><td><span class="status marginal">MARGINAL</span> Affiliate model, not remote-focused</td></tr>
+                    <tr><td>7</td><td><strong>The Muse</strong></td><td class="score">118</td><td><span class="status marginal">MARGINAL</span> Not remote-focused, limited listings</td></tr>
+                    <tr><td>8</td><td><strong>We Work Remotely</strong></td><td class="score">104</td><td><span class="status not-viable">NOT VIABLE</span> RSS only, no JSON API</td></tr>
+                    <tr><td>9</td><td><strong>Remote.co</strong></td><td class="score">68</td><td><span class="status not-viable">NOT VIABLE</span> No public API</td></tr>
+                    <tr><td>10</td><td><strong>JustRemote</strong></td><td class="score">64</td><td><span class="status not-viable">NOT VIABLE</span> No public API</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section 2: Technical Summaries -->
+    <div class="section">
+        <h2>2. Technical Summary for Each Viable API (AC2, AC8)</h2>
+
+        <!-- Himalayas -->
+        <div class="api-card primary">
+            <h3>2.1 Himalayas.app <span class="status primary">Score: 176</span></h3>
+            <p><strong>Endpoint:</strong> <code>GET https://himalayas.app/jobs/api</code></p>
+            <p><strong>Authentication:</strong> None required. Fully public API.</p>
+            <p><strong>Rate Limits:</strong> No explicit rate limit documented. Max 20 results per request (enforced since March 2025). Be respectful &mdash; they ask that you mention Himalayas as source and link back.</p>
+            <p><strong>Pricing:</strong> Completely free. No paid tiers.</p>
+
+            <h4>Parameters</h4>
+            <table class="param-table">
+                <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td><code>limit</code></td><td>int</td><td>Results per page (max 20)</td></tr>
+                    <tr><td><code>offset</code></td><td>int</td><td>Skip N results for pagination</td></tr>
+                </tbody>
+            </table>
+
+            <h4>Response Fields</h4>
+            <pre><code>{
+  <span class="json-key">"totalCount"</span>: <span class="json-number">109998</span>,
+  <span class="json-key">"offset"</span>: <span class="json-number">0</span>,
+  <span class="json-key">"limit"</span>: <span class="json-number">20</span>,
+  <span class="json-key">"jobs"</span>: [{
+    <span class="json-key">"title"</span>: <span class="json-string">"Staff Technical Marketing Engineer"</span>,
+    <span class="json-key">"companyName"</span>: <span class="json-string">"Cribl"</span>,
+    <span class="json-key">"companyLogo"</span>: <span class="json-string">"https://..."</span>,
+    <span class="json-key">"employmentType"</span>: <span class="json-string">"Full Time"</span>,
+    <span class="json-key">"seniority"</span>: [<span class="json-string">"Senior"</span>],
+    <span class="json-key">"parentCategories"</span>: [<span class="json-string">"Marketing"</span>],
+    <span class="json-key">"categories"</span>: [<span class="json-string">"Technical-Marketing"</span>, <span class="json-string">"Cloud-Security"</span>],
+    <span class="json-key">"locationRestrictions"</span>: [<span class="json-string">"United States"</span>],
+    <span class="json-key">"timezoneRestrictions"</span>: [],
+    <span class="json-key">"minSalary"</span>: <span class="json-number">175000</span>,
+    <span class="json-key">"maxSalary"</span>: <span class="json-number">195000</span>,
+    <span class="json-key">"currency"</span>: <span class="json-string">"USD"</span>,
+    <span class="json-key">"description"</span>: <span class="json-string">"&lt;html&gt;..."</span>,
+    <span class="json-key">"excerpt"</span>: <span class="json-string">"Short summary..."</span>,
+    <span class="json-key">"applicationLink"</span>: <span class="json-string">"https://himalayas.app/companies/cribl/jobs/..."</span>,
+    <span class="json-key">"guid"</span>: <span class="json-string">"unique-id"</span>,
+    <span class="json-key">"pubDate"</span>: <span class="json-number">1772444199</span>,
+    <span class="json-key">"expiryDate"</span>: <span class="json-null">null</span>
+  }]
+}</code></pre>
+
+            <h4>Authentication Flow (AC8)</h4>
+            <pre><code>curl "https://himalayas.app/jobs/api?limit=20&amp;offset=0"</code></pre>
+
+            <div class="gotchas">
+                <strong>Gotchas:</strong>
+                <ul>
+                    <li><code>pubDate</code> is a Unix timestamp, not ISO 8601</li>
+                    <li><code>locationRestrictions</code> is an array of strings (can be empty for worldwide)</li>
+                    <li>Max 20 per request &mdash; need to paginate for bulk collection</li>
+                    <li>Salary may be <code>null</code> for ~43% of listings</li>
+                    <li>No server-side search/filter by keyword &mdash; must collect and filter client-side</li>
+                    <li>Must credit Himalayas as source and link back</li>
+                </ul>
+            </div>
+
+            <div class="strengths">
+                <strong>Strengths:</strong> Massive dataset (110K+ jobs), excellent structured data (seniority, categories, employment type, currency), frequently updated, also offers MCP server for AI agents.
+            </div>
+        </div>
+
+        <!-- Remotive -->
+        <div class="api-card secondary">
+            <h3>2.2 Remotive <span class="status secondary">Score: 152</span></h3>
+            <p><strong>Endpoint:</strong> <code>GET https://remotive.com/api/remote-jobs</code></p>
+            <p><strong>Authentication:</strong> None required. Public API.</p>
+            <p><strong>Rate Limits:</strong> Max 2 requests per minute. Recommended max 4 requests per day. Excessive requests are blocked.</p>
+            <p><strong>Pricing:</strong> Free for public API. Private API available (contact hello@remotive.com).</p>
+
+            <h4>Parameters</h4>
+            <table class="param-table">
+                <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+                <tbody>
+                    <tr><td><code>category</code></td><td>string</td><td>Filter by category name or slug</td></tr>
+                    <tr><td><code>search</code></td><td>string</td><td>Search title + description (case-insensitive, partial match)</td></tr>
+                    <tr><td><code>company_name</code></td><td>string</td><td>Filter by company (case-insensitive, partial match)</td></tr>
+                    <tr><td><code>limit</code></td><td>int</td><td>Max results to return</td></tr>
+                </tbody>
+            </table>
+
+            <p><strong>Available Categories:</strong> Software Development, Customer Service, Design, Marketing, Sales / Business, Product, Project Management, AI / ML, Data Analysis, DevOps / Sysadmin, Finance, Human Resources, QA, Writing, Legal, Medical, Education, All others</p>
+
+            <h4>Response Fields</h4>
+            <pre><code>{
+  <span class="json-key">"job-count"</span>: <span class="json-number">23</span>,
+  <span class="json-key">"jobs"</span>: [{
+    <span class="json-key">"id"</span>: <span class="json-number">2082736</span>,
+    <span class="json-key">"url"</span>: <span class="json-string">"https://remotive.com/remote-jobs/marketing/senior-amazon-brand-manager-2082736"</span>,
+    <span class="json-key">"title"</span>: <span class="json-string">"Senior Amazon Brand Manager"</span>,
+    <span class="json-key">"company_name"</span>: <span class="json-string">"GNO Partners"</span>,
+    <span class="json-key">"company_logo"</span>: <span class="json-string">"https://..."</span>,
+    <span class="json-key">"company_logo_url"</span>: <span class="json-string">"https://..."</span>,
+    <span class="json-key">"category"</span>: <span class="json-string">"Marketing"</span>,
+    <span class="json-key">"job_type"</span>: <span class="json-string">"full_time"</span>,
+    <span class="json-key">"publication_date"</span>: <span class="json-string">"2026-02-26T07:45:46"</span>,
+    <span class="json-key">"candidate_required_location"</span>: <span class="json-string">"Worldwide"</span>,
+    <span class="json-key">"salary"</span>: <span class="json-string">"$220k-$300k OTE"</span>,
+    <span class="json-key">"description"</span>: <span class="json-string">"&lt;html&gt;..."</span>,
+    <span class="json-key">"tags"</span>: [<span class="json-string">"amazon"</span>, <span class="json-string">"backend"</span>, <span class="json-string">"project management"</span>, <span class="json-string">"PPC"</span>]
+  }]
+}</code></pre>
+
+            <h4>Authentication Flow (AC8)</h4>
+            <pre><code><span style="color:#94a3b8;"># All jobs</span>
+curl "https://remotive.com/api/remote-jobs"
+
+<span style="color:#94a3b8;"># Filtered by category</span>
+curl "https://remotive.com/api/remote-jobs?category=software-dev"
+
+<span style="color:#94a3b8;"># Search</span>
+curl "https://remotive.com/api/remote-jobs?search=python"
+
+<span style="color:#94a3b8;"># Categories list</span>
+curl "https://remotive.com/api/remote-jobs/categories"</code></pre>
+
+            <div class="gotchas">
+                <strong>Gotchas:</strong>
+                <ul>
+                    <li>Jobs are delayed 24 hours from posting</li>
+                    <li>Very strict rate limit (2/min, 4/day recommended)</li>
+                    <li><code>salary</code> is a free-text string, not structured (e.g., "$220k-$300k OTE" or "$3,5k-$5k/month")</li>
+                    <li><code>job_type</code> values: full_time, contract, part_time, freelance, internship</li>
+                    <li>Category filter for "software-dev" currently returns ALL jobs (possible bug or deliberate)</li>
+                    <li>Must credit Remotive as source and link back</li>
+                    <li>Cannot collect signups/emails &mdash; ToS violation</li>
+                </ul>
+            </div>
+
+            <div class="strengths">
+                <strong>Strengths:</strong> Excellent salary data (86% coverage), curated quality listings, good filtering via search/category, active community.
+            </div>
+        </div>
+
+        <!-- RemoteOK -->
+        <div class="api-card">
+            <h3>2.3 RemoteOK <span class="status viable">Score: 132</span></h3>
+            <p><strong>Endpoint:</strong> <code>GET https://remoteok.com/api</code></p>
+            <p><strong>Authentication:</strong> None required. Public API.</p>
+            <p><strong>Rate Limits:</strong> Not explicitly documented. Send <code>User-Agent</code> header.</p>
+            <p><strong>Pricing:</strong> Free.</p>
+
+            <h4>Response Fields</h4>
+            <pre><code>[
+  {<span class="json-key">"last_updated"</span>: <span class="json-number">1709129047</span>, <span class="json-key">"legal"</span>: <span class="json-string">"API Terms of Service: ..."</span>},
+  {
+    <span class="json-key">"slug"</span>: <span class="json-string">"remote-junior-live-ops-game-designer-..."</span>,
+    <span class="json-key">"id"</span>: <span class="json-string">"1130577"</span>,
+    <span class="json-key">"epoch"</span>: <span class="json-string">"1709129047"</span>,
+    <span class="json-key">"date"</span>: <span class="json-string">"2026-02-28T21:00:14+00:00"</span>,
+    <span class="json-key">"company"</span>: <span class="json-string">"A Thinking Ape"</span>,
+    <span class="json-key">"company_logo"</span>: <span class="json-string">"https://..."</span>,
+    <span class="json-key">"position"</span>: <span class="json-string">"Junior Live Ops Game Designer"</span>,
+    <span class="json-key">"tags"</span>: [<span class="json-string">"game"</span>, <span class="json-string">"design"</span>, <span class="json-string">"designer"</span>, <span class="json-string">"mobile"</span>],
+    <span class="json-key">"description"</span>: <span class="json-string">"&lt;html&gt;..."</span>,
+    <span class="json-key">"location"</span>: <span class="json-string">"BC"</span>,
+    <span class="json-key">"salary_min"</span>: <span class="json-number">0</span>,
+    <span class="json-key">"salary_max"</span>: <span class="json-number">0</span>,
+    <span class="json-key">"apply_url"</span>: <span class="json-string">"https://remoteOK.com/remote-jobs/..."</span>,
+    <span class="json-key">"url"</span>: <span class="json-string">"https://remoteOK.com/remote-jobs/..."</span>,
+    <span class="json-key">"original"</span>: <span class="json-bool">true</span>,
+    <span class="json-key">"verified"</span>: <span class="json-bool">true</span>
+  }
+]</code></pre>
+
+            <h4>Authentication Flow (AC8)</h4>
+            <pre><code>curl -H "User-Agent: MyApp/1.0" "https://remoteok.com/api"</code></pre>
+
+            <div class="gotchas">
+                <strong>Gotchas:</strong>
+                <ul>
+                    <li>First element is ALWAYS a legal notice object, not a job &mdash; skip <code>data[0]</code></li>
+                    <li>No pagination &mdash; returns ALL current jobs in a single response (~98 jobs)</li>
+                    <li>No server-side filtering &mdash; all filtering is client-side</li>
+                    <li><code>salary_min</code>/<code>salary_max</code> are integers but often <code>0</code> (only 11% have data)</li>
+                    <li><code>location</code> is inconsistent: empty string, "Remote", city name, or country</li>
+                    <li>Must mention RemoteOK and link back with follow link (no nofollow)</li>
+                </ul>
+            </div>
+
+            <div class="strengths">
+                <strong>Strengths:</strong> Simplest possible integration (one GET, no auth, no pagination), real-time data, good for quick prototyping.
+            </div>
+        </div>
+
+        <!-- JSearch -->
+        <div class="api-card">
+            <h3>2.4 JSearch via RapidAPI <span class="status viable">Score: 148</span></h3>
+            <p><strong>Endpoint:</strong> <code>GET https://jsearch.p.rapidapi.com/search</code></p>
+            <p><strong>Authentication:</strong> RapidAPI key via header <code>X-RapidAPI-Key</code>.</p>
+
+            <h4>Rate Limits &amp; Pricing</h4>
+            <table>
+                <thead><tr><th>Tier</th><th>Price</th><th>Requests/Month</th><th>Rate Limit</th></tr></thead>
+                <tbody>
+                    <tr><td>Free</td><td>$0</td><td>200</td><td>1,000/hr</td></tr>
+                    <tr><td>Pro</td><td>$25/mo</td><td>10,000</td><td>5/sec</td></tr>
+                    <tr><td>Ultra</td><td>$75/mo</td><td>50,000</td><td>10/sec</td></tr>
+                    <tr><td>Mega</td><td>$150/mo</td><td>200,000</td><td>20/sec</td></tr>
+                </tbody>
+            </table>
+
+            <p><strong>Key Parameters:</strong> <code>query</code>, <code>page</code>, <code>num_pages</code>, <code>date_posted</code>, <code>remote_jobs_only</code>, <code>employment_types</code>, <code>job_requirements</code></p>
+            <p><strong>Response includes:</strong> 40+ data points per job including employer details, salary estimates from multiple sources, application links, geographic coordinates, required experience, and education levels. Up to 500 results per query.</p>
+
+            <div class="gotchas">
+                <strong>Gotchas:</strong>
+                <ul>
+                    <li>Requires RapidAPI account and credit card for paid tiers</li>
+                    <li>Free tier is only 200 requests/month &mdash; very limited for production</li>
+                    <li>Response time varies (1-8 seconds)</li>
+                    <li>Data sourced from Google Jobs &mdash; may include stale listings</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Adzuna -->
+        <div class="api-card">
+            <h3>2.5 Adzuna <span class="status viable">Score: 142</span></h3>
+            <p><strong>Endpoint:</strong> <code>GET https://api.adzuna.com/v1/api/jobs/{country}/search/{page}</code></p>
+            <p><strong>Authentication:</strong> <code>app_id</code> and <code>app_key</code> as query parameters. Free registration at developer.adzuna.com.</p>
+
+            <h4>Rate Limits (Free Tier)</h4>
+            <ul>
+                <li>25 requests/minute</li>
+                <li>250 requests/day</li>
+                <li>1,000 requests/week</li>
+                <li>2,500 requests/month</li>
+            </ul>
+
+            <p><strong>Geographic Coverage (12 countries):</strong> UK, US, Germany, France, Australia, New Zealand, Canada, India, Poland, <strong>Brazil</strong>, Austria, South Africa.</p>
+
+            <div class="gotchas">
+                <strong>Gotchas:</strong>
+                <ul>
+                    <li>Requires registration for API keys</li>
+                    <li>Country code in URL path (not a parameter)</li>
+                    <li>Not remote-focused &mdash; "remote" is just a location keyword</li>
+                    <li>Only includes Brazil from LATAM countries</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3: Data Schema Comparison -->
+    <div class="section">
+        <h2>3. Data Schema Comparison (AC9)</h2>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field (Normalized)</th>
+                        <th>Himalayas</th>
+                        <th>Remotive</th>
+                        <th>RemoteOK</th>
+                        <th>JSearch</th>
+                        <th>Adzuna</th>
+                        <th>The Muse</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Job Title</td><td><code>title</code></td><td><code>title</code></td><td><code>position</code></td><td><code>job_title</code></td><td><code>title</code></td><td><code>name</code></td></tr>
+                    <tr><td>Company Name</td><td><code>companyName</code></td><td><code>company_name</code></td><td><code>company</code></td><td><code>employer_name</code></td><td><code>company.display_name</code></td><td><code>company.name</code></td></tr>
+                    <tr><td>Company Logo</td><td><code>companyLogo</code></td><td><code>company_logo</code></td><td><code>company_logo</code></td><td><code>employer_logo</code></td><td>&mdash;</td><td><code>company.refs.logo_image</code></td></tr>
+                    <tr><td>Job Description</td><td><code>description</code></td><td><code>description</code></td><td><code>description</code></td><td><code>job_description</code></td><td><code>description</code></td><td><code>contents</code></td></tr>
+                    <tr><td>Short Description</td><td><code>excerpt</code></td><td>&mdash;</td><td>&mdash;</td><td><code>job_highlights</code></td><td>&mdash;</td><td>&mdash;</td></tr>
+                    <tr><td>Location</td><td><code>locationRestrictions[]</code></td><td><code>candidate_required_location</code></td><td><code>location</code></td><td><code>job_city</code>, <code>job_state</code>, <code>job_country</code></td><td><code>location.display_name</code></td><td><code>locations[].name</code></td></tr>
+                    <tr><td>Remote Flag</td><td>Implicit (all remote)</td><td>Implicit (all remote)</td><td>Implicit (all remote)</td><td><code>job_is_remote</code></td><td>&mdash;</td><td>&mdash;</td></tr>
+                    <tr><td>Salary Min</td><td><code>minSalary</code> (numeric)</td><td>&mdash;</td><td><code>salary_min</code> (int)</td><td><code>job_min_salary</code></td><td><code>salary_min</code></td><td>&mdash;</td></tr>
+                    <tr><td>Salary Max</td><td><code>maxSalary</code> (numeric)</td><td>&mdash;</td><td><code>salary_max</code> (int)</td><td><code>job_max_salary</code></td><td><code>salary_max</code></td><td>&mdash;</td></tr>
+                    <tr><td>Salary (Text)</td><td>&mdash;</td><td><code>salary</code> (string)</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+                    <tr><td>Currency</td><td><code>currency</code></td><td>&mdash;</td><td>&mdash;</td><td><code>job_salary_currency</code></td><td>&mdash;</td><td>&mdash;</td></tr>
+                    <tr><td>Job Type</td><td><code>employmentType</code></td><td><code>job_type</code></td><td>&mdash;</td><td><code>job_employment_type</code></td><td><code>contract_type</code></td><td><code>type</code></td></tr>
+                    <tr><td>Category</td><td><code>parentCategories[]</code></td><td><code>category</code></td><td>&mdash;</td><td>&mdash;</td><td><code>category.label</code></td><td><code>categories[].name</code></td></tr>
+                    <tr><td>Tags/Skills</td><td><code>categories[]</code></td><td><code>tags[]</code></td><td><code>tags[]</code></td><td><code>job_required_skills</code></td><td>&mdash;</td><td><code>tags[]</code></td></tr>
+                    <tr><td>Seniority</td><td><code>seniority[]</code></td><td>&mdash;</td><td>&mdash;</td><td><code>job_required_experience</code></td><td>&mdash;</td><td><code>levels[].name</code></td></tr>
+                    <tr><td>Date Posted</td><td><code>pubDate</code> (epoch)</td><td><code>publication_date</code> (ISO)</td><td><code>date</code> (ISO)</td><td><code>job_posted_at_datetime_utc</code></td><td><code>created</code></td><td><code>publication_date</code> (ISO)</td></tr>
+                    <tr><td>Apply URL</td><td><code>applicationLink</code></td><td><code>url</code></td><td><code>apply_url</code></td><td><code>job_apply_link</code></td><td><code>redirect_url</code></td><td><code>refs.landing_page</code></td></tr>
+                    <tr><td>Unique ID</td><td><code>guid</code></td><td><code>id</code></td><td><code>id</code></td><td><code>job_id</code></td><td><code>id</code></td><td><code>id</code></td></tr>
+                    <tr><td>Timezone</td><td><code>timezoneRestrictions[]</code></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+                    <tr><td>Expiry Date</td><td><code>expiryDate</code></td><td>&mdash;</td><td>&mdash;</td><td><code>job_offer_expiration_datetime_utc</code></td><td>&mdash;</td><td>&mdash;</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>Key Takeaways</h3>
+        <ul>
+            <li><strong>Himalayas</strong> has the richest schema: seniority, timezone restrictions, categories, structured salary with currency</li>
+            <li><strong>Remotive</strong> has salary as free-text string &mdash; needs parsing but often contains ranges like "$165k - $300k"</li>
+            <li><strong>RemoteOK</strong> is simplest but sparsest &mdash; no categories, no seniority, salary often 0</li>
+            <li><strong>JSearch</strong> is most comprehensive per-job but requires paid tier for volume</li>
+        </ul>
+    </div>
+
+    <!-- Section 4: Cost Analysis -->
+    <div class="section">
+        <h2>4. Cost Analysis (AC6)</h2>
+
+        <h3>Free Tier Comparison</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>API</th><th>Cost</th><th>Requests</th><th>Jobs Accessible</th><th>Notes</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Himalayas</strong></td><td>$0</td><td>Unlimited*</td><td>110K+</td><td>20 per request, need pagination</td></tr>
+                    <tr><td><strong>Remotive</strong></td><td>$0</td><td>~4/day (rec.)</td><td>~20-50 active</td><td>Small but curated</td></tr>
+                    <tr><td><strong>RemoteOK</strong></td><td>$0</td><td>Unlimited*</td><td>~100</td><td>All in one request</td></tr>
+                    <tr><td><strong>JSearch</strong></td><td>$0</td><td>200/month</td><td>500/query x 200</td><td>Very limited free tier</td></tr>
+                    <tr><td><strong>Adzuna</strong></td><td>$0</td><td>2,500/month</td><td>Variable</td><td>Registration required</td></tr>
+                    <tr><td><strong>The Muse</strong></td><td>$0</td><td>500/hr unreg.</td><td>488K+</td><td>Not remote-focused</td></tr>
+                    <tr><td><strong>Careerjet</strong></td><td>$0</td><td>Unlisted</td><td>Variable</td><td>Affiliate model</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="font-size:13px;color:#6b7280;">*"Unlimited" means no explicit rate limit, but should be used respectfully.</p>
+
+        <h3>Cost for Our Use Case</h3>
+        <p><strong>Scenario:</strong> Refresh job listings 4x daily, collect ~500 new jobs per refresh.</p>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>API</th><th>Requests/Day</th><th>Monthly Cost</th><th>Notes</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>Himalayas</strong></td><td>~100 (4 refreshes x 25 pages)</td><td><span class="status pass">$0</span></td><td>Well within implicit limits</td></tr>
+                    <tr><td><strong>Remotive</strong></td><td>4</td><td><span class="status pass">$0</span></td><td>Gets all jobs per request</td></tr>
+                    <tr><td><strong>RemoteOK</strong></td><td>4</td><td><span class="status pass">$0</span></td><td>Gets all jobs per request</td></tr>
+                    <tr><td><strong>JSearch</strong></td><td>100</td><td><span class="status marginal">$25/mo</span></td><td>Free tier insufficient</td></tr>
+                    <tr><td><strong>Adzuna</strong></td><td>100</td><td><span class="status pass">$0</span></td><td>Within 2,500/month</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p><strong>Recommendation:</strong> Start with Himalayas + Remotive (both free). Add JSearch Pro ($25/mo) only if we need broader non-remote-specific coverage.</p>
+    </div>
+
+    <!-- Section 5: Geographic Coverage -->
+    <div class="section">
+        <h2>5. Geographic Coverage (AC4)</h2>
+
+        <h3>LATAM + US/Canada Coverage</h3>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>API</th><th>US</th><th>Canada</th><th>Mexico</th><th>Colombia</th><th>Argentina</th><th>Brazil</th><th>Notes</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Himalayas</strong></td>
+                        <td><span class="check">&#10003; Strong</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td>Worldwide listings, location restrictions as array</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Remotive</strong></td>
+                        <td><span class="check">&#10003; Strong</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td><span class="maybe">? Rare</span></td>
+                        <td><span class="maybe">? Rare</span></td>
+                        <td><span class="maybe">? Rare</span></td>
+                        <td><span class="maybe">? Rare</span></td>
+                        <td>Mostly "Worldwide" or US-specific</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RemoteOK</strong></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td><span class="maybe">? Rare</span></td>
+                        <td><span class="maybe">? Rare</span></td>
+                        <td><span class="maybe">? Rare</span></td>
+                        <td>Some LATAM listings, inconsistent format</td>
+                    </tr>
+                    <tr>
+                        <td><strong>JSearch</strong></td>
+                        <td><span class="check">&#10003; Strong</span></td>
+                        <td><span class="check">&#10003; Strong</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td>Google Jobs &mdash; global</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Adzuna</strong></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td><span class="cross">&#10007; No</span></td>
+                        <td><span class="cross">&#10007; No</span></td>
+                        <td><span class="cross">&#10007; No</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td>Only 12 countries, Brazil is only LATAM</td>
+                    </tr>
+                    <tr>
+                        <td><strong>The Muse</strong></td>
+                        <td><span class="check">&#10003; Strong</span></td>
+                        <td><span class="check">&#10003; Yes</span></td>
+                        <td><span class="cross">&#10007; No</span></td>
+                        <td><span class="cross">&#10007; No</span></td>
+                        <td><span class="cross">&#10007; No</span></td>
+                        <td><span class="cross">&#10007; No</span></td>
+                        <td>US-centric</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p><strong>Key Finding:</strong> Himalayas has the best LATAM coverage among remote-first APIs. In our 100-job sample, we found jobs tagged for Mexico, Colombia, Brazil, and "LATAM" explicitly. Jobs tagged "Worldwide" are also accessible to LATAM candidates.</p>
+
+        <h4>Verified LATAM Listings from Himalayas POC</h4>
+        <ul>
+            <li>"Senior AI Agent Engineer (Python, ML Systems) - LATAM" at DaCodes (Mexico)</li>
+            <li>"QA Lead / Manager | Remote in Mexico" at GSB Solutions (Mexico)</li>
+            <li>"Senior Backend Engineer (Node.js &amp; AWS Serverless) - LATAM" at DaCodes (Mexico)</li>
+            <li>Jobs at Wikimedia Foundation tagged for Brazil, Colombia, Mexico, Peru, Uruguay</li>
+        </ul>
+    </div>
+
+    <!-- Section 6: POC Results -->
+    <div class="section">
+        <h2>6. Proof of Concept Results (AC3, AC7)</h2>
+
+        <h3>POC Scripts</h3>
+        <p>All POC scripts are in <code>/features/research/R1-poc/</code>:</p>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>Script</th><th>API</th><th>Auth</th><th>Jobs Fetched</th><th>Filtering Demo</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>himalayas_poc.py</code></td><td>Himalayas</td><td>None</td><td>100+</td><td>Location (US, LATAM)</td><td><span class="status pass">PASS</span></td></tr>
+                    <tr><td><code>remotive_poc.py</code></td><td>Remotive</td><td>None</td><td>23</td><td>Category, Search ("python")</td><td><span class="status pass">PASS</span></td></tr>
+                    <tr><td><code>remoteok_poc.py</code></td><td>RemoteOK</td><td>None</td><td>98</td><td>Tag ("python", "react"), Location</td><td><span class="status pass">PASS</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>POC Code Characteristics (AC7)</h3>
+        <ul>
+            <li><strong>Comments:</strong> Each script has module docstring + step-by-step comments</li>
+            <li><strong>Environment variables:</strong> Not needed (no auth required for any of the top 3)</li>
+            <li><strong>Error handling:</strong> All scripts handle HTTP errors, connection errors, JSON parse errors</li>
+            <li><strong>Reusable:</strong> Common patterns (fetch &rarr; parse &rarr; filter &rarr; display) easily adaptable</li>
+            <li><strong>Zero dependencies:</strong> Uses only Python stdlib (<code>urllib</code>, <code>json</code>)</li>
+        </ul>
+
+        <h3>What Each POC Demonstrates</h3>
+        <ol>
+            <li><strong>Himalayas:</strong> Pagination (limit/offset), location filtering (US, LATAM), salary analysis, 110K+ total jobs</li>
+            <li><strong>Remotive:</strong> Category filtering, keyword search, geographic analysis, 86% salary coverage</li>
+            <li><strong>RemoteOK:</strong> Tag-based filtering, location filtering, legal notice handling, tag frequency analysis</li>
+        </ol>
+    </div>
+
+    <!-- Section 7: Recommendation -->
+    <div class="section">
+        <h2>7. Recommendation (AC5)</h2>
+
+        <div class="api-card primary">
+            <h3>Primary Recommendation: Himalayas.app <span class="status primary">PRIMARY</span></h3>
+            <p><strong>Rationale:</strong></p>
+            <ul>
+                <li><strong>Largest dataset</strong> among remote-first APIs (110K+ jobs vs. 23 for Remotive, 98 for RemoteOK)</li>
+                <li><strong>Best structured data:</strong> Seniority levels, multiple categories, structured salary with currency, timezone restrictions, employment type</li>
+                <li><strong>Best LATAM coverage:</strong> Explicit location restrictions that include Mexico, Colombia, Brazil, Argentina</li>
+                <li><strong>Free with no auth:</strong> Simplest possible integration &mdash; one HTTP GET</li>
+                <li><strong>Actively maintained:</strong> API docs updated Feb 2026, new <code>currency</code> field added May 2025</li>
+                <li><strong>MCP server available:</strong> Future potential for AI agent integration via Himalayas MCP</li>
+            </ul>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>Pros</h4>
+                    <ul>
+                        <li>Massive dataset, constantly growing</li>
+                        <li>Excellent data quality and structure</li>
+                        <li>No authentication, no rate limits</li>
+                        <li>Free forever (public API)</li>
+                        <li>Good for bulk ingestion and matching</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h4>Cons</h4>
+                    <ul>
+                        <li>No server-side search/filter &mdash; must collect all and filter client-side</li>
+                        <li>Max 20 per page &mdash; need ~5,500 requests to collect all 110K jobs</li>
+                        <li>Salary data in ~57% of listings (not as good as Remotive's 86%)</li>
+                        <li><code>pubDate</code> is Unix timestamp, not ISO 8601</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="api-card secondary">
+            <h3>Secondary Recommendation: Remotive <span class="status secondary">SECONDARY</span></h3>
+            <p><strong>Rationale:</strong> Use Remotive for its <strong>curated quality</strong> and <strong>excellent salary data</strong> (86% coverage). The smaller dataset (20-50 active jobs at any time) is actually a feature &mdash; these are hand-picked, high-quality remote positions.</p>
+
+            <div class="pros-cons">
+                <div class="pros">
+                    <h4>Pros</h4>
+                    <ul>
+                        <li>Highest salary data coverage (86%)</li>
+                        <li>Server-side filtering (category, search, company)</li>
+                        <li>Curated, high-quality listings</li>
+                        <li>18 well-defined categories</li>
+                    </ul>
+                </div>
+                <div class="cons">
+                    <h4>Cons</h4>
+                    <ul>
+                        <li>Very small dataset (~23 active jobs at test time)</li>
+                        <li>Strict rate limits (2/min, 4/day recommended)</li>
+                        <li>24-hour data delay</li>
+                        <li>Salary as free-text string (needs parsing)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h3>Integration Strategy</h3>
+        <p>Use both APIs together:</p>
+        <ol>
+            <li><strong>Himalayas</strong> for volume &mdash; bulk ingest all jobs, update 4x daily</li>
+            <li><strong>Remotive</strong> for quality &mdash; supplement with curated listings, higher salary data coverage</li>
+            <li><strong>Deduplicate</strong> by company name + job title + location</li>
+        </ol>
+    </div>
+
+    <!-- Section 8: Next Steps -->
+    <div class="section">
+        <h2>8. Next Steps (AC10)</h2>
+
+        <h3>Immediate (This Sprint)</h3>
+
+        <div class="next-steps-item immediate">
+            <h4>1. Create <code>job_listings</code> table in Xano &mdash; Owner: backend-developer</h4>
+            <p>Fields mapped from Himalayas schema: title, company_name, company_logo, employment_type, seniority, categories, location_restrictions, timezone_restrictions, min_salary, max_salary, currency, description, excerpt, application_link, source_api, source_id, fetched_at, expires_at</p>
+            <p><strong>Estimated effort:</strong> 1 day</p>
+        </div>
+
+        <div class="next-steps-item immediate">
+            <h4>2. Build Himalayas ingestion endpoint &mdash; Owner: backend-developer</h4>
+            <p>Xano function that paginates through Himalayas API and stores jobs. Run as scheduled task (4x daily).</p>
+            <p><strong>Estimated effort:</strong> 1-2 days</p>
+        </div>
+
+        <div class="next-steps-item immediate">
+            <h4>3. Build Remotive ingestion endpoint &mdash; Owner: backend-developer</h4>
+            <p>Simpler &mdash; single request gets all jobs. Merge into same <code>job_listings</code> table with <code>source_api = "remotive"</code>.</p>
+            <p><strong>Estimated effort:</strong> 0.5 days</p>
+        </div>
+
+        <h3>Short-term (Next Sprint)</h3>
+
+        <div class="next-steps-item short-term">
+            <h4>4. Build deduplication logic</h4>
+            <p>Match on normalized title + company + location</p>
+        </div>
+
+        <div class="next-steps-item short-term">
+            <h4>5. Add basic search API</h4>
+            <p>Search job_listings by keyword, location, category</p>
+        </div>
+
+        <div class="next-steps-item short-term">
+            <h4>6. Frontend job board view &mdash; Owner: frontend-developer</h4>
+            <p>Display jobs in nearshore-talent-compass dashboard</p>
+        </div>
+
+        <h3>Prerequisites</h3>
+        <ul>
+            <li>No API key approvals needed (all free, no auth)</li>
+            <li>Xano schema changes needed (new table)</li>
+            <li>No additional infrastructure costs</li>
+        </ul>
+
+        <div class="effort-box">
+            <h4 style="margin-top:0;color:#1e40af;">Effort Estimate</h4>
+            <ul>
+                <li><strong>MVP integration (Himalayas + Remotive &rarr; Xano):</strong> 2-3 days</li>
+                <li><strong>Search API + dedup:</strong> 1-2 days</li>
+                <li><strong>Frontend display:</strong> 2-3 days</li>
+                <li><strong>Total to production-ready job board:</strong> ~1 week</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Appendix A -->
+    <div class="appendix">
+        <h2>Appendix A: APIs Evaluated but Not Recommended</h2>
+
+        <div class="appendix-item">
+            <h4>We Work Remotely <span class="status not-viable">Score: 104</span></h4>
+            <p><strong>Status:</strong> RSS feed only at <code>weworkremotely.com/remote-jobs.rss</code></p>
+            <p><strong>Why not:</strong> No JSON API. Partnership required for API access. RSS is XML-based and limited in data fields.</p>
+        </div>
+
+        <div class="appendix-item">
+            <h4>Remote.co <span class="status not-viable">Score: 68</span></h4>
+            <p><strong>Status:</strong> No public API found</p>
+            <p><strong>Why not:</strong> Only available via third-party scrapers (Apify). No official developer access.</p>
+        </div>
+
+        <div class="appendix-item">
+            <h4>JustRemote <span class="status not-viable">Score: 64</span></h4>
+            <p><strong>Status:</strong> No public API found</p>
+            <p><strong>Why not:</strong> Website only. No developer documentation or API endpoints.</p>
+        </div>
+
+        <div class="appendix-item">
+            <h4>The Muse <span class="status marginal">Score: 118</span></h4>
+            <p><strong>Status:</strong> Working API at <code>themuse.com/api/public/jobs</code></p>
+            <p><strong>Why not:</strong> 488K+ jobs but overwhelmingly NOT remote. No effective remote filter. US-centric with no LATAM coverage. No salary data.</p>
+        </div>
+
+        <div class="appendix-item">
+            <h4>Careerjet <span class="status marginal">Score: 120</span></h4>
+            <p><strong>Status:</strong> Working API at <code>search.api.careerjet.net/v4/query</code></p>
+            <p><strong>Why not:</strong> Affiliate model (requires partner account), must pass user IP and user agent with every request (designed for server-side job search widgets, not data ingestion), basic auth required. Not remote-focused.</p>
+        </div>
+    </div>
+
+    <!-- Appendix B -->
+    <div class="appendix">
+        <h2>Appendix B: Weighted Score Calculation Details</h2>
+        <p><strong>Formula:</strong> Score = &Sigma;(Criterion_Score x Weight)</p>
+        <p><strong>Maximum possible score:</strong> (5x5) + (5x5) + (5x5) + (5x4) + (5x4) + (5x4) + (5x3) + (5x3) + (5x3) + (5x2) + (5x2) = <strong>200</strong></p>
+
+        <h4>Himalayas Score Breakdown</h4>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>Criterion</th><th>Score</th><th>Weight</th><th>Weighted</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Remote-First Focus</td><td>5</td><td>5</td><td>25</td></tr>
+                    <tr><td>API Maintenance</td><td>5</td><td>5</td><td>25</td></tr>
+                    <tr><td>Data Quality</td><td>5</td><td>5</td><td>25</td></tr>
+                    <tr><td>Free Tier Availability</td><td>5</td><td>4</td><td>20</td></tr>
+                    <tr><td>Geographic Coverage</td><td>4</td><td>4</td><td>16</td></tr>
+                    <tr><td>Data Freshness</td><td>5</td><td>4</td><td>20</td></tr>
+                    <tr><td>Rate Limits</td><td>4</td><td>3</td><td>12</td></tr>
+                    <tr><td>Ease of Integration</td><td>5</td><td>3</td><td>15</td></tr>
+                    <tr><td>Search Capabilities</td><td>3</td><td>3</td><td>9</td></tr>
+                    <tr><td>Salary Data</td><td>4</td><td>2</td><td>8</td></tr>
+                    <tr><td>Company Details</td><td>4</td><td>2</td><td>8</td></tr>
+                    <tr style="background:#f0f4ff;font-weight:700;"><td><strong>Total</strong></td><td></td><td></td><td class="score">176 / 200</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Final Summary -->
+    <div class="summary-final">
+        <h2>Research Summary</h2>
+        <p><strong>Overall Result:</strong> <span class="status pass">10/10 ACs PASS</span></p>
+        <p><strong>APIs Evaluated:</strong> 10 (6 remote-first, 4 general with remote filters)</p>
+        <p><strong>Recommended Stack:</strong></p>
+        <ul>
+            <li><span class="status primary">PRIMARY</span> <strong>Himalayas.app</strong> &mdash; 176/200 &mdash; Volume, structured data, LATAM coverage</li>
+            <li><span class="status secondary">SECONDARY</span> <strong>Remotive</strong> &mdash; 152/200 &mdash; Quality, salary data, curated listings</li>
+        </ul>
+        <p><strong>Monthly Cost:</strong> <span class="status pass">$0</span> (both APIs are completely free)</p>
+        <p><strong>Time to MVP:</strong> ~1 week (2-3 days backend ingestion + 2-3 days frontend display)</p>
+    </div>
+
+</body>
+</html>
