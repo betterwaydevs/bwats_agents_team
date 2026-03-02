@@ -18,6 +18,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 |----|-------|------|--------|-------|------|
 | **D1** | **Deploy M1, M2, M3, M7, L6, P2 & Pending Changes to Production** | **DEPLOY** | **pending** | — | [spec](specs/D1-deploy-m1-m2.md) |
 | **W1** | **Multi-Agent Team Delivery Workflow** | **PROCESS** | **in-progress** | — | [spec](specs/W1-multi-agent-delivery-workflow.md) |
+| **SEC1** | **Security Review Agent — Pre-QA Security Gate** | **TEAM** | **pending** | — | [spec](specs/SEC1-security-review-agent.md) |
 | **S1** | **Shark Helpers — Multi-Tenant Support & Deployment** | **BOTH** | **pending** | — | [spec](specs/S1-shark-helpers-multi-tenant.md) |
 | **S2** | **Extension Automation Detection Test Rig** | **EXT** | **pending** | — | [spec](specs/S2-automation-detection.md) |
 | **S3** | **Sales Outreach Campaign (V1)** | **BOTH** | **pending** | — | [spec](specs/S3-sales-campaign.md) |
@@ -40,8 +41,9 @@ When picking up a task, agents MUST read both the spec and progress files before
 
 | ID | Title | Type | Status | Owner | Spec |
 |----|-------|------|--------|-------|------|
-| M8 | Task Supervisor Agent | BACK | pending | — | [spec](specs/M8-task-supervisor-agent.md) |
+| M8 | Delivery Supervisor Agent (Post-Task Hook) | TEAM | pending | — | [spec](specs/M8-task-supervisor-agent.md) |
 | M10 | LinkedIn AI Reply — Phase 1 ALL PASS; Phase 2 (Conversation Analyzer) deferred | EXT/BACK | **dev-complete** | — | [spec](specs/M10-linkedin-ai-reply.md) |
+| M11 | Dashboard AI Assistant — Claude API via membership token | FRONT | **dev-complete** | — | [spec](specs/M11-dashboard-ai-assistant.md) | [delivery](delivery/M11.md) |
 
 ## Low Priority / Future
 
