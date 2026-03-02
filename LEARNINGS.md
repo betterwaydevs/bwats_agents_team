@@ -123,6 +123,16 @@ _(Add entries as patterns are discovered)_
 - **Solution**: To update the development branch's API code, you need to either (1) merge v1 to development, or (2) use a branch-specific mechanism. The `X-Branch: development` header on MCP requests did NOT reliably target the development branch. For testing fixes, publish to v1, then verify on v1 (which requires live credentials), or ask the user to merge v1 to development via the Xano UI.
 - **Date**: 2026-03-01
 
+### QA must verify DATA loads, not just UI structure
+- **Issue**: P1 QA passed with empty grids in all screenshots. The tester dismissed zero-people grids as "dev/live data disparity" when it was actually a critical regression — the code change broke data loading entirely. The association API does NOT embed person data; `item.person` does not exist. The P1 "optimization" that removed N+1 `getFullParsedProspect`/`getFullParsedCandidate` calls broke all grids because there's no embedded data to fall back on.
+- **Solution**: QA tests for data grids MUST assert that rows contain actual data (names, scores, etc.), not just that the table component renders. If a grid shows 0 people, that's a FAIL unless the project is genuinely empty. Always verify row count > 0 for projects known to have data on dev. "Data disparity" should never be used to dismiss empty results without investigation.
+- **Date**: 2026-03-01
+
+### Association API does NOT embed person data
+- **Issue**: The Xano `getProjectStageAssociationsPaginated` endpoint returns `person_id`, `person_type`, `elastic_search_id` as pointer fields — NOT an embedded `person` object with `first_name`, `last_name`, etc. The N+1 pattern (`getFullParsedProspect`/`getFullParsedCandidate` per row) is currently required to display person details in the grid.
+- **Solution**: Until the backend is updated to support embedded person data (via addons/joins), the frontend MUST use the N+1 fetch pattern. Any future optimization must first confirm the API actually returns the data before removing the individual fetches.
+- **Date**: 2026-03-01
+
 ## How to Add Learnings
 
 Append new entries to the appropriate category using this format:
