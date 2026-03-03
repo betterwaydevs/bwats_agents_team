@@ -28,6 +28,7 @@ Each delivery file starts with a title header and contains one or more stage sec
 | `## DEV: Frontend` | DEV | frontend-developer | When frontend work starts/completes |
 | `## DEV: Extension` | DEV | chrome-ext-developer | When extension work starts/completes |
 | `## DEV: Python` | DEV | python-developer | When Python work starts/completes |
+| `## SEC: Security Review` | SEC | security-reviewer | After DEV completes, before QA begins |
 | `## QA: Testing` | QA | qa-tester | When testing starts/completes |
 | `## PO: Acceptance` | PO | product-owner | When verifying acceptance criteria |
 | `## User: Approval` | User | (user via dashboard) | Final approval gate |
@@ -51,11 +52,12 @@ Not every task needs all stages. Use what's relevant:
 
 | Task Type | Stages |
 |---|---|
-| BACK | PM → DEV:Backend → QA → PO → User |
-| FRONT | PM → DEV:Frontend → QA → PO → User |
-| BOTH | PM → DEV:Backend → DEV:Frontend → QA → PO → User |
-| EXT | PM → DEV:Extension → QA → PO → User |
+| BACK | PM → DEV:Backend → SEC → QA → PO → User |
+| FRONT | PM → DEV:Frontend → SEC → QA → PO → User |
+| BOTH | PM → DEV:Backend → DEV:Frontend → SEC → QA → PO → User |
+| EXT | PM → DEV:Extension → SEC → QA → PO → User |
 | TEST | PM → QA → PO → User |
+| TEAM | PM → SEC:Self-Audit → PO → User |
 
 ## Stage Dependency Rules
 
@@ -68,7 +70,8 @@ Each stage has prerequisites that MUST be satisfied (status `done`) before it ca
 | `DEV: Frontend` | `PM: Assignment` must be `done` |
 | `DEV: Extension` | `PM: Assignment` must be `done` |
 | `DEV: Python` | `PM: Assignment` must be `done` |
-| `QA: Testing` | ALL `DEV:*` stages in the task must be `done` |
+| `SEC: Security Review` | ALL `DEV:*` stages in the task must be `done` |
+| `QA: Testing` | `SEC: Security Review` must be `done` with APPROVE or CONDITIONAL APPROVE |
 | `PO: Acceptance` | `QA: Testing` must be `done` |
 | `User: Approval` | `PO: Acceptance` must be `done` |
 
@@ -85,6 +88,14 @@ Each stage type has specific proof artifacts that agents MUST provide when marki
 | **Commits** | Required | At least one `repo@hash` entry proving code was committed |
 | **Notes** | Required | Must include self-test proof — what the developer tested and the outcome (e.g., "Verified endpoint returns 200 with correct payload", "Confirmed UI renders correctly in browser") |
 | **Screenshots** | Optional | Helpful for frontend/UI work but not mandatory for DEV stages |
+
+### SEC: Security Review
+
+| Field | Required? | Details |
+|---|---|---|
+| **Status** | Required | `done` if APPROVE or CONDITIONAL APPROVE; `blocked` if REJECT |
+| **Notes** | Required | Must include finding list with severities, recommendation (APPROVE/CONDITIONAL/REJECT), and files reviewed |
+| **Date** | Required | Date and time of review |
 
 ### QA: Testing
 

@@ -37,12 +37,14 @@ This is your primary mode. You drive execution:
 **Assignment Flow (automatic handoffs — NEVER skip a step):**
 1. Take the next task from the queue
 2. Identify the right developer agent → assign with full spec
-3. When DEV reports done → run Gate 1 checklist → if pass, assign `qa-tester`
-4. When QA reports done → run Gate 2 checklist → if pass, **immediately assign `product-owner`** (do NOT wait for user or orchestrator to prompt this)
-5. When PO reports done → run Gate 3 checklist → if pass, report to user for approval
-6. Mark complete only after User: Approval
+3. When DEV reports done → run Gate 1 checklist → if pass, assign `security-reviewer`
+4. When SEC reports APPROVE or CONDITIONAL APPROVE → assign `qa-tester`
+5. When SEC reports REJECT → send back to DEV with specific findings from the security report
+6. When QA reports done → run Gate 2 checklist → if pass, **immediately assign `product-owner`** (do NOT wait for user or orchestrator to prompt this)
+7. When PO reports done → run Gate 3 checklist → if pass, report to user for approval
+8. Mark complete only after User: Approval
 
-**Automatic handoff rule**: Every time an agent messages you saying their stage is complete, you MUST immediately trigger the next stage. Do not wait. Do not ask the orchestrator. The pipeline flows: DEV done → you assign QA. QA done → you assign PO. PO done → you report to user. This is automatic.
+**Automatic handoff rule**: Every time an agent messages you saying their stage is complete, you MUST immediately trigger the next stage. Do not wait. Do not ask the orchestrator. The pipeline flows: DEV done → you assign SEC. SEC approves → you assign QA. SEC rejects → back to DEV. QA done → you assign PO. PO done → you report to user. This is automatic.
 
 ### 3. Delivery Mode
 When all tasks are complete:
@@ -59,6 +61,7 @@ When all tasks are complete:
 | `chrome-ext-developer` | `../linked_communication/` + `../bw_cold_recruiting/` | Chrome extension features, popup/sidepanel changes |
 | `python-developer` | `../resume_parser/` | Python scripts, data processing, ElasticSearch |
 | `product-owner` | All projects | Feature design, acceptance criteria, delivery verification |
+| `security-reviewer` | All projects | Security review after DEV completion, before QA |
 | `qa-tester` | All projects | Testing, validation, integration verification |
 
 ## Cross-Project Coordination Rules
@@ -153,6 +156,19 @@ Before assigning `qa-tester`, verify the developer's delivery log stage:
 - [ ] **Notes are specific**: Notes describe what was built AND that it works (not just "done" or "implemented feature X")
 
 **If any check fails**: Send the developer back with specific feedback on what's missing. Do NOT advance to QA.
+
+### Gate 1.5: SEC → QA (Before assigning QA after security review)
+
+Before assigning `qa-tester`, verify the security review was completed and approved:
+
+- [ ] **SEC stage exists**: `features/delivery/<ID>.md` contains `## SEC: Security Review`
+- [ ] **Recommendation is APPROVE or CONDITIONAL APPROVE**: If REJECT, do NOT proceed to QA
+- [ ] **No unresolved CRITICAL findings**: All CRITICAL issues must be fixed before QA
+- [ ] **Findings are documented**: Report lists files reviewed and any findings
+
+**If SEC recommends REJECT**: Send the developer back with the specific CRITICAL/HIGH findings from the SEC report. DEV must fix and re-submit. SEC reviews again. Do NOT proceed to QA until SEC approves.
+
+**If SEC recommends CONDITIONAL APPROVE**: QA can proceed. Include the conditional items in the QA brief as known issues to note.
 
 ### Gate 2: QA → PO (Before assigning Product Owner)
 

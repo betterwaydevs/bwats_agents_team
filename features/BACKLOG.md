@@ -17,7 +17,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 | ID | Title | Type | Status | Owner | Spec |
 |----|-------|------|--------|-------|------|
 | **W1** | **Multi-Agent Team Delivery Workflow** | **PROCESS** | **in-progress** | — | [spec](specs/W1-multi-agent-delivery-workflow.md) |
-| **SEC1** | **Security Review Agent — Pre-QA Security Gate** | **TEAM** | **pending** | — | [spec](specs/SEC1-security-review-agent.md) |
+| **SEC1** | **Security Review Agent — Pre-QA Security Gate** | **TEAM** | **dev-complete** | — | [spec](specs/SEC1-security-review-agent.md) |
 | **S1** | **Shark Helpers — Multi-Tenant Support & Deployment** | **BOTH** | **pending** | — | [spec](specs/S1-shark-helpers-multi-tenant.md) |
 | **S2** | **Extension Automation Detection Test Rig** | **EXT** | **pending** | — | [spec](specs/S2-automation-detection.md) |
 | **S3** | **Sales Outreach Campaign (V1)** | **BOTH** | **pending** | — | [spec](specs/S3-sales-campaign.md) |
@@ -28,6 +28,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 |----|-------|------|--------|-------|------|
 | M8 | Delivery Supervisor Agent (Post-Task Hook) | TEAM | pending | — | [spec](specs/M8-task-supervisor-agent.md) |
 | M12 | AI Reply Context Enhancement — Knowledge Base & Project Context | BOTH | pending | — | [spec](specs/M12-ai-reply-context-enhancement.md) |
+| **OPT1** | **Code Optimization Agent — Post-DEV Performance Gate** | **TEAM** | **pending** | — | [spec](specs/OPT1-code-optimization-agent.md) |
 | QF7 | function.call → function.run sweep (touchpoint_create + others on v1) | BACK | dev-complete | — | |
 | QF8 | Frontend Laura cleanup — remove hardcoded "Laura" from ~11 files | FRONT | dev-complete | — | [delivery](delivery/QF8.md) |
 | QF9 | Extension Async Save — Invitations & Connections fire-and-forget | EXT | dev-complete | — | [spec](specs/QF9-extension-async-save.md) | [delivery](delivery/QF9.md) |
@@ -37,6 +38,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 | QF11 | Extension Duplicate Detection — Verify existing prospects are recognized on page | EXT | pending | — | [spec](specs/QF11-extension-duplicate-detection.md) |
 | QF13 | Pending Prospect Count Performance — Fast count + move to ATS | BOTH | dev-complete | — | [spec](specs/QF13-pending-prospect-count-performance.md) |
 | QF14 | Add_prospect conflict error — db.patch expects array, gets string | BACK | dev-complete | — | [spec](specs/QF14-add-prospect-patch-type-error.md) |
+| QF15 | Add .env deny rules to `.claude/settings.local.json` — agent permissions hardening | TEAM | pending | — | |
 
 ## Low Priority / Future
 

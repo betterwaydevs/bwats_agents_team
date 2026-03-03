@@ -4,6 +4,11 @@
 # Node
 node_modules/
 
+# Build/test artifacts
+.next/
+test-results/
+*.tsbuildinfo
+
 # OS
 .DS_Store
 Thumbs.db
