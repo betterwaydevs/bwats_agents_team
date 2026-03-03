@@ -23,51 +23,40 @@ Removed all 15+ hardcoded references to "Laura" / "Laura Pulgarin" across 9 fron
 | 11 | `src/components/project/CreateHumanTasksDialog.tsx` | Hardcoded 3-user fallback list replaced with dynamic fallback using current auth user |
 | 12 | `src/components/project/CreateLinkedInTasksDialog.tsx` | Hardcoded 3-user fallback list replaced with dynamic fallback using current auth user |
 
-## Sign-offs
-
-### DEV Sign-off
+## DEV: Frontend
+- **Status**: done
 - **Agent**: frontend-developer
 - **Date**: 2026-03-03
-- **Status**: PASS
 - **Notes**: All 15+ hardcoded "Laura" references replaced with dynamic user data. Two new utility functions created (`buildFromEmail`, `splitUserName`). Auth context (`useAuth`) added or extended in all consuming components. Build verified clean.
 
-### QA Sign-off
+## QA: Testing
+- **Status**: done
 - **Agent**: qa-tester
 - **Date**: 2026-03-03 12:41 UTC
-- **Status**: PASS
-- **Method**: Playwright E2E browser tests + build verification + source/dist grep
 - **Screenshots**: qf8-email-settings.png, qf8-project-new.png, qf8-linkedin-tasks.png, qf8-dashboard.png, qf8-candidates.png
-- **Report**: qf8-test-report.html, qf8-playwright-report.html
+- **Report**: qf8-test-report.html
 - **Notes**:
-  **Build**: PASS — `npm run build` completed in 29.14s, 4982 modules transformed, zero TypeScript errors, production bundle 3,288 kB.
-  **AC1 — No hardcoded "Laura Pulgarin" strings**: PASS — Playwright navigated to 5 pages (Email Settings, Project New, LinkedIn Tasks, Dashboard, Candidates) with real browser rendering; none contained "Laura Pulgarin". Source grep: only 2 JSDoc examples in emailUtils.ts. Dist grep: zero matches in production bundle.
-  **AC2 — Dynamic user data from auth context**: PASS — Dashboard screenshot shows "Good morning, Pablo!" and header shows "Pablo Velasquez" — dynamically rendered from authenticated user context.
-  **AC3 — Placeholder text in settings page**: PASS — Email Settings screenshot shows generic account names (BetterWay Devs Hiring, etc.). No "Laura Pulgarin" or "laura@" in any placeholder field.
-  **AC4 — Email from_email construction**: PASS — No hardcoded "Laura <laura@..." anywhere in rendered pages. buildFromEmail(user) utility confirmed in source.
-  **AC5 — Preview template placeholders**: PASS — Project New screenshot shows generic "Enter project name" placeholder. No hardcoded name in preview fields.
-  **AC6 — Fallback user lists in dialogs**: PASS — Source grep confirms no hardcoded user lists remain. Dynamic auth user fallback in all 3 dialog components.
-  **AC7 — No regression**: PASS — Build clean, all 8 Playwright tests passed (6 browser + 2 grep verification), dev server responsive at localhost:8080.
+  **Build**: PASS — `npm run build` completed in 29.14s, zero TypeScript errors, production bundle 3,288 kB.
+  **AC1 — No hardcoded "Laura Pulgarin" strings**: PASS — Playwright visited 5 pages; none contained "Laura Pulgarin". Source grep: only 2 JSDoc examples. Dist grep: zero matches.
+  **AC2 — Dynamic user data from auth context**: PASS — Dashboard shows "Good morning, Pablo!" and header shows "Pablo Velasquez" — dynamic from auth context.
+  **AC3 — Placeholder text in settings page**: PASS — Email Settings shows generic account names. No "Laura Pulgarin" or "laura@" in any placeholder.
+  **AC4 — Email from_email construction**: PASS — No hardcoded "Laura <laura@..." anywhere in rendered pages.
+  **AC5 — Preview template placeholders**: PASS — Project New shows generic placeholders. No hardcoded name in preview fields.
+  **AC6 — Fallback user lists in dialogs**: PASS — No hardcoded user lists remain. Dynamic auth user fallback in all 3 dialog components.
+  **AC7 — No regression**: PASS — Build clean, all 8 Playwright tests passed, dev server responsive at localhost:8080.
 
-### PO Sign-off
+## PO: Acceptance
+- **Status**: done
 - **Agent**: product-owner
 - **Date**: 2026-03-03
-- **Status**: PASS
-- **Verdict**:
-  - **AC1 — No hardcoded "Laura Pulgarin" strings**: PASS — All 15+ occurrences replaced. Only JSDoc examples remain (documentation, not runtime).
-  - **AC2 — Dynamic user data from auth context**: PASS — All components use `useAuth()` to get the logged-in user's name and email. Works for any user, not just Laura.
-  - **AC3 — Placeholder text in settings page**: PASS — Changed to generic `"Your Name"`, `"you@email.betterway.dev"`, `"you@betterway.dev"` — appropriate neutral placeholders.
-  - **AC4 — Email from_email construction**: PASS — `buildFromEmail(user)` dynamically constructs `"FirstName <username@email.betterway.dev>"` from the authenticated user's data, with a safe generic fallback.
-  - **AC5 — Preview template placeholders**: PASS — `splitUserName` extracts first/last name for `{{user_first_name}}` and `{{user_last_name}}` template variable previews.
-  - **AC6 — Fallback user lists in dialogs**: PASS — Three dialog components now use dynamic fallback from current auth user instead of hardcoded 3-person list. API-fetched team list still takes priority when available.
-  - **AC7 — No regression**: PASS — Build succeeds with zero errors. No type mismatches.
-- **Notes**: Clean implementation. The utility function approach (`emailUtils.ts`) is a good pattern — centralizes the logic, easy to maintain. Fallback values are sensible and will not break the UI for unauthenticated edge cases.
+- **Notes**:
+  **AC1 — No hardcoded "Laura Pulgarin" strings**: PASS — All 15+ occurrences replaced. Only JSDoc examples remain.
+  **AC2 — Dynamic user data from auth context**: PASS — All components use `useAuth()`. Works for any user.
+  **AC3 — Placeholder text in settings page**: PASS — Generic placeholders: "Your Name", "you@email.betterway.dev".
+  **AC4 — Email from_email construction**: PASS — `buildFromEmail(user)` dynamically constructs from auth data with safe fallback.
+  **AC5 — Preview template placeholders**: PASS — `splitUserName` extracts first/last name for template variables.
+  **AC6 — Fallback user lists in dialogs**: PASS — Dynamic fallback from current auth user instead of hardcoded list.
+  **AC7 — No regression**: PASS — Build succeeds with zero errors.
 
-### Build & Dev Environment Verification
-- **Date**: 2026-03-03 11:14 UTC
-- **Build result**: PASS — `npm run build` completed in ~26s, zero errors, production bundle generated (3,288 kB main chunk)
-- **Dist grep for "Laura"**: PASS — zero matches in `dist/` output; no hardcoded Laura strings ship to production
-- **Dev server status**: PASS — `http://localhost:8080` returning HTTP 200; Vite dev server running (PID 537303, up since Feb 28)
-- **Note**: Dev server is running via a bare `vite` process (no systemd unit). It serves source files directly (HMR), so code changes in `src/` are picked up automatically without restart. The `dist/` build confirms the production bundle is also clean.
-
-### User: Approval
+## User: Approval
 - **Status**: pending
