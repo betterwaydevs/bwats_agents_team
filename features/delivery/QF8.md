@@ -29,6 +29,90 @@ Removed all 15+ hardcoded references to "Laura" / "Laura Pulgarin" across 9 fron
 - **Date**: 2026-03-03
 - **Notes**: All 15+ hardcoded "Laura" references replaced with dynamic user data. Two new utility functions created (`buildFromEmail`, `splitUserName`). Auth context (`useAuth`) added or extended in all consuming components. Build verified clean.
 
+## SEC: Security Review
+
+- **Status**: done
+- **Agent**: security-reviewer
+- **Date**: 2026-03-03 17:30 UTC
+- **Commit Range**: 6bc4df7 (QF8 from_email fix)
+- **Projects Reviewed**: nearshore-talent-compass
+
+### Files Reviewed
+
+- `src/utils/emailUtils.ts` — NEW file, 93 lines — `buildFromEmail()`, `splitUserName()`, HTML cleaners
+- `src/contexts/AuthContext.tsx` — 201 lines — auth context providing `user` object
+- `src/components/profile/tabs/EmailSection.tsx` — uses `buildFromEmail(user)` in API payload (line 82)
+- `src/components/messaging/MessagingDialog.tsx` — uses `buildFromEmail(user)` in API payload (line 523)
+- `src/components/project/KanbanCard.tsx` — uses `buildFromEmail(user)` in API payload (line 224)
+- `src/components/project/ContactListTable.tsx` — uses `buildFromEmail(user)` in API payload (line 930)
+- `src/apps/bwats/pages/BwatsLinkedInTasks.tsx` — uses `buildFromEmail(user)` in API payload (line 881)
+- `.claude/settings.local.json` — agent permissions (Category 9)
+- `bwats_xano/.mcp.json` — MCP config (Category 9)
+- `.claude/agents/*.md` — agent definitions (Category 9)
+- `nearshore-talent-compass/.gitignore` — secrets exclusion check
+
+### Findings
+
+#### [MEDIUM]: Client-controlled `from_email` in API payload — emailUtils.ts:17
+**File**: `src/utils/emailUtils.ts:17` + 5 consuming components
+**Issue**: The `from_email` value is constructed client-side and sent as part of the API request body. A technically savvy user could intercept the request (via browser DevTools or a proxy) and substitute any `from_email` value, potentially spoofing another user's identity.
+**Impact**: Email spoofing — a user could send emails appearing to come from a different team member. Mitigated by the fact that Resend enforces the `@email.betterway.dev` sending domain, so spoofing to external domains is blocked at the email provider level. However, intra-team spoofing (e.g., sending as another BetterWay recruiter) would be possible if the backend doesn't validate.
+**Recommendation**: Backend should override `from_email` using the authenticated user's data from `var.auth_user` rather than trusting the client payload. This is a backend fix (not in scope of this PR) — track as a separate backlog item.
+**Status**: SHOULD FIX (separate backend task)
+
+#### [LOW]: No CRLF sanitization on user.name in email header — emailUtils.ts:15-17
+**File**: `src/utils/emailUtils.ts:15-17`
+**Issue**: `user.name` from the auth response is interpolated directly into the email From header string without stripping CR/LF characters. In theory, a malicious name like `"Evil\r\nBcc: victim@example.com"` could inject additional headers.
+**Impact**: Extremely low — `user.name` is sourced from the Xano `/auth/me` endpoint (server-controlled, not user-editable from the frontend). Resend's API also sanitizes headers. Two layers of defense exist upstream.
+**Recommendation**: As a defense-in-depth measure, consider adding `.replace(/[\r\n]/g, '')` to `firstName` in `buildFromEmail`. Optional improvement, not blocking.
+**Status**: CONSIDER FIXING
+
+#### [LOW]: Frontend `.gitignore` missing `.env` exclusion — .gitignore
+**File**: `nearshore-talent-compass/.gitignore`
+**Issue**: The `.gitignore` file does not explicitly exclude `.env` files. While no `.env` files currently exist in the frontend project, this is a preventive best practice.
+**Recommendation**: Add `.env*` to the frontend `.gitignore`.
+**Status**: CONSIDER FIXING
+
+#### [PRE-EXISTING MEDIUM]: No `.env` deny rules in agent permissions — .claude/settings.local.json
+**File**: `.claude/settings.local.json`
+**Issue**: No deny rules for `.env` files. Already tracked as QF-ENV from previous security review (SEC1 self-audit).
+**Impact**: Agents could potentially read `.env` files containing secrets.
+**Recommendation**: Already tracked — QF-ENV in backlog.
+**Status**: SHOULD FIX (tracked separately)
+
+### Positive Observations
+
+1. **Null safety**: `buildFromEmail` properly handles `null`/`undefined` user with a safe generic fallback (`BetterWay <team@email.betterway.dev>`).
+2. **Domain lock**: The sending domain `@email.betterway.dev` is hardcoded in the function, preventing arbitrary domain spoofing regardless of the username portion.
+3. **Auth context pattern**: All 5 API payload files correctly source `user` from `useAuth()`, which pulls from the validated `/auth/me` response.
+4. **Centralized utility**: `buildFromEmail` is defined once and imported everywhere — no scattered inline constructions that could drift.
+5. **No secrets exposed**: No hardcoded tokens, API keys, or credentials in any changed files.
+
+### Category 9: Team Orchestration Self-Audit
+
+- `.claude/settings.local.json`: No `.env` deny rules (PRE-EXISTING, tracked as QF-ENV)
+- `.mcp.json`: Uses `${XANO_TOKEN}` env var reference — PASS
+- Agent definitions: No hardcoded credentials — PASS
+- `.gitignore` coverage: Frontend missing `.env` exclusion — LOW
+
+### Summary
+
+- **CRITICAL**: 0
+- **HIGH**: 0
+- **MEDIUM**: 1 (client-controlled from_email) + 1 pre-existing (QF-ENV)
+- **LOW**: 2
+
+### Recommendation
+
+**CONDITIONAL APPROVE** — The frontend code change is well-implemented and secure within its scope. The `buildFromEmail` function correctly uses auth context, has proper null handling, and locks the sending domain. The MEDIUM finding (client-controlled `from_email`) is an architectural concern that requires a backend fix — it should be tracked as a separate backlog item but does not block this frontend delivery. QA can proceed.
+
+### Sign-off
+
+- **Reviewer**: security-reviewer
+- **Status**: CONDITIONAL
+- **Conditions**: Track backend `from_email` validation as a new backlog item. Frontend LOW findings are optional improvements.
+- **Next Step**: QA can proceed with testing
+
 ## QA: Testing
 - **Status**: done
 - **Agent**: qa-tester

@@ -48,6 +48,13 @@ The cold recruiting extension (`bw_cold_recruiting`) displays a count of pending
 - [ ] Card-based layout using shadcn/ui components
 - [ ] Auto-refresh every 30 seconds using TanStack Query
 - [ ] Accessible from ATS sidebar navigation (e.g., "Parsing Queue" or "Parsing Status")
+- [ ] **Reset Queue button**: resets all `conflict` and `parsing` (stuck) prospects back to `pending`. Calls `GET /api:zE_czJ22/unparsed_and_lock_reset`. Button should show confirmation dialog before executing, and display the count of reset records after.
+
+### AC2.1: Backend — Update Reset Endpoint
+- [ ] `unparsed_and_lock_reset` endpoint updated to also reset `conflict` status (not just `parsing`)
+- [ ] Endpoint resets both `parsing` → `pending` AND `conflict` → `pending`
+- [ ] Response includes count of records reset per status category
+- [ ] Deployed to v1
 
 ### AC3: Integration & Deployment
 - [ ] Frontend changes merged to main branch
@@ -95,8 +102,16 @@ The cold recruiting extension (`bw_cold_recruiting`) displays a count of pending
 
 **Navigation**: Add "Parsing Queue" link to ATS sidebar (in `LayoutUser.tsx` or equivalent)
 
+### Reset Endpoint (Backend Update Needed)
+**Endpoint**: `GET /api:zE_czJ22/unparsed_and_lock_reset`
+**File**: `apis/prospects/16910_unparsed_and_lock_reset_GET.xs`
+**Current behavior**: Only resets `parsing` → `pending`
+**Needed**: Also reset `conflict` → `pending`
+**Auth**: Currently unauthenticated (placeholder `Authorization: token` header, no validation). Consider adding real auth.
+**Reference**: Extension button in `bw_cold_recruiting/classes/UnparsedProspectManager.js`
+
 ### Extension (No Changes)
-The extension (`bw_cold_recruiting`) continues using the old `unparsed_count` endpoint. No changes needed.
+The extension (`bw_cold_recruiting`) continues using the old `unparsed_count` endpoint for now. See QF17 for switching extension to the fast endpoint.
 
 ## References
 

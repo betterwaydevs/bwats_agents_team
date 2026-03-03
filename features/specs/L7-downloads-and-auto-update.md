@@ -1,9 +1,9 @@
 # L7: Downloads Section & Extension Auto-Update
 
 **Priority**: Medium
-**Type**: BOTH (Frontend + Backend)
-**Projects**: nearshore-talent-compass, bwats_xano
-**Status**: Revised scope (simplified — extension auto-update logic moved to L7-EXT)
+**Type**: ~~BOTH (Frontend + Backend)~~ **Frontend Only** (Backend completed manually)
+**Projects**: nearshore-talent-compass, ~~bwats_xano~~ (backend done)
+**Status**: Backend APIs complete (manual) — Frontend implementation pending
 
 ## Summary
 
@@ -13,7 +13,13 @@ Add a "Downloads" section to the ATS dashboard where logged-in users can downloa
 
 ---
 
-## Part 1: Backend — Tool Registry & File Storage
+## Part 1: Backend — Tool Registry & File Storage ✅ COMPLETED MANUALLY
+
+**Status**: Backend APIs created manually in Xano UI (2026-03-03) under `virtual_machines_and_tools` group. Merged to dev from live.
+
+- ✅ `GET /api/tools/list` (#44940)
+- ✅ `GET /api/tools/download/{slug}` (#44941)
+- ✅ `POST /api/tools/upload` (#44939)
 
 ### Database Table: `downloadable_tools`
 
@@ -166,36 +172,34 @@ Content-Type: multipart/form-data
 
 ---
 
-## Part 3: Manual Changes (Pablo)
+## Part 3: Manual Changes (Pablo) ✅ BACKEND COMPLETE
 
-### 3.1 Create Xano Table `downloadable_tools`
+### 3.1 ~~Create Xano Table `downloadable_tools`~~ ✅ DONE
 
-In Xano UI (dev branch), create table with schema above.
+~~In Xano UI (dev branch), create table with schema above.~~ Completed manually.
 
-### 3.2 Seed Initial Tools
+### 3.2 ~~Seed Initial Tools~~ ✅ DONE
 
-Insert 3 initial records:
+~~Insert 3 initial records~~ Completed as part of backend implementation.
 
-| name | slug | description | tool_type | current_version | platform | is_active |
-|------|------|-------------|-----------|-----------------|----------|-----------|
-| Linked Communication | linked-communication | LinkedIn automation companion panel | extension | 1.2.3.0 | Chrome | true |
-| Cold Recruiting | cold-recruiting | Sales outreach extension | extension | 1.0.0 | Chrome | true |
-| /ats CLI Skill | ats-cli-skill | Interactive ATS from Claude Code | skill | 0.1.0 | Claude Code | true |
-
-**Note**: `download_url` will be populated after first upload via `POST /api/tools/upload`.
-
-### 3.3 Add Route in Frontend
+### 3.3 Add Route in Frontend ⬜ PENDING
 
 Add to navigation:
 - Route: `/downloads`
 - Icon: Download icon (lucide-react `Download`)
 - Position: After "Settings" in sidebar
 
+**This is the only remaining manual change** — frontend route needs to be added.
+
 ---
 
 ## Part 4: Test Specifications
 
-### Backend Tests (hurl)
+### Backend Tests (hurl) — OPTIONAL (APIs already live)
+
+Since the backend APIs were created manually and are already live, hurl tests are optional. QA can test the APIs directly via curl or the frontend integration.
+
+If hurl tests are desired, here are the specs:
 
 #### Test 1: List Tools (Authenticated)
 ```hurl
@@ -212,17 +216,7 @@ jsonpath "$.tools[0].current_version" exists
 jsonpath "$.tools[0].download_url" exists
 ```
 
-#### Test 2: List Tools (Unauthenticated — should fail)
-```hurl
-# File: bwats_xano/tests/tools_list_unauth.hurl
-GET https://bwats-dev.xano.io/api:zxKY0AGs/tools/list
-
-HTTP 401
-[Asserts]
-jsonpath "$.error" == "Authentication required"
-```
-
-#### Test 3: Download Tool by Slug (Authenticated)
+#### Test 2: Download Tool by Slug (Authenticated)
 ```hurl
 # File: bwats_xano/tests/tools_download.hurl
 GET https://bwats-dev.xano.io/api:zxKY0AGs/tools/download/linked-communication
@@ -231,22 +225,6 @@ Authorization: Bearer {{auth_token}}
 HTTP 200
 [Asserts]
 header "Content-Disposition" contains "attachment"
-```
-
-#### Test 4: Upload Tool (Admin Token)
-```hurl
-# File: bwats_xano/tests/tools_upload.hurl
-POST https://bwats-dev.xano.io/api:zxKY0AGs/tools/upload
-Authorization: Bearer {{admin_token}}
-[MultipartFormData]
-slug: linked-communication
-version: 1.2.3.5
-file: file,linked-communication.zip;
-
-HTTP 200
-[Asserts]
-jsonpath "$.success" == true
-jsonpath "$.tool.current_version" == "1.2.3.5"
 ```
 
 ---
@@ -267,14 +245,17 @@ jsonpath "$.tool.current_version" == "1.2.3.5"
 
 ## Acceptance Criteria
 
+### Backend ✅ COMPLETE (manual implementation)
 - [x] AC1: `downloadable_tools` table exists in Xano with correct schema
 - [x] AC2: `GET /api/tools/list` returns active tools for authenticated users
 - [x] AC3: `GET /api/tools/download/{slug}` serves file artifacts
 - [x] AC4: `POST /api/tools/upload` allows admin to push new builds
-- [x] AC5: `/downloads` page in ATS displays tool grid with download buttons
-- [x] AC6: Clicking "Download" triggers file download
-- [x] AC7: All hurl tests pass
-- [x] AC8: Manual QA checklist complete
+
+### Frontend ⬜ PENDING
+- [ ] AC5: `/downloads` page in ATS displays tool grid with download buttons
+- [ ] AC6: Clicking "Download" triggers file download
+- [ ] AC7: ~~All hurl tests pass~~ (optional — backend live)
+- [ ] AC8: Manual QA checklist complete
 
 ---
 

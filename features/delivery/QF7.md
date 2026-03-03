@@ -113,8 +113,28 @@ All 45 XanoScript entities pushed successfully to Xano dev branch via MCP:
 - Fixed broken UTF-8 em-dash characters in `call_recruiter_assistant.xs` (lines 39, 68) and `process_email.xs` (6 occurrences) before pushing — Xano parser rejects non-ASCII in comments
 - `updateFunction` and `updateTask` automatically target the correct branch based on entity ID (dev IDs → dev branch)
 
-### Remaining Steps
-1. **Test on dev**: Run test endpoint and verify agent flows work correctly with `function.run`
-2. **Merge to v1**: This is the critical step — v1 is where `function.call` was silently failing
-3. **Test on v1**: Re-run the same flows on production
-4. **Monitor**: Watch for "function not found" errors in Xano logs (should be none)
+### v1 Branch Deployment — 2026-03-03 20:00-20:16 UTC
+
+23 entities pushed to Xano v1 via MCP (tools skipped — branch-independent):
+
+| Type | Count | Status |
+|------|-------|--------|
+| Functions | 9 | All OK |
+| API Endpoints | 12 | All OK |
+| Tasks | 2 | All OK |
+| Tools | 22 (skipped) | Already updated from dev push |
+| **Total** | **23/23** | **All OK** |
+
+### v1 QA — 2026-03-03 ~20:18 UTC
+
+All 3 endpoints tested on v1 production with live auth token:
+
+| Test | Endpoint | HTTP | Duration | Result |
+|------|----------|------|----------|--------|
+| prospect_router | POST /api:8MRsSZQv/prospect_router | 200 | 51.69s | PASS |
+| call_recruiter_assistant | POST /api:8MRsSZQv/call_recruiter_assistant | 200 | 24.88s | PASS |
+| Scorer | POST /api:8MRsSZQv/call_Prospects_and_Candidates_Project_Scorer | 200 | 11.68s | PASS |
+
+15+ function.run calls executed successfully. Zero "function not found" errors. Report: `qf7-v1-test-report.html`
+
+**VERDICT: PASS — function.run works on v1 production.**

@@ -1,0 +1,6 @@
+{
+  "userName": "Pablo Velasquez",
+  "userEmail": "pablo@betterway.dev",
+  "expectedFromEmail": "Pablo <pablo@email.betterway.dev>",
+  "testTimestamp": "2026-03-03T20:29:39.464Z"
+}
