@@ -1,6 +1,6 @@
 "use client";
 
-import { use } from "react";
+import { use, useState, useEffect } from "react";
 import Link from "next/link";
 import { useBacklog } from "@/hooks/useBacklog";
 import { useSpec } from "@/hooks/useSpec";
@@ -13,11 +13,13 @@ import { ProgressTimeline } from "@/components/task-detail/ProgressTimeline";
 import { ChecklistProgress } from "@/components/task-detail/ChecklistProgress";
 import { DeliveryPipeline } from "@/components/task-detail/DeliveryPipeline";
 import { ChatInterface } from "@/components/assistant/ChatInterface";
+import { ReportCard } from "@/components/reports/ReportCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pencil, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { ReportFile } from "@/lib/types";
 
 export default function TaskDetailPage({
   params,
@@ -29,6 +31,15 @@ export default function TaskDetailPage({
   const { spec, loading: specLoading } = useSpec(id);
   const { progress, loading: progressLoading } = useProgress(id);
   const { delivery, loading: deliveryLoading, updateStage } = useDelivery(id);
+
+  const [reports, setReports] = useState<ReportFile[]>([]);
+
+  useEffect(() => {
+    fetch("/api/reports")
+      .then((r) => r.json())
+      .then((all: ReportFile[]) => setReports(all.filter((r) => r.taskId === id)))
+      .catch(console.error);
+  }, [id]);
 
   const task = tasks.find((t) => t.id === id);
   const loading = backlogLoading || specLoading || progressLoading || deliveryLoading;
@@ -98,6 +109,9 @@ export default function TaskDetailPage({
                 Progress
                 {progress && ` (${progress.sessions.length})`}
               </TabsTrigger>
+              <TabsTrigger value="reports">
+                Reports{reports.length > 0 ? ` (${reports.length})` : ""}
+              </TabsTrigger>
               <TabsTrigger value="chat">
                 <MessageSquare className="h-4 w-4" /> Chat
               </TabsTrigger>
@@ -130,6 +144,20 @@ export default function TaskDetailPage({
               ) : (
                 <div className="text-muted-foreground text-center py-12">
                   No progress log yet for {id}
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="reports" className="mt-4">
+              {reports.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {reports.map((report) => (
+                    <ReportCard key={report.filename} report={report} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-muted-foreground text-center py-12">
+                  No reports yet for {id}
                 </div>
               )}
             </TabsContent>

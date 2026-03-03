@@ -138,6 +138,17 @@ _(Add entries as patterns are discovered)_
 - **Solution**: Added mandatory "Phase 0: Scaffold & Merge" to backend-developer agent. Before any development: (1) identify all new files needed, (2) create empty skeletons on dev via MCP, (3) merge skeletons to live immediately so IDs are locked in, (4) then proceed with development. Updated both `team/.claude/agents/backend-developer.md` and `bwats_xano/CLAUDE.md`.
 - **Date**: 2026-03-02
 
+### Stuck team — how to force-cleanup
+- **Issue**: `TeamDelete` fails with "active member" even after sending shutdown requests. Session still thinks it's leading the old team, blocking `TeamCreate`.
+- **Solution**: (1) `tmux kill-pane -t %<paneId>` to kill the stuck agent pane (pane ID is in `~/.claude/teams/<name>/config.json`), (2) `rm -rf ~/.claude/teams/<name> ~/.claude/tasks/<name>`, (3) call `TeamDelete` again — it will succeed and clear the session state.
+- **Date**: 2026-03-03
+
+### general-purpose agents don't auto-approve shutdown requests
+- **Issue**: Agents spawned as `general-purpose` subagent type receive shutdown requests but go idle instead of calling `SendMessage` with `type: "shutdown_response"`. This leaves the team in a stuck state and blocks `TeamDelete`.
+- **Solution**: After a `general-purpose` agent goes idle without responding to a shutdown, send a follow-up `message` (not `shutdown_request`) explicitly providing the request ID and instructing them to call `SendMessage` with `type: "shutdown_response"`, `request_id`, and `approve: true`.
+- **Also**: Spawning agents as `superpowers:code-reviewer` type also doesn't respond to shutdown requests at all — they ignore them entirely. Use `general-purpose` for all team agents.
+- **Date**: 2026-03-03
+
 ## How to Add Learnings
 
 Append new entries to the appropriate category using this format:

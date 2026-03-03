@@ -42,4 +42,6 @@
   - **AC6 (optional): PASS** -- Activity feed shows "Saving N record(s) in background..." immediately, and "Background save done: N saved" / "N failed" on completion via `xano-save-complete` listener.
 
 ## User: Approval
-- **Status**: pending
+- **Status**: blocked
+- **Date**: 2026-03-03
+- **Notes**: The problem is not the timing, one second between the invitations for connection. The problem is the backend. Actually this is a task that shouldn't touch the extension; it's a backend task. The issue is that the task is doing a lot and it should do it after it returns so that the stage can continue with the next one.  And it should evaluate if we actually need to do that movement anymore because we have auto-organized and we have the extension as soon as someone is invited to automatically. I think we don't need to do that anymore at this point. 

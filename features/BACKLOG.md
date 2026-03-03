@@ -1,6 +1,6 @@
 # BWATS Feature Backlog
 
-> Single source of truth for all tasks. Updated: 2026-03-02
+> Single source of truth for all tasks. Updated: 2026-03-03
 
 ## How This Works
 
@@ -31,7 +31,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 | **OPT1** | **Code Optimization Agent — Post-DEV Performance Gate** | **TEAM** | **pending** | — | [spec](specs/OPT1-code-optimization-agent.md) |
 | QF7 | function.call → function.run sweep (touchpoint_create + others on v1) | BACK | dev-complete | — | |
 | QF8 | Frontend Laura cleanup — remove hardcoded "Laura" from ~11 files | FRONT | dev-complete | — | [delivery](delivery/QF8.md) |
-| QF9 | Extension Async Save — Invitations & Connections fire-and-forget | EXT | dev-complete | — | [spec](specs/QF9-extension-async-save.md) | [delivery](delivery/QF9.md) |
+| QF9 | Backend Async Processing — Prospect Save Returns Fast | BACK | pending | — | [spec](specs/QF9-extension-async-save.md) |
 | L5 | /ats CLI Skill — Interactive ATS from CLI | TOOL | **in-progress** | — | [spec](specs/L5-ats-cli-skill.md) |
 | L7 | Downloads Section & Extension Auto-Update Notification | BOTH | pending | — | [spec](specs/L7-downloads-and-auto-update.md) |
 | QF10 | Prospect Parser — Replace OpenAI with Claude/Codex to save costs | BACK | pending | — | [spec](specs/QF10-prospect-parser-cost-optimization.md) |

@@ -88,7 +88,10 @@ Replaced all 113 occurrences of `function.call` with `function.run` across 34 Xa
 - **Notes**: Critical infrastructure fix. The `function.call` GUID-based resolution has been a known source of silent failures on v1. The sweep is comprehensive (34 files, 113 occurrences, zero remaining), and the replacement is risk-free since `function.run` is syntactically identical with name-based resolution.
 
 ## User: Approval
-- **Status**: pending
+- **Status**: done
+- **Date**: 2026-03-03
+- **Notes**: if you really changed 113 files and I dont even know why this task was needed, I have no alternative than to deploy to v1 and test fully live, I will neeed a report or we need a new task to test this in live direclty
+
 
 ## Deployment Results
 
