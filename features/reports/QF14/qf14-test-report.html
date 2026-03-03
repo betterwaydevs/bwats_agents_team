@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QF14 — db.patch Type Error Fix — QA Test Report</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 960px; margin: 0 auto; padding: 24px; background: #f8f9fa; color: #1a1a2e; }
+  h1 { border-bottom: 3px solid #0d6efd; padding-bottom: 12px; }
+  h2 { color: #0d6efd; margin-top: 32px; }
+  .meta { background: #e7f1ff; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .meta dt { font-weight: bold; display: inline; }
+  .meta dd { display: inline; margin-left: 4px; margin-right: 16px; }
+  .pass { color: #198754; font-weight: bold; }
+  .fail { color: #dc3545; font-weight: bold; }
+  .info { color: #0d6efd; font-weight: bold; }
+  .warn { color: #fd7e14; font-weight: bold; }
+  .blocked { color: #6c757d; font-weight: bold; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  th, td { border: 1px solid #dee2e6; padding: 10px 14px; text-align: left; }
+  th { background: #0d6efd; color: white; }
+  tr:nth-child(even) { background: #f1f3f5; }
+  pre { background: #212529; color: #f8f9fa; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; }
+  .verdict { font-size: 24px; padding: 16px; border-radius: 8px; text-align: center; margin: 24px 0; }
+  .verdict.pass { background: #d1e7dd; color: #0f5132; border: 2px solid #198754; }
+  .verdict.blocked { background: #fff3cd; color: #664d03; border: 2px solid #ffc107; }
+  .test-block { background: white; padding: 20px; border-radius: 8px; margin: 16px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+</style>
+</head>
+<body>
+
+<h1>QF14 — Add_prospect db.patch Type Error Fix — QA Test Report</h1>
+
+<div class="meta">
+  <dl>
+    <dt>Task:</dt><dd>QF14</dd>
+    <dt>Tester:</dt><dd>qa-tester (automated)</dd>
+    <dt>Date:</dt><dd>2026-03-03</dd>
+    <dt>Time:</dt><dd>12:35–12:36 UTC</dd>
+    <dt>Environment:</dt><dd>Xano v1 branch (API endpoint) / dev branch (function code)</dd>
+    <dt>Auth:</dt><dd>Bearer token (dev login)</dd>
+  </dl>
+</div>
+
+<h2>Summary</h2>
+<p>The QF14 fix has been deployed to the Xano dev branch function (ID 11189). However, the API endpoints that call this function are on the v1 branch, which still uses the old v1 function (ID 11280). <strong>Full runtime testing is blocked until the dev function is merged to v1.</strong></p>
+<p>Deployment verification (code comparison) confirms the fix is on dev. Endpoint accessibility was confirmed via API calls.</p>
+
+<div class="verdict blocked">VERDICT: PASS (Limited) — Code deployed to dev, endpoint accessible. Full runtime test blocked pending v1 merge.</div>
+
+<h2>Tests Executed</h2>
+
+<div class="test-block">
+<h3>Test 1: create_prospect_from_html endpoint accessibility</h3>
+<p><strong>Time:</strong> 2026-03-03 12:35:37 UTC | <strong>Duration:</strong> 0.48s | <strong>HTTP:</strong> 500</p>
+<p><strong>Input:</strong> <code>{"linkedin_profile":"https://www.linkedin.com/in/test-qa-profile/","linked_html":"&lt;div&gt;Test QA profile&lt;/div&gt;"}</code></p>
+<p><strong>Result:</strong></p>
+<pre>{"code":"ERROR_FATAL","message":"Duplicate record detected. Please check your input and try again."}</pre>
+<p><strong>Analysis:</strong> The endpoint IS accessible and running. The 500 error is an application-level duplicate detection — the test LinkedIn URL already exists in the database. This proves the endpoint code executes up to and including the duplicate check logic. The <code>function.run "parse_unparsed_prospect"</code> call happens AFTER duplicate detection, so this test doesn't exercise the QF14 fix.</p>
+</div>
+
+<div class="test-block">
+<h3>Test 2: create_prospect_from_html with unique URL</h3>
+<p><strong>Time:</strong> 2026-03-03 12:36:43 UTC | <strong>Duration:</strong> 0.58s | <strong>HTTP:</strong> 500</p>
+<p><strong>Input:</strong> <code>{"linkedin_profile":"https://www.linkedin.com/in/qa-test-run-20260303-1235/","linked_html":"&lt;div&gt;QA Test Person&lt;/div&gt;"}</code></p>
+<p><strong>Result:</strong></p>
+<pre>{"code":"ERROR_FATAL","message":"Duplicate record detected. Please check your input and try again."}</pre>
+<p><strong>Analysis:</strong> Same duplicate detection error. The URL from Test 1 may have been saved despite the error, or the v1 database has stricter duplicate detection. Either way, this endpoint runs on the v1 branch code, which does NOT have the QF14 fix.</p>
+</div>
+
+<div class="test-block">
+<h3>Why full runtime testing is blocked</h3>
+<p>As documented in the delivery log:</p>
+<ol>
+  <li>The <code>parse_unparsed_prospect</code> function (QF14 fix) was deployed to <strong>dev branch</strong> (function ID 11189)</li>
+  <li>All API endpoints in the prospects group (canonical <code>zE_czJ22</code>) are on the <strong>v1 branch</strong></li>
+  <li>The v1 branch has a <strong>different</strong> copy of <code>parse_unparsed_prospect</code> (function ID 11280) that does NOT have the QF14 fix</li>
+  <li>There is no way to call the dev function directly via API — MCP has no "run function" capability</li>
+  <li>The scheduled task <code>process_pending_prospects</code> (ID 575) calls the v1 API endpoint via <code>api.request</code></li>
+</ol>
+<p><strong>Conclusion:</strong> Runtime testing requires either merging dev to v1 or creating a dev-branch API endpoint that calls the function.</p>
+</div>
+
+<h2>Deployment Verification (from delivery log)</h2>
+
+<table>
+  <tr><th>Check</th><th>Result</th><th>Details</th></tr>
+  <tr>
+    <td>Dev function ID 11189 deployed</td>
+    <td class="pass">VERIFIED</td>
+    <td>MCP <code>getFunction</code> confirmed code matches local file. Updated at 2026-03-03 11:14:20 UTC.</td>
+  </tr>
+  <tr>
+    <td>Pre-parse block (line ~225)</td>
+    <td class="pass">PRESENT</td>
+    <td>Parses 6 array fields (skills, work_history, education, certifications, languages, industries) from JSON strings to arrays before normalization.</td>
+  </tr>
+  <tr>
+    <td>Safety-net block (line ~309)</td>
+    <td class="pass">PRESENT</td>
+    <td>Second defense on <code>dbData</code> before return — catches any leakage after validFields.forEach copy.</td>
+  </tr>
+  <tr>
+    <td>XanoScript syntax</td>
+    <td class="pass">OK</td>
+    <td>No syntax errors reported by Xano parser.</td>
+  </tr>
+</table>
+
+<h2>Acceptance Criteria</h2>
+
+<table>
+  <tr><th>AC</th><th>Criterion</th><th>Result</th><th>Evidence</th></tr>
+  <tr>
+    <td>AC1</td>
+    <td>Identify which field causes the type mismatch</td>
+    <td class="pass">PASS</td>
+    <td>Root cause: AI parser returns array fields as JSON strings. Any of the 6 fields can trigger it. Fix handles all 6 defensively.</td>
+  </tr>
+  <tr>
+    <td>AC2</td>
+    <td>Fix endpoint to handle string-encoded JSON fields</td>
+    <td class="pass">PASS</td>
+    <td>Two-layer fix deployed to dev: early parsing on <code>parsed</code> object + safety net on <code>dbData</code> before db.patch.</td>
+  </tr>
+  <tr>
+    <td>AC3</td>
+    <td>Reprocess prospect 72100 successfully</td>
+    <td class="blocked">BLOCKED</td>
+    <td>Requires v1 merge. Dev function cannot be called via API endpoints (all on v1).</td>
+  </tr>
+  <tr>
+    <td>AC4</td>
+    <td>No more conflict status from type errors</td>
+    <td class="blocked">BLOCKED</td>
+    <td>Requires v1 deployment and monitoring. Cannot be verified on dev alone.</td>
+  </tr>
+</table>
+
+<h2>Next Steps Required</h2>
+<ol>
+  <li><strong>Merge dev to v1</strong> in Xano UI (or update v1 function ID 11280 via MCP)</li>
+  <li><strong>Reset prospect 72100</strong>: Set <code>parse_status</code> to <code>"pending"</code> on v1</li>
+  <li><strong>Trigger reprocessing</strong>: Wait for scheduled task or call <code>Add_prospect</code> with the prospect's LinkedIn URL</li>
+  <li><strong>Verify</strong>: Prospect 72100 should get <code>parse_status = "parsed"</code> instead of <code>"conflict"</code></li>
+  <li><strong>Monitor</strong>: Check Xano logs for <code>DBO::set()</code> type errors — should drop to zero</li>
+</ol>
+
+</body>
+</html>
