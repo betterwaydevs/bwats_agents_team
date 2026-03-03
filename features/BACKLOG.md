@@ -1,6 +1,6 @@
 # BWATS Feature Backlog
 
-> Single source of truth for all tasks. Updated: 2026-03-01
+> Single source of truth for all tasks. Updated: 2026-03-02
 
 ## How This Works
 
@@ -16,42 +16,33 @@ When picking up a task, agents MUST read both the spec and progress files before
 
 | ID | Title | Type | Status | Owner | Spec |
 |----|-------|------|--------|-------|------|
-| **D1** | **Deploy M1, M2, M3, M7, L6, P2 & Pending Changes to Production** | **DEPLOY** | **pending** | — | [spec](specs/D1-deploy-m1-m2.md) |
 | **W1** | **Multi-Agent Team Delivery Workflow** | **PROCESS** | **in-progress** | — | [spec](specs/W1-multi-agent-delivery-workflow.md) |
 | **SEC1** | **Security Review Agent — Pre-QA Security Gate** | **TEAM** | **pending** | — | [spec](specs/SEC1-security-review-agent.md) |
 | **S1** | **Shark Helpers — Multi-Tenant Support & Deployment** | **BOTH** | **pending** | — | [spec](specs/S1-shark-helpers-multi-tenant.md) |
 | **S2** | **Extension Automation Detection Test Rig** | **EXT** | **pending** | — | [spec](specs/S2-automation-detection.md) |
 | **S3** | **Sales Outreach Campaign (V1)** | **BOTH** | **pending** | — | [spec](specs/S3-sales-campaign.md) |
-| **R1** | **Job Board API Research** | **RESEARCH** | **done** | python-developer | [spec](specs/R1-job-board-api-research.md) | [delivery](delivery/R1.md) |
-
-## Dev-Complete (awaiting D1 deploy + live verification)
-
-| ID | Title | Type | Status | Owner | Spec |
-|----|-------|------|--------|-------|------|
-| M1 | Email Account Stickiness Per Person | BACK | **dev-complete** | backend-developer | [spec](specs/M1-email-account-stickiness.md) |
-| M2 | Email Event Tracking (Opens, Clicks, Bounces) | BOTH | **dev-complete** | backend-developer | [spec](specs/M2-email-event-tracking.md) |
-| M3 | Auto-Reply Email for Job Applications | BOTH | **dev-complete** | backend-developer | [spec](specs/M3-auto-reply-email.md) |
-| P2 | Auto-Organize Housekeeper + Cross-Project Touchpoints | BOTH | **dev-complete** | — | [spec](specs/P2-auto-organize-housekeeper.md) |
-| L6 | CLI Token Page — Browser-based auth for /ats | FRONT | **dev-complete** | frontend-developer | [spec](specs/L6-cli-token-page.md) |
-| P3 | Add Prospect — Manual E2E Test | TEST | **dev-complete** | — | [spec](specs/P3-add-prospect-e2e-test.md) |
-| M9 | Incoming WhatsApp Messages & Notifications | BOTH | **dev-complete** | — | [spec](specs/M9-whatsapp-incoming-notifications.md) |
-| P1 | Prospects Grid Performance — Reduce Network Calls & Freezing | FRONT | **dev-complete** | frontend-developer | [spec](specs/P1-prospects-grid-freeze.md) |
-| QF5 | Reduce WhatsApp unread polling — only poll when dropdown open | FRONT | **dev-complete** | — |
+| **QF12** | **Cross-Project Commit & Sync Audit** | **DEPLOY** | **pending** | — | [spec](specs/QF12-cross-project-commit-and-sync-audit.md) |
 
 ## Medium Priority
 
 | ID | Title | Type | Status | Owner | Spec |
 |----|-------|------|--------|-------|------|
 | M8 | Delivery Supervisor Agent (Post-Task Hook) | TEAM | pending | — | [spec](specs/M8-task-supervisor-agent.md) |
-| M10 | LinkedIn AI Reply — Phase 1 ALL PASS; Phase 2 (Conversation Analyzer) deferred | EXT/BACK | **dev-complete** | — | [spec](specs/M10-linkedin-ai-reply.md) |
-| M11 | Dashboard AI Assistant — Claude API via membership token | FRONT | **dev-complete** | — | [spec](specs/M11-dashboard-ai-assistant.md) | [delivery](delivery/M11.md) |
+| M12 | AI Reply Context Enhancement — Knowledge Base & Project Context | BOTH | pending | — | [spec](specs/M12-ai-reply-context-enhancement.md) |
+| QF7 | function.call → function.run sweep (touchpoint_create + others on v1) | BACK | pending | — | |
+| QF8 | Frontend Laura cleanup — remove hardcoded "Laura" from ~11 files | FRONT | pending | — | |
+| QF9 | Extension Async Save — Invitations & Connections fire-and-forget | EXT | pending | — | [spec](specs/QF9-extension-async-save.md) |
+| L5 | /ats CLI Skill — Interactive ATS from CLI | TOOL | **in-progress** | — | [spec](specs/L5-ats-cli-skill.md) |
+| L7 | Downloads Section & Extension Auto-Update Notification | BOTH | pending | — | [spec](specs/L7-downloads-and-auto-update.md) |
+| QF10 | Prospect Parser — Replace OpenAI with Claude/Codex to save costs | BACK | pending | — | [spec](specs/QF10-prospect-parser-cost-optimization.md) |
+| QF11 | Extension Duplicate Detection — Verify existing prospects are recognized on page | EXT | pending | — | [spec](specs/QF11-extension-duplicate-detection.md) |
+| QF13 | Pending Prospect Count Performance — Fast count + move to ATS | BOTH | pending | — | [spec](specs/QF13-pending-prospect-count-performance.md) |
 
 ## Low Priority / Future
 
 | ID | Title | Type | Status | Owner | Spec |
 |----|-------|------|--------|-------|------|
 | L2 | Prerender / SEO Meta Tags | FRONT/INFRA | pending | — | [spec](specs/L2-prerender-seo.md) |
-| L5 | /ats CLI Skill — Interactive ATS from CLI | TOOL | **in-progress** | — | [spec](specs/L5-ats-cli-skill.md) |
 
 ## Delegated to Interns (QA on delivery)
 
@@ -65,6 +56,19 @@ When picking up a task, agents MUST read both the spec and progress files before
 
 | ID | Title | Completed |
 |----|-------|-----------|
+| D1 | Deploy M1, M2, M3, M7, L6, P2 & Pending Changes to Production | Mar 2026 |
+| M10 | LinkedIn AI Reply — Phase 1 (Reply Assistant) | Mar 2026 |
+| M1 | Email Account Stickiness Per Person | Mar 2026 |
+| M2 | Email Event Tracking (Opens, Clicks, Bounces) | Mar 2026 |
+| M3 | Auto-Reply Email for Job Applications | Mar 2026 |
+| M9 | Incoming WhatsApp Messages & Notifications | Mar 2026 |
+| M11 | Dashboard AI Assistant — Claude API via membership token | Mar 2026 |
+| P1 | Prospects Grid Performance — Reduce Network Calls & Freezing | Mar 2026 |
+| P2 | Auto-Organize Housekeeper + Cross-Project Touchpoints | Mar 2026 |
+| P3 | Add Prospect — Manual E2E Test | Mar 2026 |
+| L6 | CLI Token Page — Browser-based auth for /ats | Mar 2026 |
+| QF5 | Reduce WhatsApp unread polling — only poll when dropdown open | Mar 2026 |
+| R1 | Job Board API Research | Mar 2026 |
 | P4 | Profile Not Loading — Source Mismatch Fallback | Mar 2026 |
 | M4 | Filter People by Last Outreach Date | Mar 2026 |
 | M5 | Frontend Permission UI Changes | Feb 2026 |

@@ -123,6 +123,31 @@ The agent reviews code changes for:
 - ✅ Passwords never logged or stored in plaintext
 - ✅ PII handling follows data minimization principle
 
+### 9. Team Orchestration Security (Self-Audit)
+- ❌ `.env` or `.env.*` files exposed via Read permissions in `.claude/settings.local.json`
+- ❌ MCP configurations exposing sensitive tokens to unauthorized agents
+- ❌ Agent permissions allowing writes to sensitive system files
+- ❌ Cloud service credentials (Kamatera, Resend, Xano) accessible without restrictions
+- ❌ `.git/config` or git credentials exposed to agents
+- ✅ `.env` files explicitly denied in permissions with `"deny": ["Read(.env)", "Read(.env.*)"]`
+- ✅ MCP configs (`.mcp.json`) only accessible by specific agents that need them
+- ✅ `XANO_TOKEN`, API keys, secrets never passed as plaintext in agent instructions
+- ✅ Agent permissions follow principle of least privilege
+- ✅ No sensitive data in `.claude/` config files (keys, tokens, passwords)
+
+**Self-Audit Scope**: The security agent MUST review the team orchestration system itself:
+- `.claude/settings.local.json` — permissions configuration
+- `.claude/agents/*.md` — agent definitions (no hardcoded secrets)
+- `../bwats_xano/.mcp.json` — MCP configuration (token handling)
+- All `.env` and `.env.*` files across projects (must be in `.gitignore`, denied to agents)
+- Agent prompt files in tier-2 subagents (`../bwats_xano/.claude/agents/prompts/`)
+
+**Why This Matters**: AI agents calling external systems (MCP servers, APIs) could inadvertently expose credentials if permissions aren't locked down. We must ensure:
+1. Agents can't read `.env` files that contain secrets
+2. MCP tokens are isolated to the agents that need them
+3. No secrets leak into agent instructions or logs
+4. Cloud API keys (Kamatera, Resend) aren't accessible to general-purpose agents
+
 ## Review Process
 
 ### Step 1: Identify Changed Files
@@ -375,13 +400,51 @@ Review code diffs for security vulnerabilities before QA testing begins. You are
 **And** DEV re-submits for security review
 **And** SEC reviews again before allowing QA
 
+### AC11: Self-Audit — .env Exposure Check
+**Given** the security agent runs a self-audit
+**When** it checks `.claude/settings.local.json`
+**Then** it verifies `.env` files are explicitly denied in Read permissions
+**And** flags CRITICAL if `.env` files are accessible to agents
+**And** recommends adding deny rules
+
+### AC12: Self-Audit — MCP Token Isolation
+**Given** the security agent reviews `../bwats_xano/.mcp.json`
+**When** it checks token handling
+**Then** it verifies `XANO_TOKEN` is loaded from environment variable, not hardcoded
+**And** flags CRITICAL if tokens are hardcoded in MCP config
+**And** verifies only `backend-developer` agent has access to that directory
+
+### AC13: Self-Audit — Agent Prompt Secrets
+**Given** the security agent reviews all agent definition files
+**When** it scans `.claude/agents/*.md` and tier-2 prompts
+**Then** it searches for patterns like API keys, tokens, passwords
+**And** flags CRITICAL if any secrets are found
+**And** recommends moving to `.env` or secure environment variables
+
+### AC14: Self-Audit — .gitignore Coverage
+**Given** the security agent checks version control hygiene
+**When** it reviews all `.gitignore` files across projects
+**Then** it verifies `.env`, `.env.*`, `*.pem`, `*.key`, `*secret*` are ignored
+**And** flags HIGH if sensitive patterns are missing
+**And** recommends adding them to `.gitignore`
+
+### AC15: Self-Audit — Report Generation
+**Given** the security agent completes the self-audit
+**When** it writes the report
+**Then** it includes a "Team Orchestration Security" section
+**And** lists all configuration files reviewed
+**And** provides PASS/FAIL status for each security check
+**And** recommends APPROVE only if all orchestration security checks pass
+
 ## Implementation Plan
 
 ### Phase 1: Agent Creation
 - [ ] Create `.claude/agents/security-reviewer.md` with full instructions
-- [ ] Include security checklist in agent prompt
+- [ ] Include security checklist (1-9) in agent prompt
+- [ ] Include self-audit checklist (category 9) in agent prompt
 - [ ] Define report format in agent instructions
 - [ ] Test agent on a mock code change with intentional vulnerabilities
+- [ ] Test agent self-audit on team orchestration configs
 
 ### Phase 2: PM Integration
 - [ ] Update `project-manager` agent to invoke security-reviewer after DEV completion
@@ -446,6 +509,23 @@ Review code diffs for security vulnerabilities before QA testing begins. You are
 - DEV fixes
 - SEC approves
 - QA proceeds
+
+### Test 6: Self-Audit — .env Exposure
+- Temporarily remove `.env` deny rules from `.claude/settings.local.json`
+- Run security-reviewer self-audit
+- Expected: CRITICAL finding, recommendation to add deny rules
+- Restore deny rules, re-run
+- Expected: PASS
+
+### Test 7: Self-Audit — Hardcoded Token
+- Create mock agent with hardcoded token in prompt
+- Run security-reviewer self-audit
+- Expected: CRITICAL finding, recommendation to move to `.env`
+
+### Test 8: Self-Audit — MCP Config
+- Review `../bwats_xano/.mcp.json` for token handling
+- Run security-reviewer self-audit
+- Expected: PASS (token loaded from env var)
 
 ## Future Enhancements
 
