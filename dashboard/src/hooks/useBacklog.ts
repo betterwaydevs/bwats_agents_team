@@ -29,5 +29,25 @@ export function useBacklog() {
     return () => clearInterval(interval);
   }, [fetchBacklog]);
 
-  return { tasks, loading, error, refetch: fetchBacklog };
+  const updateStatus = useCallback(
+    async (id: string, status: string): Promise<boolean> => {
+      try {
+        const res = await fetch("/api/backlog", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, status }),
+        });
+        if (!res.ok) throw new Error("Failed to update status");
+        const data = await res.json();
+        setTasks(data);
+        return true;
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Unknown error");
+        return false;
+      }
+    },
+    []
+  );
+
+  return { tasks, loading, error, refetch: fetchBacklog, updateStatus };
 }

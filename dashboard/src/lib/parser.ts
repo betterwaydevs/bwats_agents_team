@@ -166,6 +166,67 @@ export function parseBacklog(): BacklogTask[] {
   return tasks;
 }
 
+// --- Backlog Updater ---
+
+export function updateBacklogStatus(taskId: string, newStatus: string): boolean {
+  const filePath = path.join(FEATURES_DIR, "BACKLOG.md");
+  const content = fs.readFileSync(filePath, "utf-8");
+  const lines = content.split("\n");
+
+  let currentSchema: ColumnSchema | null = null;
+  let headerSeen = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    if (line.startsWith("## ")) {
+      currentSchema = null;
+      headerSeen = false;
+      continue;
+    }
+
+    if (line.includes("| ID ") || line.includes("| ID|")) {
+      currentSchema = detectSchema(line);
+      headerSeen = false;
+      continue;
+    }
+
+    if (line.match(/^\|[\s-|]+\|$/)) {
+      headerSeen = true;
+      continue;
+    }
+
+    if (headerSeen && currentSchema && currentSchema.hasStatus && line.startsWith("|")) {
+      const statusIdx = currentSchema.columns.findIndex(
+        (c) => c.toLowerCase() === "status"
+      );
+      if (statusIdx === -1) continue;
+
+      // Check if this row matches the task ID
+      const rawCells = line.split("|");
+      // rawCells[0] is empty (before first |), actual cells start at index 1
+      const idIdx = currentSchema.columns.findIndex(
+        (c) => c.toLowerCase() === "id"
+      );
+      const idCell = (rawCells[idIdx + 1] ?? "").replace(/\*\*/g, "").trim();
+      if (idCell !== taskId) continue;
+
+      // Preserve bold formatting if the original cell had it
+      const originalCell = rawCells[statusIdx + 1] ?? "";
+      const hasBold = originalCell.includes("**");
+      rawCells[statusIdx + 1] = hasBold
+        ? ` **${newStatus}** `
+        : ` ${newStatus} `;
+      lines[i] = rawCells.join("|");
+
+      fs.writeFileSync(filePath, lines.join("\n"), "utf-8");
+      return true;
+    }
+  }
+
+  return false;
+}
+
 // --- Spec Parser ---
 
 async function markdownToHtml(md: string): Promise<string> {

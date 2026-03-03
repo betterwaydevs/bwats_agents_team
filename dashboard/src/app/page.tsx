@@ -14,6 +14,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   FileText,
   Clock,
   CheckCircle2,
@@ -23,7 +30,16 @@ import {
   ArrowLeft,
   Plus,
 } from "lucide-react";
+import { toast } from "sonner";
 import type { BacklogTask, DeliveryStage } from "@/lib/types";
+
+const STATUS_OPTIONS = [
+  { value: "pending", label: "Pending" },
+  { value: "in-progress", label: "In Progress" },
+  { value: "dev-complete", label: "Dev-Complete" },
+  { value: "done", label: "Done" },
+  { value: "blocked", label: "Blocked" },
+];
 
 const AGENT_MAP: Record<string, { label: string; color: string }[]> = {
   BACK: [{ label: "backend-developer", color: "bg-purple-500" }],
@@ -40,18 +56,17 @@ const AGENT_MAP: Record<string, { label: string; color: string }[]> = {
 function TaskRow({
   task,
   deliveryStages,
+  onStatusChange,
 }: {
   task: BacklogTask;
   deliveryStages?: DeliveryStage[];
+  onStatusChange?: (id: string, status: string) => void;
 }) {
   const agents = AGENT_MAP[task.type] || [];
 
   return (
-    <Link
-      href={`/tasks/${task.id}`}
-      className="flex items-center gap-4 rounded-lg border bg-card p-4 transition-colors hover:bg-accent/50"
-    >
-      <div className="flex-1 min-w-0">
+    <div className="flex items-center gap-4 rounded-lg border bg-card p-4 transition-colors hover:bg-accent/50">
+      <Link href={`/tasks/${task.id}`} className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-mono text-xs font-bold text-muted-foreground">
             {task.id}
@@ -78,9 +93,28 @@ function TaskRow({
             ))}
           </div>
         )}
-      </div>
-      <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
-    </Link>
+      </Link>
+      {onStatusChange && (
+        <Select
+          value={task.status}
+          onValueChange={(value) => onStatusChange(task.id, value)}
+        >
+          <SelectTrigger size="sm" className="w-[130px] shrink-0">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {STATUS_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value}>
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+      <Link href={`/tasks/${task.id}`}>
+        <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+      </Link>
+    </div>
   );
 }
 
@@ -91,6 +125,7 @@ function StatusSection({
   deliveries,
   defaultOpen = true,
   statusFilter,
+  onStatusChange,
 }: {
   title: string;
   icon: React.ElementType;
@@ -98,6 +133,7 @@ function StatusSection({
   deliveries: Record<string, DeliveryStage[]>;
   defaultOpen?: boolean;
   statusFilter: string;
+  onStatusChange?: (id: string, status: string) => void;
 }) {
   if (tasks.length === 0) return null;
 
@@ -116,6 +152,7 @@ function StatusSection({
             key={`${task.id}-${task.title}`}
             task={task}
             deliveryStages={deliveries[task.id]}
+            onStatusChange={onStatusChange}
           />
         ))}
         {!defaultOpen && tasks.length > 5 && (
@@ -157,8 +194,17 @@ export default function DashboardPage() {
 function DashboardContent() {
   const searchParams = useSearchParams();
   const statusFilter = searchParams.get("status");
-  const { tasks, loading, error } = useBacklog();
+  const { tasks, loading, error, updateStatus } = useBacklog();
   const [deliveries, setDeliveries] = useState<Record<string, DeliveryStage[]>>({});
+
+  const handleStatusChange = async (id: string, status: string) => {
+    const ok = await updateStatus(id, status);
+    if (ok) {
+      toast.success(`${id} status updated to ${status}`);
+    } else {
+      toast.error(`Failed to update ${id} status`);
+    }
+  };
 
   useEffect(() => {
     async function fetchDeliveries() {
@@ -252,6 +298,7 @@ function DashboardContent() {
                 key={`${task.id}-${task.title}`}
                 task={task}
                 deliveryStages={deliveries[task.id]}
+                onStatusChange={handleStatusChange}
               />
             ))}
             {filteredTasks.length === 0 && (
@@ -321,6 +368,7 @@ function DashboardContent() {
             tasks={inProgress}
             deliveries={deliveries}
             statusFilter="in-progress"
+            onStatusChange={handleStatusChange}
           />
 
           <StatusSection
@@ -329,6 +377,7 @@ function DashboardContent() {
             tasks={devComplete}
             deliveries={deliveries}
             statusFilter="dev-complete"
+            onStatusChange={handleStatusChange}
           />
 
           {blocked.length > 0 && (
@@ -338,6 +387,7 @@ function DashboardContent() {
               tasks={blocked}
               deliveries={deliveries}
               statusFilter="blocked"
+              onStatusChange={handleStatusChange}
             />
           )}
 
@@ -350,6 +400,7 @@ function DashboardContent() {
             deliveries={deliveries}
             defaultOpen={false}
             statusFilter="done"
+            onStatusChange={handleStatusChange}
           />
 
           <StatusSection
@@ -359,6 +410,7 @@ function DashboardContent() {
             deliveries={deliveries}
             defaultOpen={false}
             statusFilter="pending"
+            onStatusChange={handleStatusChange}
           />
         </>
       )}

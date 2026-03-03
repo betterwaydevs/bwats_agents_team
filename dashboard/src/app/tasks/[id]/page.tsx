@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Pencil, MessageSquare } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { ReportFile } from "@/lib/types";
 
@@ -27,7 +28,7 @@ export default function TaskDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { tasks, loading: backlogLoading } = useBacklog();
+  const { tasks, loading: backlogLoading, updateStatus } = useBacklog();
   const { spec, loading: specLoading } = useSpec(id);
   const { progress, loading: progressLoading } = useProgress(id);
   const { delivery, loading: deliveryLoading, updateStage } = useDelivery(id);
@@ -43,6 +44,26 @@ export default function TaskDetailPage({
 
   const task = tasks.find((t) => t.id === id);
   const loading = backlogLoading || specLoading || progressLoading || deliveryLoading;
+
+  const handleStatusChange = async (status: string) => {
+    const ok = await updateStatus(id, status);
+    if (ok) {
+      toast.success(`Status updated to ${status}`);
+    } else {
+      toast.error("Failed to update status");
+    }
+  };
+
+  const handleMarkStageDone = async (role: string, label: string) => {
+    const today = new Date().toISOString().split("T")[0];
+    const ok = await updateStage(role, label, "Status", "done");
+    if (ok) {
+      await updateStage(role, label, "Date", today);
+      toast.success(`${role}: ${label} marked as done`);
+    } else {
+      toast.error(`Failed to update ${role}: ${label}`);
+    }
+  };
 
   const handleApprove = async (notes: string) => {
     const today = new Date().toISOString().split("T")[0];
@@ -87,7 +108,7 @@ export default function TaskDetailPage({
         </div>
       ) : (
         <>
-          {task && <TaskHeader task={task} spec={spec ?? undefined} />}
+          {task && <TaskHeader task={task} spec={spec ?? undefined} onStatusChange={handleStatusChange} />}
 
           {spec && spec.checkboxes.total > 0 && (
             <ChecklistProgress
@@ -124,6 +145,7 @@ export default function TaskDetailPage({
                   stages={delivery.stages}
                   onApprove={handleApprove}
                   onReject={handleReject}
+                  onMarkStageDone={handleMarkStageDone}
                 />
               </TabsContent>
             )}

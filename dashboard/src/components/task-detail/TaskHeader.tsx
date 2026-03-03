@@ -1,21 +1,57 @@
+"use client";
+
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
 import { TypeBadge } from "@/components/dashboard/TypeBadge";
 import { ChecklistProgress } from "@/components/task-detail/ChecklistProgress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { BacklogTask, SpecFile } from "@/lib/types";
+
+const STATUS_OPTIONS = [
+  { value: "pending", label: "Pending" },
+  { value: "in-progress", label: "In Progress" },
+  { value: "dev-complete", label: "Dev-Complete" },
+  { value: "done", label: "Done" },
+  { value: "blocked", label: "Blocked" },
+];
 
 interface TaskHeaderProps {
   task: BacklogTask;
   spec?: SpecFile;
+  onStatusChange?: (status: string) => void;
 }
 
-export function TaskHeader({ task, spec }: TaskHeaderProps) {
+export function TaskHeader({ task, spec, onStatusChange }: TaskHeaderProps) {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-mono text-sm text-muted-foreground">
           {task.id}
         </span>
-        <StatusBadge status={task.status} />
+        {onStatusChange ? (
+          <Select
+            value={task.status}
+            onValueChange={onStatusChange}
+          >
+            <SelectTrigger size="sm" className="w-[140px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <StatusBadge status={task.status} />
+        )}
         <TypeBadge type={task.type} />
       </div>
       <h1 className="text-xl font-bold tracking-tight md:text-2xl">

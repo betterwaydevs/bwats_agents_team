@@ -123,14 +123,44 @@ function getGateViolations(
   return warnings;
 }
 
+/** Check whether a stage's prerequisites are met so it can be marked done. */
+function canMarkDone(stage: DeliveryStage, allStages: DeliveryStage[]): boolean {
+  if (stage.status === "done") return false;
+  if (stage.role === "User") return false; // User stage has its own approve/reject UI
+
+  const isDone = (role: string, label?: string) =>
+    allStages.some(
+      (s) =>
+        s.role === role &&
+        (label ? s.label === label : true) &&
+        s.status === "done"
+    );
+  const allDevDone = allStages
+    .filter((s) => s.role === "DEV")
+    .every((s) => s.status === "done");
+
+  if (stage.role === "PM") return true;
+  if (stage.role === "DEV") return isDone("PM", "Assignment");
+  if (stage.role === "SEC") return allDevDone;
+  if (stage.role === "QA") {
+    const hasSec = allStages.some((s) => s.role === "SEC");
+    return allDevDone && (!hasSec || isDone("SEC"));
+  }
+  if (stage.role === "PO") return isDone("QA", "Testing");
+
+  return true;
+}
+
 interface StageCardProps {
   stage: DeliveryStage;
   taskId: string;
   isLast: boolean;
   isUserStage: boolean;
   warnings: string[];
+  canMark: boolean;
   onApprove?: (notes: string) => void;
   onReject?: (notes: string) => void;
+  onMarkDone?: (role: string, label: string) => void;
 }
 
 function StageCard({
@@ -139,8 +169,10 @@ function StageCard({
   isLast,
   isUserStage,
   warnings,
+  canMark,
   onApprove,
   onReject,
+  onMarkDone,
 }: StageCardProps) {
   const [expanded, setExpanded] = useState(stage.screenshots.length > 0);
   const [approvalNotes, setApprovalNotes] = useState("");
@@ -345,6 +377,19 @@ function StageCard({
               {stage.notes && ` — ${stage.notes}`}
             </div>
           )}
+
+          {/* Mark Done button for non-User stages */}
+          {!isUserStage && stage.status !== "done" && canMark && onMarkDone && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="mt-2"
+              onClick={() => onMarkDone(stage.role, stage.label)}
+            >
+              <CheckCircle2 className="mr-1.5 size-4" />
+              Mark Done
+            </Button>
+          )}
         </div>
       </div>
 
@@ -375,6 +420,7 @@ interface DeliveryPipelineProps {
   stages: DeliveryStage[];
   onApprove?: (notes: string) => void;
   onReject?: (notes: string) => void;
+  onMarkStageDone?: (role: string, label: string) => void;
 }
 
 function TopApprovalCard({
@@ -423,6 +469,7 @@ export function DeliveryPipeline({
   stages,
   onApprove,
   onReject,
+  onMarkStageDone,
 }: DeliveryPipelineProps) {
   const pendingUserStage = stages.find(
     (s) => s.role === "User" && s.status === "pending"
@@ -474,8 +521,10 @@ export function DeliveryPipeline({
             isLast={i === stages.length - 1}
             isUserStage={stage.role === "User"}
             warnings={getGateViolations(stage, stages)}
+            canMark={canMarkDone(stage, stages)}
             onApprove={onApprove}
             onReject={onReject}
+            onMarkDone={onMarkStageDone}
           />
         ))}
       </div>
