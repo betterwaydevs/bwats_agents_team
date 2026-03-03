@@ -111,9 +111,10 @@ if [ "$BACKEND_ONLY" = true ]; then
   cd "$SCRIPT_DIR/../bwats_xano"
   exec claude $CONTINUE_FLAG
 else
-  echo -e "${GREEN}Launching Claude Code with team agents...${NC}"
+  echo -e "${GREEN}Launching Claude Code as team orchestrator...${NC}"
   echo -e "  Working directory: $SCRIPT_DIR"
+  echo -e "  Agent: orchestrator (delegates to 7 specialist agents)"
   echo -e "  Agent teams: enabled"
   echo ""
-  exec claude $CONTINUE_FLAG
+  exec claude --agent orchestrator $CONTINUE_FLAG
 fi
