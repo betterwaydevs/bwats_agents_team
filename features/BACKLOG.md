@@ -37,6 +37,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 | QF10 | Prospect Parser — Replace OpenAI with Claude/Codex to save costs | BACK | pending | — | [spec](specs/QF10-prospect-parser-cost-optimization.md) |
 | QF11 | Extension Duplicate Detection — Verify existing prospects are recognized on page | EXT | pending | — | [spec](specs/QF11-extension-duplicate-detection.md) |
 | QF13 | Pending Prospect Count Performance — Fast count + move to ATS | BOTH | pending | — | [spec](specs/QF13-pending-prospect-count-performance.md) |
+| QF14 | Add_prospect conflict error — db.patch expects array, gets string | BACK | pending | — | [spec](specs/QF14-add-prospect-patch-type-error.md) |
 
 ## Low Priority / Future
 
