@@ -31,30 +31,31 @@ When picking up a task, agents MUST read both the spec and progress files before
 | **OPT1** | **Code Optimization Agent — Post-DEV Performance Gate** | **TEAM** | **pending** | — | [spec](specs/OPT1-code-optimization-agent.md) |
 | QF7 | function.call → function.run sweep (touchpoint_create + others on v1) | BACK | done | — | [delivery](delivery/QF7.md) |
 | QF8 | Frontend Laura cleanup — remove hardcoded "Laura" from ~11 files | BOTH | done | — | [delivery](delivery/QF8.md) |
-| QF9 | Backend Async Processing — Prospect Save Returns Fast | BACK | pending | — | [spec](specs/QF9-extension-async-save.md) |
+| QF9 | Backend Async Processing — Prospect Save Returns Fast | BACK | dev-complete | — | [delivery](delivery/QF9.md) |
 | L5 | /ats CLI Skill — Interactive ATS from CLI | TOOL | **in-progress** | — | [spec](specs/L5-ats-cli-skill.md) |
-| L7 | Downloads Section & Extension Auto-Update Notification | BOTH | pending | — | [spec](specs/L7-downloads-and-auto-update.md) |
+| L7 | Downloads Section & Extension Auto-Update Notification | BOTH | in-progress | — | [spec](specs/L7-downloads-and-auto-update.md) |
 | QF10 | Prospect Parser — Replace OpenAI with Claude/Codex to save costs | BACK | pending | — | [spec](specs/QF10-prospect-parser-cost-optimization.md) |
 | QF11 | Extension Duplicate Detection — Verify existing prospects are recognized on page | EXT | pending | — | [spec](specs/QF11-extension-duplicate-detection.md) |
-| QF13 | Pending Prospect Count Performance — Fast count + move to ATS | BOTH | done | — | [delivery](delivery/QF13.md) |
+| QF13 | Pending Prospect Count Performance — Fast count + move to ATS + reset button | BOTH | done | — | [delivery](delivery/QF13.md) |
 | QF14 | Add_prospect conflict error — db.patch expects array, gets string | BACK | done | — | [delivery](delivery/QF14.md) |
-| QF15 | Add .env deny rules to `.claude/settings.local.json` — agent permissions hardening | TEAM | pending | — | |
+| QF15 | Add .env deny rules to `.claude/settings.local.json` — agent permissions hardening | TEAM | done | — | |
 | **QF16** | **Scoring Agent Reliability & Router Integration Fix** | **BACK** | **pending** | — | [spec](specs/QF16-scoring-agent-reliability.md) |
-| QF17 | Extension Slow Loading — Switch to fast count endpoint + tasks N+1 fix | EXT + BACK | pending | — | [spec](specs/QF17-extension-slow-loading.md) |
+| QF17 | Extension Slow Loading — Switch to fast count endpoint + tasks N+1 fix | EXT + BACK | done | — | [delivery](delivery/QF17.md) |
+
 
 ## Low Priority / Future
 
 | ID | Title | Type | Status | Owner | Spec |
 |----|-------|------|--------|-------|------|
+| INT1 | Multi-Tenant Branding — CSS-Based Logo & Colors | FRONT | pending | — | [spec](specs/INT1-global-super-admin-settings.md) |
 | L2 | Prerender / SEO Meta Tags | FRONT/INFRA | pending | — | [spec](specs/L2-prerender-seo.md) |
 
 ## Delegated to Interns (QA on delivery)
 
 | ID | Title | Status | Our Task |
 |----|-------|--------|----------|
-| INT1 | Global Super Admin Settings (multi-tenant) | in progress | QA + acceptance testing when delivered |
-| INT2 | Expanded Template System | in progress | QA + acceptance testing when delivered |
-| INT3 | Duplicate Candidate Detection & Merge | in progress | QA + acceptance testing when delivered |
+| INT2 | Expanded Template System | pending | QA + acceptance testing when delivered |
+| INT3 | Duplicate Candidate Detection & Merge | pending | QA + acceptance testing when delivered |
 
 ## Done (deployed to live + verified)
 
