@@ -1,6 +1,6 @@
 # BWATS Feature Backlog
 
-> Single source of truth for all tasks. Updated: 2026-03-03
+> Single source of truth for all tasks. Updated: 2026-03-05
 
 ## How This Works
 
@@ -33,7 +33,8 @@ When picking up a task, agents MUST read both the spec and progress files before
 | QF8 | Frontend Laura cleanup — remove hardcoded "Laura" from ~11 files | BOTH | done | — | [delivery](delivery/QF8.md) |
 | QF9 | Backend Async Processing — Prospect Save Returns Fast | BACK | dev-complete | — | [delivery](delivery/QF9.md) |
 | L5 | /ats CLI Skill — Interactive ATS from CLI | TOOL | **in-progress** | — | [spec](specs/L5-ats-cli-skill.md) |
-| L7 | Downloads Section & Extension Auto-Update Notification | BOTH | in-progress | — | [spec](specs/L7-downloads-and-auto-update.md) |
+| **L8** | **ATS Skill — Migrate from curl/API to Xano MCP** | **BACK + TOOL** | **in-progress** | — | [spec](specs/L8-ats-mcp-migration.md) |
+| L7 | Downloads Section & Extension Auto-Update Notification | BOTH | done | — | [delivery](delivery/L7.md) |
 | QF10 | Prospect Parser — Replace OpenAI with Claude/Codex to save costs | BACK | pending | — | [spec](specs/QF10-prospect-parser-cost-optimization.md) |
 | QF11 | Extension Duplicate Detection — Verify existing prospects are recognized on page | EXT | pending | — | [spec](specs/QF11-extension-duplicate-detection.md) |
 | QF13 | Pending Prospect Count Performance — Fast count + move to ATS + reset button | BOTH | done | — | [delivery](delivery/QF13.md) |
@@ -47,7 +48,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 
 | ID | Title | Type | Status | Owner | Spec |
 |----|-------|------|--------|-------|------|
-| INT1 | Multi-Tenant Branding — CSS-Based Logo & Colors | FRONT | pending | — | [spec](specs/INT1-global-super-admin-settings.md) |
+| INT1 | Multi-Tenant Branding — CSS-Based Logo & Colors | FRONT | done | — | [spec](specs/INT1-global-super-admin-settings.md) |
 | L2 | Prerender / SEO Meta Tags | FRONT/INFRA | pending | — | [spec](specs/L2-prerender-seo.md) |
 
 ## Delegated to Interns (QA on delivery)
