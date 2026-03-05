@@ -18,7 +18,7 @@ The multi-agent delivery pipeline (PM → DEV → QA → PO → User) is only as
 
 ## Solution
 
-Create a **delivery-supervisor** agent that runs as a **post-task completion hook**. When a task is marked complete, the supervisor:
+Create a **delivery-supervisor** agent that runs as a **post-task completion hook** and **autonomously enforces delivery quality**. When a task is marked complete, the supervisor:
 
 1. Reads the delivery log (`features/delivery/<TASK_ID>.md`)
 2. Validates compliance with `features/DELIVERY_FORMAT.md`:
@@ -34,7 +34,32 @@ Create a **delivery-supervisor** agent that runs as a **post-task completion hoo
    - PO approval without reviewing QA artifacts
    - DEV claiming completion without deployment/testing proof
 4. Generates a compliance report and appends it to the delivery log
-5. If violations found, sets task status back to `in-progress` and notifies the orchestrator
+5. **If violations found** (CRITICAL — fully autonomous loop closure):
+   - Reverts task status in BACKLOG.md: `done` → `in-progress`
+   - Appends compliance report with specific violations to delivery log
+   - **Instructs the orchestrator to resume the pipeline** at the failed stage
+   - **Creates a new team** (via the orchestrator) to complete missing work
+   - **Does NOT wait for user intervention** — the supervisor closes the loop autonomously
+
+## Autonomous Loop Closure
+
+**This is a critical design principle**: The supervisor does NOT just flag violations and wait for humans. It **closes the loop autonomously**:
+
+```
+Task marked done → Supervisor validates → Violations found
+  ↓
+Supervisor reverts status to in-progress
+  ↓
+Supervisor instructs orchestrator: "Resume pipeline from [stage]"
+  ↓
+Orchestrator creates new team → Agents fix violations → Task marked done again
+  ↓
+Supervisor validates again → Loop continues until ACCEPT
+  ↓
+Task stays done, ready for User approval
+```
+
+**Key point**: The orchestrator is responsible for creating teams and resuming work. The supervisor only validates and instructs — it does not spawn agents directly.
 
 ## Architecture
 
@@ -42,14 +67,42 @@ Create a **delivery-supervisor** agent that runs as a **post-task completion hoo
 - **Trigger**: Post-task completion (when BACKLOG.md status changes to `done`)
 - **Location**: `.claude/hooks/post-task-complete.sh`
 - **Action**: Launches `delivery-supervisor` agent with task ID
+- **Autonomy**: Supervisor has authority to revert status and instruct orchestrator to resume work without user approval
 
 ### Agent Definition
 - **Name**: `delivery-supervisor`
 - **Location**: `.claude/agents/delivery-supervisor.md`
 - **Model**: `haiku` (cost-efficient for structured validation)
-- **Tools**: `Read`, `Edit`, `Grep`, `Bash` (git operations)
+- **Tools**: `Read`, `Edit`, `Grep`, `Bash` (git operations), `Task` (to instruct orchestrator)
 - **Inputs**: Task ID
-- **Outputs**: Compliance report appended to delivery log
+- **Outputs**:
+  - Compliance report appended to delivery log
+  - Reverted BACKLOG.md status (if violations found)
+  - **Message to orchestrator** with instructions to resume pipeline (if violations found)
+- **Authority**: Can autonomously revert task status and command orchestrator to restart work
+
+### Communication Protocol (Supervisor → Orchestrator)
+
+When violations are found, the supervisor appends a section to the delivery log:
+
+```markdown
+## Supervisor: Instructions to Orchestrator
+
+**Task**: [TASK_ID]
+**Status**: REVERTED to in-progress
+**Failed Stage**: [PM/DEV/QA/PO]
+**Action Required**: Create new team and resume pipeline from [stage]
+
+### Specific Instructions
+- Spawn agents: [list of agents needed]
+- Starting stage: [stage name]
+- Focus on: [specific violations to fix]
+
+### Context for Agents
+[Brief summary of what needs to be fixed, extracted from violations]
+```
+
+The orchestrator reads this section and acts on it immediately without user intervention.
 
 ### Validation Rules
 
@@ -115,7 +168,28 @@ The supervisor enforces these rules from MEMORY.md and CLAUDE.md:
 
 - Reverted BACKLOG.md status: `done` → `in-progress`
 - Appended compliance report to delivery log
-- Notified orchestrator: requires QA re-work
+- **Instructed orchestrator to create new team and resume from QA stage**
+
+---
+
+## Supervisor: Instructions to Orchestrator
+
+**Task**: M8
+**Status**: REVERTED to in-progress
+**Failed Stage**: QA
+**Action Required**: Create new team and resume pipeline from QA stage
+
+### Specific Instructions
+- Spawn agents: `qa-tester`
+- Starting stage: QA Testing
+- Focus on: Real execution tests with dated evidence
+
+### Context for Agents
+QA previously performed code review only. Need:
+1. Real execution tests against dev environment
+2. Per-AC test results with PASS/FAIL
+3. Test report with execution date and time
+4. Artifacts (curl outputs, screenshots, test logs)
 ```
 
 ## Implementation Plan
@@ -133,14 +207,24 @@ The supervisor enforces these rules from MEMORY.md and CLAUDE.md:
   - Validation rules (from above)
   - Instruction to read DELIVERY_FORMAT.md
   - Instruction to append compliance report
-  - Instruction to revert task status if violations found
+  - **Instruction to revert task status if violations found**
+  - **Instruction to command orchestrator to resume pipeline autonomously**
+  - **No waiting for user intervention — full loop closure**
 - [ ] Test agent on existing delivery logs (M1, M2, M3, M10)
 
-### Phase 3: Integration
+### Phase 3: Integration & Orchestrator Training
 - [ ] Configure hook in `.claude/settings.local.json` (if needed)
-- [ ] Update CLAUDE.md to document supervisor workflow
+- [ ] **Update CLAUDE.md** to document:
+  - Supervisor workflow (hook → validate → revert → instruct)
+  - Orchestrator's responsibility to resume work when supervisor instructs
+  - Loop closure principle: no user intervention needed
 - [ ] Update MEMORY.md with supervisor learnings
-- [ ] Run full test: mark a task done → verify supervisor runs → verify violations caught
+- [ ] **Train orchestrator** to respond to supervisor instructions:
+  - Read supervisor compliance report
+  - Identify failed stage (PM/DEV/QA/PO)
+  - Create new team starting from that stage
+  - Resume pipeline autonomously
+- [ ] Run full test: mark a task done → verify supervisor runs → verify violations caught → verify orchestrator resumes work
 
 ### Phase 4: Backlog Integration
 - [ ] Run supervisor on all `dev-complete` tasks in BACKLOG.md
@@ -198,11 +282,13 @@ The supervisor enforces these rules from MEMORY.md and CLAUDE.md:
 **And** provides detailed violation descriptions
 **And** gives a final recommendation (ACCEPT/REJECT)
 
-### AC8: Supervisor Reverts Status on Violations
+### AC8: Supervisor Reverts Status and Restarts Pipeline
 **Given** the supervisor finds violations
 **When** it completes the compliance check
 **Then** it reverts the task status in BACKLOG.md from `done` to `in-progress`
 **And** commits the change with message "Supervisor: M8 reverted due to delivery violations"
+**And** instructs the orchestrator to resume the pipeline at the failed stage
+**And** the orchestrator creates a new team to complete missing work autonomously
 
 ### AC9: Supervisor Accepts Compliant Deliveries
 **Given** a delivery log that passes all validation rules
@@ -212,7 +298,16 @@ The supervisor enforces these rules from MEMORY.md and CLAUDE.md:
 **And** leaves the task status as `done`
 **And** notes "Ready for User approval"
 
-### AC10: Supervisor Self-Documents
+### AC10: Supervisor Autonomously Closes the Loop
+**Given** the supervisor finds violations
+**When** it reverts the task status
+**Then** it does NOT wait for user intervention
+**And** it instructs the orchestrator to immediately create a new team
+**And** the orchestrator resumes the pipeline at the failed stage (e.g., QA re-test)
+**And** the loop continues until all violations are resolved
+**And** the task is only marked `done` when the supervisor approves
+
+### AC11: Supervisor Self-Documents
 **Given** the supervisor runs
 **When** it completes
 **Then** the compliance report includes:
@@ -220,6 +315,7 @@ The supervisor enforces these rules from MEMORY.md and CLAUDE.md:
   - Task ID reviewed
   - Agent name and model (delivery-supervisor / haiku)
   - Summary of actions taken (status changes, notifications)
+  - Instructions sent to orchestrator (if violations found)
 
 ## Dependencies
 
