@@ -158,3 +158,15 @@ Append new entries to the appropriate category using this format:
 - **Solution**: How to fix or handle it
 - **Date**: YYYY-MM-DD
 ```
+
+## MCP Safety
+
+### Xano Project Deletion Cascades to Associations
+- **Issue**: Deleting a project via MCP also deletes all `project_person_association` records linked to it. If a person is in multiple projects, deleting one project removes them from the association table — effectively removing them from other projects' pipelines too.
+- **Solution**: NEVER expose delete operations (projects, associations, stages, people) via the BWATS_ATS MCP server. All deletions must be done through the ATS UI where the user sees the full impact. The MCP is read + safe-writes only.
+- **Date**: 2026-03-05
+
+### BWATS_ATS MCP Server Details
+- **Issue**: Need to know canonical and URL for the custom ATS MCP server.
+- **Solution**: Canonical `Sk3cINn0`, URL: `https://xano.atlanticsoft.co/x2/mcp/Sk3cINn0/mcp/stream`. Dev: add `X-Data-Source: development` header. Live: omit header. Workspace 6 (BetterWayDevs). Live server ID 594, Dev server ID 602.
+- **Date**: 2026-03-05
