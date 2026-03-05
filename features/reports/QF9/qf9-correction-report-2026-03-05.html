@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QF9 Correction Report - 2026-03-05</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; line-height: 1.5; color: #111827; }
+    h1, h2 { margin: 0 0 12px; }
+    .meta { margin-bottom: 20px; color: #374151; }
+    .card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .pass { color: #065f46; font-weight: 700; }
+    ul { margin-top: 8px; }
+    code { background: #f3f4f6; padding: 2px 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>QF9 Correction Report (Post-Rejection)</h1>
+  <div class="meta">
+    <div><strong>Date:</strong> 2026-03-05</div>
+    <div><strong>Task:</strong> QF9</div>
+    <div><strong>Scope:</strong> LinkedIn endpoints only: <code>create_linkedin_invitation</code> and <code>create_linkedin_connections</code></div>
+  </div>
+
+  <div class="card">
+    <h2>Acceptance Checks</h2>
+    <ul>
+      <li><strong>AC1:</strong> Deduped insert behavior for invitation records by <code>(user_id, Connection_Profile_URL)</code> <span class="pass">PASS</span></li>
+      <li><strong>AC2:</strong> Deduped insert behavior for connection records by <code>(user_id, Connection_Profile_URL)</code> <span class="pass">PASS</span></li>
+      <li><strong>AC3:</strong> No stage movement trigger in either endpoint <span class="pass">PASS</span></li>
+      <li><strong>AC4:</strong> Auth ownership enforced with <code>$auth.id</code>, mismatched input user blocked <span class="pass">PASS</span></li>
+      <li><strong>AC5:</strong> Non-empty <code>Connection_Profile_URL</code> required <span class="pass">PASS</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Files Verified</h2>
+    <ul>
+      <li><code>bwats_xano/apis/linkedin/16924_create_linkedin_invitation_POST.xs</code></li>
+      <li><code>bwats_xano/apis/linkedin/16921_create_linkedin_connections_POST.xs</code></li>
+      <li><code>bwats_xano/tables/148_linkedin_connections.xs</code> (unique index)</li>
+      <li><code>bwats_xano/tables/149_linkedin_invitation.xs</code> (unique index)</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Verdict</h2>
+    <p><strong>APPROVED</strong> for corrected QF9 scope.</p>
+  </div>
+</body>
+</html>
