@@ -162,8 +162,8 @@ we just need to make sure we have the invitation and connection recorded if they
 - **Status**: blocked
 - **Agent**: qa-tester
 - **Date**: 2026-03-05
-- **Notes**: Full runtime validation executed against development with real authenticated user context (auth/login token + X-Data-Source: development), 10 timed calls per endpoint. Result: runtime behavior does NOT match corrected repo code. `create_linkedin_invitation` still returns `stage_updates` and duplicate fatal errors instead of idempotent `{inserted, already_exists}` flow. `create_linkedin_connections` returns `ERROR_FATAL: Missing User id` on all calls despite valid auth. This indicates dev endpoint logic is stale/not synced to commit `bwats_xano@f0f2f3a`. Delivery is blocked until corrected logic is deployed and runtime retested.
-- **Report**: qf9-correction-runtime-dev-2026-03-05.html
+- **Notes**: Runtime validation re-executed against development with real authenticated user context (auth/login token + X-Data-Source: development), 10 timed calls per endpoint (retest on 2026-03-05). Result still does NOT match corrected repo code. `create_linkedin_invitation` returns `stage_updates` and then duplicate fatal errors (insert batch avg 1.3463s, p50 0.4715s, p95 9.5377s). `create_linkedin_connections` returns `ERROR_FATAL: Missing User id` on all calls (insert avg 0.3898s). This indicates dev endpoint logic remains stale/not synced to commit `bwats_xano@f0f2f3a`. Delivery remains blocked until corrected logic is deployed and runtime retest passes.
+- **Report**: qf9-correction-runtime-dev-retest-2026-03-05.html
 
 ## PO: Acceptance (Correction)
 - **Status**: blocked

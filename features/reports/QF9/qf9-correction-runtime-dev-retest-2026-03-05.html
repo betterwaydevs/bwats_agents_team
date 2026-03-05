@@ -1,0 +1,13 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>QF9 Dev Retest 2026-03-05</title></head><body>
+<h1>QF9 Correction Runtime Retest (Development)</h1>
+<p><strong>Date:</strong> 2026-03-05</p>
+<p><strong>Verdict:</strong> BLOCKED (still failing)</p>
+<ul>
+<li>create_linkedin_invitation insert: codes 200+500, avg 1.3463s, p50 0.4715s, p95 9.5377s; first response includes <code>stage_updates</code>.</li>
+<li>create_linkedin_invitation duplicate: code 500 only, avg 0.3908s; message <code>Duplicate record detected</code>.</li>
+<li>create_linkedin_connections insert: code 500 only, avg 0.3898s; message <code>Missing User id</code>.</li>
+<li>create_linkedin_connections duplicate: code 500 only, avg 0.3954s; message <code>Missing User id</code>.</li>
+</ul>
+<p>Expected corrected behavior (<code>inserted/already_exists</code>, auth-bound user, no stage movement side effects) is not active on development runtime.</p>
+</body></html>
