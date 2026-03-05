@@ -163,7 +163,7 @@ we just need to make sure we have the invitation and connection recorded if they
 - **Agent**: qa-tester
 - **Date**: 2026-03-05
 - **Notes**: Static QA pass for corrected scope. Verified dedupe logic and no stage movement trigger in both endpoints. Verified auth-bound user enforcement and non-empty URL validation. Runtime execution against live Xano not performed from this workspace; residual runtime risk noted for URL normalization edge-cases.
-- **Report**: static validation in delivery notes (no runtime harness available in this workspace)
+- **Report**: features/reports/QF9/qf9-correction-report-2026-03-05.md
 
 ## PO: Acceptance (Correction)
 - **Status**: done
