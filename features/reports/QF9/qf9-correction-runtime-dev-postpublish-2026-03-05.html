@@ -1,0 +1,11 @@
+<!doctype html><html><head><meta charset="utf-8"><title>QF9 Post-Publish Dev Retest</title></head><body>
+<h1>QF9 Correction - Post-Publish Runtime Retest (Development)</h1>
+<p><strong>Date:</strong> 2026-03-05</p>
+<p><strong>Publish action:</strong> Endpoints <code>16924</code> and <code>16921</code> updated via MCP to workspace <code>6</code>, API group <code>1512</code> (<code>linkedin</code>, canonical <code>mIBuuXC3</code>), branch <code>development</code>, <code>publish=true</code>.</p>
+<p><strong>Runtime retest:</strong> 10 calls per endpoint using auth/login token + <code>X-Data-Source: development</code>.</p>
+<ul>
+<li><code>create_linkedin_invitation</code>: HTTP 403 only (<code>ERROR_CODE_ACCESS_DENIED</code>), avg 0.4787s</li>
+<li><code>create_linkedin_connections</code>: HTTP 403 only (<code>ERROR_CODE_ACCESS_DENIED</code>), avg 0.3782s</li>
+</ul>
+<p><strong>Verdict:</strong> BLOCKED for functional AC validation with current QA credential. Deployment is confirmed, but end-to-end behavior cannot be validated until a permitted user token is used.</p>
+</body></html>

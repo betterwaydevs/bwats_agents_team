@@ -150,7 +150,7 @@ we just need to make sure we have the invitation and connection recorded if they
 - **Agent**: backend-developer
 - **Date**: 2026-03-05
 - **Notes**: Updated `create_linkedin_invitation` and `create_linkedin_connections` to ensure they only record invitation/connection events and do not trigger stage movement. Changes: (1) removed `automatic_action_association` call from both endpoints, (2) added dedupe checks by `(user_id, Connection_Profile_URL)` before insert, (3) added explicit response flags `inserted` and `already_exists`, (4) hardened auth by enforcing `$auth.id > 0`, rejecting mismatched `input.user_id`, and persisting/querying using `$auth.id`, (5) required non-empty `Connection_Profile_URL`. DB-level unique indexes already exist on both tables for `(user_id, Connection_Profile_URL)`.
-- **Commits**: bwats_xano@f0f2f3a
+- **Commits**: bwats_xano@f0f2f3a, bwats_xano@33dde6e
 
 ## SEC: Security Review (Correction)
 - **Status**: done
@@ -162,8 +162,8 @@ we just need to make sure we have the invitation and connection recorded if they
 - **Status**: blocked
 - **Agent**: qa-tester
 - **Date**: 2026-03-05
-- **Notes**: Runtime validation re-executed against development with real authenticated user context (auth/login token + X-Data-Source: development), 10 timed calls per endpoint (retest on 2026-03-05). Result still does NOT match corrected repo code. `create_linkedin_invitation` returns `stage_updates` and then duplicate fatal errors (insert batch avg 1.3463s, p50 0.4715s, p95 9.5377s). `create_linkedin_connections` returns `ERROR_FATAL: Missing User id` on all calls (insert avg 0.3898s). This indicates dev endpoint logic remains stale/not synced to commit `bwats_xano@f0f2f3a`. Delivery remains blocked until corrected logic is deployed and runtime retest passes.
-- **Report**: qf9-correction-runtime-dev-retest-2026-03-05.html
+- **Notes**: Runtime validation was rerun after publishing endpoint updates directly to Xano development (workspace 6, api group 1512, publish=true). Post-publish retest now returns `403 ERROR_CODE_ACCESS_DENIED` on both endpoints for the QA test credential (10/10 calls each). This confirms deployment changed runtime behavior from the prior stale responses, but functional AC validation is still blocked until a permitted user token is used to execute insert/dedupe scenarios.
+- **Report**: qf9-correction-runtime-dev-postpublish-2026-03-05.html
 
 ## PO: Acceptance (Correction)
 - **Status**: blocked
