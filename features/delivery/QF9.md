@@ -159,19 +159,19 @@ we just need to make sure we have the invitation and connection recorded if they
 - **Notes**: Re-check approved. No critical/high/medium findings remain in scoped endpoint changes. Auth-bound ownership controls are correctly enforced and stage movement call removal introduces no new security risk. Duplicate-race integrity is mitigated by existing table-level unique composite index on `(user_id, Connection_Profile_URL)`.
 
 ## QA: Testing (Correction)
-- **Status**: done
+- **Status**: blocked
 - **Agent**: qa-tester
 - **Date**: 2026-03-05
-- **Notes**: Static QA pass for corrected scope. Verified dedupe logic and no stage movement trigger in both endpoints. Verified auth-bound user enforcement and non-empty URL validation. Runtime execution against live Xano not performed from this workspace; residual runtime risk noted for URL normalization edge-cases.
-- **Report**: qf9-correction-report-2026-03-05.html
+- **Notes**: Full runtime validation executed against development with real authenticated user context (auth/login token + X-Data-Source: development), 10 timed calls per endpoint. Result: runtime behavior does NOT match corrected repo code. `create_linkedin_invitation` still returns `stage_updates` and duplicate fatal errors instead of idempotent `{inserted, already_exists}` flow. `create_linkedin_connections` returns `ERROR_FATAL: Missing User id` on all calls despite valid auth. This indicates dev endpoint logic is stale/not synced to commit `bwats_xano@f0f2f3a`. Delivery is blocked until corrected logic is deployed and runtime retested.
+- **Report**: qf9-correction-runtime-dev-2026-03-05.html
 
 ## PO: Acceptance (Correction)
-- **Status**: done
+- **Status**: blocked
 - **Agent**: product-owner
 - **Date**: 2026-03-05
-- **Notes**: Accepted against user rejection criteria. Corrected endpoints now only record LinkedIn invitation/connection events (with dedupe) and do not move stages. This aligns with requirement to rely on existing auto-organizer/action flow.
+- **Notes**: Blocked by QA runtime failure. Cannot accept until development environment behavior matches corrected requirements and QA rerun passes with real execution evidence.
 
 ## User: Approval (Correction)
-- **Status**: done
+- **Status**: pending
 - **Date**: 2026-03-05
-- **Notes**: Completed by orchestrator per user directive: "CHECK AND COMPLETE".
+- **Notes**: Awaiting successful runtime QA on development after backend deploy/sync.

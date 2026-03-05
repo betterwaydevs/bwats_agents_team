@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QF9 Correction Runtime Report (Dev) - 2026-03-05</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; color: #111827; line-height: 1.45; }
+    h1,h2 { margin: 0 0 10px; }
+    .meta { margin-bottom: 18px; color: #374151; }
+    .card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; margin-bottom: 12px; }
+    .ok { color: #065f46; font-weight: 700; }
+    .bad { color: #991b1b; font-weight: 700; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; font-size: 14px; }
+    th { background: #f9fafb; }
+    code { background: #f3f4f6; padding: 2px 4px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <h1>QF9 Correction Runtime Report (Development)</h1>
+  <div class="meta">
+    <div><strong>Date:</strong> 2026-03-05</div>
+    <div><strong>Executor:</strong> qa-tester (orchestrator-run curl suite)</div>
+    <div><strong>Env:</strong> <code>https://xano.atlanticsoft.co/api:mIBuuXC3:development</code> with <code>X-Data-Source: development</code></div>
+    <div><strong>Method:</strong> Real login via <code>auth/login</code>, then 10 timed POST calls per endpoint</div>
+  </div>
+
+  <div class="card">
+    <h2>Verdict</h2>
+    <p class="bad">BLOCKED</p>
+    <p>Runtime behavior does not match corrected implementation in repo commit <code>bwats_xano@f0f2f3a</code>. Development endpoint responses indicate old logic is still active.</p>
+  </div>
+
+  <div class="card">
+    <h2>Runtime Results</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Endpoint</th>
+          <th>HTTP Codes</th>
+          <th>Avg (s)</th>
+          <th>P50 (s)</th>
+          <th>P95 (s)</th>
+          <th>Observed Response Pattern</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>create_linkedin_invitation</code> (insert batch)</td>
+          <td>200 + 500</td>
+          <td>1.3838</td>
+          <td>0.4799</td>
+          <td>9.5519</td>
+          <td>200 response includes <code>stage_updates</code>; subsequent calls fail with duplicate fatal</td>
+        </tr>
+        <tr>
+          <td><code>create_linkedin_invitation</code> (duplicate batch)</td>
+          <td>500 only</td>
+          <td>0.3922</td>
+          <td>0.3880</td>
+          <td>0.4138</td>
+          <td><code>{"code":"ERROR_FATAL","message":"Duplicate record detected..."}</code></td>
+        </tr>
+        <tr>
+          <td><code>create_linkedin_connections</code> (insert batch)</td>
+          <td>500 only</td>
+          <td>0.4651</td>
+          <td>0.4018</td>
+          <td>0.7929</td>
+          <td><code>{"code":"ERROR_FATAL","message":"Missing User id"}</code></td>
+        </tr>
+        <tr>
+          <td><code>create_linkedin_connections</code> (duplicate batch)</td>
+          <td>500 only</td>
+          <td>0.4916</td>
+          <td>0.3863</td>
+          <td>1.4046</td>
+          <td><code>{"code":"ERROR_FATAL","message":"Missing User id"}</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Mismatch vs Expected (QF9 Correction)</h2>
+    <ul>
+      <li>Expected idempotent dedupe with <code>inserted</code>/<code>already_exists</code> flags. <span class="bad">Not observed.</span></li>
+      <li>Expected auth-bound <code>$auth.id</code> handling (no "Missing User id" for valid auth). <span class="bad">Not observed.</span></li>
+      <li>Expected no stage movement trigger in endpoint response flow. <span class="bad">Not observed (stage_updates present).</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Conclusion</h2>
+    <p>Task cannot be delivered yet. Backend repo code is corrected, but dev runtime is not aligned. Deploy/sync corrected endpoint definitions to development, then rerun this exact runtime suite.</p>
+  </div>
+</body>
+</html>
