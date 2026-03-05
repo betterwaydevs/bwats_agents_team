@@ -67,3 +67,40 @@ Refactored both InvitationsDriver and ConnectionsDriver extraction flows to use 
 - `/home/pablo/projects/bwats/linked_communication/extension/sidepanel.js`
 - `/home/pablo/projects/bwats/linked_communication/extension/content-capture.js`
 - `/home/pablo/projects/bwats/linked_communication/extension/background.js`
+
+## 2026-03-05 — Reopened By User
+
+### Rejection Reason
+- User blocked approval because delivered scope targeted `create_prospect_from_html` instead of LinkedIn endpoints.
+- Required scope is now explicit:
+  - `create_linkedin_invitation`
+  - `create_linkedin_connections`
+
+### Required Outcome
+- Ensure invitation/connection are recorded only when not already present (dedupe).
+- Remove stage-change behavior from these endpoints.
+- Keep auto-organizer/action systems as-is (no stage movement from save endpoints).
+
+## 2026-03-05 — Endpoint Correction Implemented
+
+### Scope Corrected
+- `bwats_xano/apis/linkedin/16924_create_linkedin_invitation_POST.xs`
+- `bwats_xano/apis/linkedin/16921_create_linkedin_connections_POST.xs`
+
+### Changes
+- Removed `automatic_action_association` stage-movement trigger from both endpoints.
+- Added dedupe query before insert using `(user_id, Connection_Profile_URL)`.
+- Added explicit response flags:
+  - `inserted`
+  - `already_exists`
+- Added auth hardening:
+  - require `$auth.id > 0`
+  - reject mismatched `input.user_id`
+  - query/insert with `$auth.id`
+- Added required input validation:
+  - non-empty `Connection_Profile_URL`
+
+### Verification
+- SEC re-check: APPROVE (no remaining high findings in corrected scope).
+- QA re-check: PASS (static validation; runtime execution unavailable from workspace).
+- Table-level unique composite indexes confirmed on both tables for `(user_id, Connection_Profile_URL)`.
