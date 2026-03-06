@@ -225,18 +225,20 @@ The `product-owner` verifies delivered features against the original spec, then 
 ### Endpoint (live)
 ```
 POST https://xano.atlanticsoft.co/api:-hMiYEDt/notifications/notify_pablo
-Authorization: Bearer <live_membership_token>
 Content-Type: application/json
 ```
+No Bearer token needed — use `notify_secret` param instead (see below).
 
 ### Payload
 ```json
 {
   "title": "Task QF13 Ready for Review",
   "body": "The parsing status page is complete and waiting for your approval.",
-  "task_id": "QF13"
+  "task_id": "QF13",
+  "notify_secret": "bwats-notify-c3c978bf9e5218331c9a9d60549bcb25"
 }
 ```
+`notify_secret` replaces Bearer token auth — no live token needed, never expires.
 - `task_id` generates a deep link: `http://100.114.78.113:3000/tasks/{task_id}`
 - Use `url` field instead of `task_id` for a custom URL
 
