@@ -54,12 +54,17 @@ function buildBacklogSummary(): string {
 function buildPrompt(
   messages: { role: string; content: string }[],
   context: string[],
-  systemInstruction?: string
+  systemInstruction?: string,
+  fileInstruction?: string
 ): string {
   const parts: string[] = [];
 
   if (systemInstruction) {
     parts.push(systemInstruction);
+  }
+
+  if (fileInstruction) {
+    parts.push(fileInstruction);
   }
 
   // Include spec file references if context has spec IDs
@@ -111,7 +116,7 @@ function buildPrompt(
 
 export async function POST(request: NextRequest) {
   try {
-    const { messages, context, systemInstruction, agent } = await request.json();
+    const { messages, context, systemInstruction, agent, filePath } = await request.json();
     const agentName = agent === "project-manager" ? "project-manager" : "product-owner";
 
     if (!Array.isArray(messages) || messages.length === 0) {
@@ -124,10 +129,16 @@ export async function POST(request: NextRequest) {
     }
 
     const teamDir = path.join(FEATURES_DIR, "..");
+    let fileInstruction: string | undefined;
+    if (typeof filePath === "string" && filePath.endsWith(".pdf")) {
+      fileInstruction = `The user uploaded a PDF file. Read it using your Read tool at: ${filePath}`;
+    }
+
     const prompt = buildPrompt(
       messages,
       Array.isArray(context) ? context : [],
-      typeof systemInstruction === "string" ? systemInstruction : undefined
+      typeof systemInstruction === "string" ? systemInstruction : undefined,
+      fileInstruction
     );
     const backlogSummary = getCachedBacklogSummary();
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, Paperclip, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -39,11 +39,14 @@ export function ChatInterface({
   const [input, setInput] = useState("");
   const [selectedContext, setSelectedContext] = useState<string[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [attachedFile, setAttachedFile] = useState<{ name: string; path: string } | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const [availableSpecs, setAvailableSpecs] = useState<
     { id: string; title: string }[]
   >([]);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const effectiveContext = fixedContext ?? selectedContext;
   const prompts = suggestedPrompts ?? DEFAULT_PROMPTS;
@@ -88,6 +91,28 @@ export function ChatInterface({
     return () => clearTimeout(timer);
   }, []);
 
+  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Upload failed");
+      }
+      const { path, filename } = await res.json();
+      setAttachedFile({ name: filename, path });
+    } catch (err) {
+      console.error("Upload failed:", err);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }, []);
+
   const sendMessage = useCallback(
     async (text: string) => {
       if (!text.trim() || isStreaming) return;
@@ -97,6 +122,8 @@ export function ChatInterface({
       setMessages(updatedMessages);
       setInput("");
       setIsStreaming(true);
+      const currentFile = attachedFile;
+      setAttachedFile(null);
 
       try {
         const res = await fetch("/api/chat", {
@@ -107,6 +134,7 @@ export function ChatInterface({
             context: effectiveContext,
             ...(systemInstruction && { systemInstruction }),
             ...(agent && { agent }),
+            ...(currentFile && { filePath: currentFile.path }),
           }),
         });
 
@@ -183,7 +211,7 @@ export function ChatInterface({
         setIsStreaming(false);
       }
     },
-    [messages, isStreaming, effectiveContext, systemInstruction, agent]
+    [messages, isStreaming, effectiveContext, systemInstruction, agent, attachedFile]
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -241,27 +269,62 @@ export function ChatInterface({
       </ScrollArea>
 
       {/* Input area */}
-      <div ref={inputRef} className="relative z-50 flex items-end gap-2 bg-background pb-4 md:pb-0">
-        <Textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder ?? "Ask about your specs, tasks, or project..."}
-          className="min-h-10 resize-none"
-          rows={1}
-          disabled={isStreaming}
-        />
-        <Button
-          onClick={() => sendMessage(input)}
-          disabled={!input.trim() || isStreaming}
-          size="icon"
-        >
-          {isStreaming ? (
-            <Loader2 className="animate-spin" />
-          ) : (
-            <Send />
-          )}
-        </Button>
+      <div ref={inputRef} className="relative z-50 flex flex-col gap-2 bg-background pb-4 md:pb-0">
+        {attachedFile && (
+          <div className="flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-1.5 text-xs">
+            <Paperclip className="size-3 shrink-0" />
+            <span className="truncate">{attachedFile.name}</span>
+            <button
+              onClick={() => setAttachedFile(null)}
+              className="ml-auto shrink-0 rounded-full p-0.5 hover:bg-muted"
+            >
+              <X className="size-3" />
+            </button>
+          </div>
+        )}
+        <div className="flex items-end gap-2">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf"
+            className="hidden"
+            onChange={handleFileUpload}
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="shrink-0"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isStreaming || isUploading}
+            title="Attach PDF"
+          >
+            {isUploading ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Paperclip className="size-4" />
+            )}
+          </Button>
+          <Textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholder ?? "Ask about your specs, tasks, or project..."}
+            className="min-h-10 resize-none"
+            rows={1}
+            disabled={isStreaming}
+          />
+          <Button
+            onClick={() => sendMessage(input)}
+            disabled={!input.trim() || isStreaming}
+            size="icon"
+          >
+            {isStreaming ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <Send />
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );
