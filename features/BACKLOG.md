@@ -1,6 +1,6 @@
 # BWATS Feature Backlog
 
-> Single source of truth for all tasks. Updated: 2026-03-05
+> Single source of truth for all tasks. Updated: 2026-03-06
 
 ## How This Works
 
@@ -33,8 +33,6 @@ When picking up a task, agents MUST read both the spec and progress files before
 | QF7 | function.call → function.run sweep (touchpoint_create + others on v1) | BACK | done | — | [delivery](delivery/QF7.md) |
 | QF8 | Frontend Laura cleanup — remove hardcoded "Laura" from ~11 files | BOTH | done | — | [delivery](delivery/QF8.md) |
 | QF9 | Backend Async Processing — Prospect Save Returns Fast | BACK | dev-complete | — | [delivery](delivery/QF9.md) |
-| L5 | /ats CLI Skill — Interactive ATS from CLI | TOOL | **in-progress** | — | [spec](specs/L5-ats-cli-skill.md) |
-| L8 | ATS Skill — Migrate from curl/API to Xano MCP | BACK + TOOL | dev-complete | — | [spec](specs/L8-ats-mcp-migration.md) |
 | L7 | Downloads Section & Extension Auto-Update Notification | BOTH | done | — | [delivery](delivery/L7.md) |
 | QF10 | Prospect Parser — Local Codex Processing (Zero API Cost) | BACK+INFRA | dev-complete | — | [spec](specs/QF10-prospect-parser-cost-optimization.md) |
 | QF11 | Extension Duplicate Detection — Verify existing prospects are recognized on page | EXT | pending | — | [spec](specs/QF11-extension-duplicate-detection.md) |
@@ -64,6 +62,8 @@ When picking up a task, agents MUST read both the spec and progress files before
 
 | ID | Title | Completed |
 |----|-------|-----------|
+| L8 | ATS Skill — Migrate from curl/API to Xano MCP | Mar 2026 |
+| L5 | /ats CLI Skill — Interactive ATS from CLI | Mar 2026 |
 | D1 | Deploy M1, M2, M3, M7, L6, P2 & Pending Changes to Production | Mar 2026 |
 | M10 | LinkedIn AI Reply — Phase 1 (Reply Assistant) | Mar 2026 |
 | M1 | Email Account Stickiness Per Person | Mar 2026 |

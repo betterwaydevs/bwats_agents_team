@@ -10,6 +10,7 @@ import {
   Sun,
   Brain,
   Users,
+  Download,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/layout/ThemeProvider";
@@ -19,6 +20,7 @@ const navItems = [
   { href: "/reports", label: "Reports", icon: FileText },
   { href: "/agents", label: "Agents", icon: Users },
   { href: "/system", label: "System", icon: Brain },
+  { href: "/downloads", label: "Downloads", icon: Download },
   { href: "/assistant", label: "Team", icon: MessageSquare },
 ];
 
