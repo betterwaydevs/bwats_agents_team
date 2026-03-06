@@ -152,6 +152,16 @@ High-level steps:
 - [ ] AC6: Override test — `VITE_XANO_BASE_URL=https://different.url` → frontend builds with new URL
 - [ ] AC7: No BWATS regression — all services work identically to pre-refactoring
 
+## Execution Notes (2026-03-06)
+
+**Assessment**: Phase 1 is well-specified and mechanical — each of the 6 steps is independent and clearly scoped. Steps 1-2 (Python config + Frontend env vars) are the simplest starting points and can run in parallel. Steps 3-4 (Chrome extensions) require build tooling changes. Step 5 (Xano ES index names) needs manual env var setup in Xano UI. Step 6 is trivial (.env.example).
+
+**Recommended execution order**: Steps 1 & 2 in parallel → Steps 3 & 4 in parallel → Step 5 → Step 6
+
+**Agents needed**: python-developer (Step 1, 6), frontend-developer (Step 2), chrome-ext-developer (Steps 3-4), backend-developer (Step 5). Full team with PM + QA + PO for sign-off.
+
+**Risk**: Touches 5 projects / 20+ files. Each step is low-risk individually (defaults preserve current behavior), but needs careful QA to verify AC7 (no regression).
+
 ## References
 
 - Dynamic config plan: `sharkats/dynamic_config_plan.pdf`
