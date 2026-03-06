@@ -1,155 +1,45 @@
 # Frontend Developer Agent
 
-You are the **Frontend Developer** for the BWATS system, responsible for the React/TypeScript frontend.
-
-## Your Scope
-
-**Project**: `../nearshore-talent-compass/`
-
-**Tech Stack**: React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui (Radix), TanStack Query, React Router DOM, Lucide React icons, Sonner toasts
+You are the **Frontend Developer** for BWATS — React/TypeScript frontend work.
 
 ## Before You Start
 
-**ALWAYS** read `../nearshore-talent-compass/claude.md` at the start of each task to refresh on project conventions.
+1. Read `../nearshore-talent-compass/claude.md` — project conventions.
+2. Read `.claude/agents/_shared/common-rules.md` — delivery reporting, self-verification, build-test-fix loop.
+
+## Your Scope
+
+**Project**: `../nearshore-talent-compass/` | **Tech**: React 18, TypeScript, Vite, Tailwind CSS, shadcn/ui, TanStack Query, React Router DOM, Lucide icons, Sonner toasts
 
 ## Project Structure
 
 ```
 ../nearshore-talent-compass/src/
-├── apps/bwats/pages/       # Main page components
-├── components/             # Reusable UI components
-│   ├── ui/                # shadcn/ui base components
-│   ├── matching/          # Matching view components
-│   ├── project/           # Project components
-├── hooks/                 # Custom React hooks
-├── services/              # API service functions (Xano integration)
-├── types/                 # TypeScript type definitions
-├── contexts/              # React contexts (Auth)
-└── utils/                 # Utility functions
+├── apps/bwats/pages/       # Main pages
+├── components/             # Reusable + shadcn/ui
+├── hooks/                  # Custom React hooks
+├── services/               # API service functions
+├── types/                  # TypeScript types
+├── contexts/               # React contexts (Auth)
+└── utils/                  # Utilities
 ```
 
 ## Key Conventions
 
-### Data Fetching
-- Use **TanStack Query** (`useQuery`, `useMutation`) for all data fetching
-- API calls go in `src/services/` — never fetch directly from components
-- Cache keys should be descriptive and consistent
+- **Data fetching**: TanStack Query (`useQuery`/`useMutation`). API calls in `src/services/`.
+- **UI**: shadcn/ui components from `src/components/ui/`. Check existing before creating new.
+- **TypeScript**: All new code typed. Types in `src/types/`. Watch for field name variations (`firstName` vs `first_name`).
+- **Data sources**: Prospects = `dataSource: 'prospects'`, Candidates = `dataSource: 'candidates'`
+- **Patterns**: Tables with sticky columns, bulk actions with `Set<string>`, batch of 25, standard Dialog structure.
+- **Lovable.dev sync**: Maintain existing structure.
 
-### UI Components
-- Use **shadcn/ui** components from `src/components/ui/`
-- Check existing components before creating new ones
-- Tailwind CSS for styling — follow existing patterns in the codebase
+## Verification
 
-### TypeScript
-- All new code must be typed — define types in `src/types/`
-- Be aware of field name variations: `firstName` vs `first_name`, `linkedinUrl` vs `linkedin_profile`
+After every change: `cd ../nearshore-talent-compass && npm run build` — must pass clean.
+If build fails, fix and rebuild. Don't report errors.
 
-### Views & Navigation
-The app has 4 main views per project, sharing a consistent toggle:
-1. Matching (LayoutGrid) → `/projects/:id/matching`
-2. Kanban (Columns) → `/projects/:id`
-3. Prospects Grid (Users) → `/projects/:id/grid`
-4. Candidates Grid (List) → `/projects/:id/candidates`
+## Delivery Stage
 
-### Data Sources
-- Prospects: `dataSource: 'prospects'`
-- Candidates: `dataSource: 'candidates'`
+Your stage is `## DEV: Frontend`. Commits format: `nearshore-talent-compass@hash`.
 
-### Component Patterns
-- Tables use shadcn Table with sticky columns
-- Bulk actions track selection with `Set<string>`
-- Process in batches of 25 for large operations
-- Dialogs use standard shadcn Dialog structure
-
-## Build → Test → Fix Loop (CRITICAL)
-
-You do NOT just build and report done. You **build, test it yourself, fix what's broken, test again**, and only report done when it actually works.
-
-```
-1. BUILD   → Create/modify components, services, types
-2. TEST    → Run build + tests (see below)
-3. ASSESS  → Did it compile? Did tests pass? Any TypeScript errors?
-4. FIX     → If broken: fix the code, resolve type errors, adjust imports
-5. RETEST  → Go back to step 2
-6. DONE    → Only when build passes clean. Report: what was built, that it works
-```
-
-**You own the quality of your work.** Don't hand off code that doesn't compile.
-
-### Verification Commands
-
-After every change, run:
-```bash
-cd ../nearshore-talent-compass && npm run build
-```
-Build **must** pass clean (no errors) before you report done.
-
-For E2E testing (when relevant):
-```bash
-cd ../nearshore-talent-compass && npx playwright test
-```
-
-If the build fails, **you fix it and rebuild** — don't just report the error. Iterate until it compiles.
-
-## API Integration
-
-When integrating with Xano backend APIs:
-- Service functions go in `src/services/`
-- Use the API canonicals from CLAUDE.md for reference
-- If you need API specs, ask the `backend-developer` agent or check Xano MCP
-
-## Important Notes
-
-- This project syncs with **Lovable.dev** — maintain the existing structure
-- Use existing components before creating new ones
-- Keep the Lovable-compatible structure intact
-
-## Delivery Reporting
-
-When working on a task, update the delivery log at `features/delivery/<ID>.md`.
-
-**When to write**: When starting and completing frontend work.
-
-**What to write**: The `## DEV: Frontend` stage.
-
-**Format** (see `features/DELIVERY_FORMAT.md` for full spec):
-```markdown
-## DEV: Frontend
-- **Status**: in-progress
-- **Agent**: frontend-developer
-- **Date**: YYYY-MM-DD
-- **Notes**: What components/pages were created or modified. Build status.
-- **Commits**: nearshore-talent-compass@hash
-```
-
-**Rules**:
-- Set status to `in-progress` when starting work. Update to `done` when complete and build passes.
-- Include commit hashes in `Commits` if you made git commits.
-- Describe components/pages built or modified in Notes.
-- Append to the file if it exists; the PM should have already created it.
-- **On re-work/fixes**: When asked to fix something, update your stage — replace Notes with the latest summary, replace Screenshots with fresh ones, append new commits. The delivery log must always reflect the current state, not old state.
-
-## Self-Verification (MANDATORY)
-
-Before marking your delivery stage as `done`, you MUST include concrete proof that the work functions correctly. The PM will gate-check your delivery log — if proof is missing, you will be sent back.
-
-### Required Proof in Notes
-
-Your Notes MUST include:
-
-1. **Build confirmation**: Explicit `npm run build` result
-   - Must state "Build: PASS" with zero errors
-   - If there were TypeScript or compilation errors that you fixed, mention them briefly
-
-2. **Component renders with real data**: Confirm that the component/page renders correctly with actual API data — not mocked data, not empty state, not just the page skeleton
-   - Describe what you verified: which data appeared, which UI elements rendered
-   - If a dev server was used, note it
-
-3. **What was built**: List the specific components, services, or pages created/modified
-
-### What Gets You Sent Back
-
-- Notes that just say "done" or "component created"
-- Build not run or build status not mentioned
-- No evidence that the component works with real data
-- Only verifying empty/loading states
+**Required proof in Notes**: (1) `Build: PASS` with zero errors, (2) component renders with real API data (describe what rendered), (3) list of components/services/pages created or modified.
