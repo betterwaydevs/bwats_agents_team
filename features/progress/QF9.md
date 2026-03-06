@@ -1,8 +1,8 @@
 # QF9: Extension Async Save — Progress
 
-## Status: Implementation Complete
+## Status: Blocked (Correction Cycle)
 
-## Date: 2026-03-02
+## Date: 2026-03-05
 
 ## Summary
 
@@ -102,5 +102,26 @@ Refactored both InvitationsDriver and ConnectionsDriver extraction flows to use 
 
 ### Verification
 - SEC re-check: APPROVE (no remaining high findings in corrected scope).
-- QA re-check: PASS (static validation; runtime execution unavailable from workspace).
+- QA re-check: Static PASS only (runtime initially unavailable).
 - Table-level unique composite indexes confirmed on both tables for `(user_id, Connection_Profile_URL)`.
+
+## 2026-03-05 — Runtime + Deploy Updates
+
+### What Was Done
+- Corrected endpoint code pushed to `bwats_xano` and then adjusted to publishable XanoScript syntax.
+- Endpoints republished to Xano development via MCP with `publish=true`:
+  - `16924 create_linkedin_invitation`
+  - `16921 create_linkedin_connections`
+
+### Current Issue
+- Post-publish runtime retest with current QA credential returns:
+  - `403 ERROR_CODE_ACCESS_DENIED` on both endpoints
+- This blocks functional verification of dedupe behavior (`inserted` / `already_exists`) for correction ACs.
+
+### Pending
+- Obtain/use a permitted development user token for API group `mIBuuXC3`.
+- Re-run runtime benchmark and behavior checks (insert + duplicate) on both endpoints.
+- If successful, update delivery stages:
+  - `QA: Testing (Correction)` -> `done`
+  - `PO: Acceptance (Correction)` -> `done`
+  - `User: Approval (Correction)` -> ready

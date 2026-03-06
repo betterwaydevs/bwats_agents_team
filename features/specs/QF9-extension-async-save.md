@@ -73,3 +73,31 @@ The previous QF9 implementation made changes to the `linked_communication` exten
 - The backend-developer must read `../bwats_xano/CLAUDE.md` before making any changes
 - All Xano MCP writes must go through `xano-branch-guard` first
 - Test response time on v1 (not just dev — dev can be slower due to cold starts)
+
+## 2026-03-05 Scope Correction
+
+The effective scope for the correction cycle is:
+- `create_linkedin_invitation` (API `16924`, group `linkedin`, canonical `mIBuuXC3`)
+- `create_linkedin_connections` (API `16921`, group `linkedin`, canonical `mIBuuXC3`)
+
+Required behavior for correction:
+- Record invitation/connection idempotently by `(user_id, Connection_Profile_URL)`.
+- Return dedupe indicators (`inserted`, `already_exists`) instead of duplicate fatal errors.
+- Do not trigger stage movement in these save endpoints.
+
+## Current Issues
+
+- Runtime mismatch was reproduced in development before republish (old behavior present).
+- Endpoints were then republished to Xano development, but QA runtime calls with the current test credential now return `403 ERROR_CODE_ACCESS_DENIED`.
+- Because of `403`, functional acceptance criteria for insert/dedupe behavior cannot be verified with that credential.
+
+## Pending
+
+- Run runtime QA with a permitted user token that has access to `mIBuuXC3` development endpoints.
+- Re-execute timed insert + duplicate batches for both endpoints (10 calls each).
+- Confirm expected response contract:
+  - HTTP success on valid requests
+  - `inserted=true` for first insert
+  - `already_exists=true` for duplicate calls
+  - no stage movement side effects in endpoint response
+- If all pass, update `features/delivery/QF9.md` correction stages from `blocked` to `done`.
