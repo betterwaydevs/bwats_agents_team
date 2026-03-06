@@ -26,16 +26,17 @@ When picking up a task, agents MUST read both the spec and progress files before
 
 | ID | Title | Type | Status | Owner | Spec |
 |----|-------|------|--------|-------|------|
+| N1 | Orchestrator WhatsApp Notifications (via WHAPI) | BOTH | done | — | [spec](specs/N1-android-push-notifications.md) |
 | M8 | Delivery Supervisor Agent (Post-Task Hook) | TEAM | dev-complete | — | [spec](specs/M8-task-supervisor-agent.md) |
-| M12 | AI Reply Context Enhancement — Knowledge Base & Project Context | BOTH | pending | — | [spec](specs/M12-ai-reply-context-enhancement.md) |
+| M12 | AI Reply Context Enhancement — Knowledge Base & Project Context | BOTH | dev-complete | — | [spec](specs/M12-ai-reply-context-enhancement.md) |
 | OPT1 | Code Optimization Agent — Post-DEV Performance Gate | TEAM | dev-complete | — | [spec](specs/OPT1-code-optimization-agent.md) |
 | QF7 | function.call → function.run sweep (touchpoint_create + others on v1) | BACK | done | — | [delivery](delivery/QF7.md) |
 | QF8 | Frontend Laura cleanup — remove hardcoded "Laura" from ~11 files | BOTH | done | — | [delivery](delivery/QF8.md) |
 | QF9 | Backend Async Processing — Prospect Save Returns Fast | BACK | dev-complete | — | [delivery](delivery/QF9.md) |
 | L5 | /ats CLI Skill — Interactive ATS from CLI | TOOL | **in-progress** | — | [spec](specs/L5-ats-cli-skill.md) |
-| **L8** | **ATS Skill — Migrate from curl/API to Xano MCP** | **BACK + TOOL** | **in-progress** | — | [spec](specs/L8-ats-mcp-migration.md) |
+| L8 | ATS Skill — Migrate from curl/API to Xano MCP | BACK + TOOL | dev-complete | — | [spec](specs/L8-ats-mcp-migration.md) |
 | L7 | Downloads Section & Extension Auto-Update Notification | BOTH | done | — | [delivery](delivery/L7.md) |
-| QF10 | Prospect Parser — Replace OpenAI with Claude/Codex to save costs | BACK | pending | — | [spec](specs/QF10-prospect-parser-cost-optimization.md) |
+| QF10 | Prospect Parser — Local Codex Processing (Zero API Cost) | BACK+INFRA | dev-complete | — | [spec](specs/QF10-prospect-parser-cost-optimization.md) |
 | QF11 | Extension Duplicate Detection — Verify existing prospects are recognized on page | EXT | pending | — | [spec](specs/QF11-extension-duplicate-detection.md) |
 | QF13 | Pending Prospect Count Performance — Fast count + move to ATS + reset button | BOTH | done | — | [delivery](delivery/QF13.md) |
 | QF14 | Add_prospect conflict error — db.patch expects array, gets string | BACK | done | — | [delivery](delivery/QF14.md) |
@@ -55,7 +56,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 
 | ID | Title | Status | Our Task |
 |----|-------|--------|----------|
-| INT2 | Expanded Template System | pending | QA + acceptance testing when delivered |
+| INT2 | Expanded Template System | in-progress | Full pipeline: PM → DEV → SEC → QA → PO |
 | INT3 | Duplicate Candidate Detection & Merge | pending | QA + acceptance testing when delivered |
 
 ## Done (deployed to live + verified)
