@@ -28,6 +28,7 @@ You are the **team orchestrator** for BWATS — a multi-project system with 7 sp
 - Run `git status`, `git log`, `git commit`, `git push` on any repo (housekeeping)
 - Update LEARNINGS.md and memory files
 - Communicate with the user
+- **Send WhatsApp notifications to Pablo** (see Notification System below) — call after closing a team when approval is pending, or when an agent needs user input
 
 ### Decision tree for every request
 
@@ -214,3 +215,71 @@ The `product-owner` verifies delivered features against the original spec, then 
 - **User ↔ PO/PM**: Always high-level. Goals, outcomes, status. No code, no file paths, no stack traces.
 - **PM ↔ Developers**: Always detailed. Full task specs, acceptance criteria, exact fields/endpoints/behaviors.
 - **Developers ↔ Code**: The implementation layer. Developers own the "how".
+
+---
+
+## Notification System (N1 — WhatsApp via WHAPI)
+
+**Send Pablo a WhatsApp when a team closes or an agent needs input.**
+
+### Endpoint (live)
+```
+POST https://xano.atlanticsoft.co/api:-hMiYEDt/notifications/notify_pablo
+Authorization: Bearer <live_membership_token>
+Content-Type: application/json
+```
+
+### Payload
+```json
+{
+  "title": "Task QF13 Ready for Review",
+  "body": "The parsing status page is complete and waiting for your approval.",
+  "task_id": "QF13"
+}
+```
+- `task_id` generates a deep link: `http://100.114.78.113:3000/tasks/{task_id}`
+- Use `url` field instead of `task_id` for a custom URL
+
+### When to call it
+1. **Team closes (PO approved)** — after closing the team, call notify_pablo with task ID + summary of what was built
+2. **Agent needs input mid-pipeline** — write question file first (see below), then notify
+3. **User: Approval blocked + re-engaged** — title: `"Pipeline Resumed — {ID}"`, body: what was fixed
+
+### Agent Question Flow (for mid-pipeline input)
+
+When an agent needs Pablo's input and must wait for a response:
+
+```bash
+# 1. Write the question file
+cat > features/questions/<ID>.md << 'EOF'
+# Question: <ID>
+Status: pending
+Date: <today>
+Agent: <agent-name>
+
+## Question
+<question text>
+
+## Answer
+
+EOF
+
+# 2. Send WhatsApp notification
+curl -s -X POST "https://xano.atlanticsoft.co/api:-hMiYEDt/notifications/notify_pablo" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
+  -d '{"title":"Agent needs your input — <ID>","body":"<question summary>","task_id":"<ID>"}'
+
+# 3. Poll for answer (Pablo sees amber banner on /tasks/<ID>, types answer, submits)
+while ! grep -q "^Status: answered" features/questions/<ID>.md 2>/dev/null; do
+  sleep 15
+done
+
+# 4. Read answer and continue
+ANSWER=$(awk '/^## Answer/{found=1; next} found && NF{print}' features/questions/<ID>.md)
+```
+
+The dashboard shows the question as a prominent amber banner at the top of the task page. Pablo's submitted answer updates the file and the polling loop unblocks.
+
+### Auth note
+Requires a live membership token. For orchestrator use, get a token via `POST https://xano.atlanticsoft.co/api:Ks58d17q/auth/login` with Pablo's credentials from `bwats_xano/.env` (`TEST_USER_EMAIL` / `TEST_USER_PASSWORD` — **these are dev credentials, for live you need the live equivalents**). Alternatively, store a long-lived live token in `bwats_xano/.env` as `LIVE_NOTIFY_TOKEN`.

@@ -11,6 +11,7 @@ import { TaskHeader } from "@/components/task-detail/TaskHeader";
 import { SpecViewer } from "@/components/task-detail/SpecViewer";
 import { ProgressTimeline } from "@/components/task-detail/ProgressTimeline";
 import { ChecklistProgress } from "@/components/task-detail/ChecklistProgress";
+import { QuestionBanner } from "@/components/task-detail/QuestionBanner";
 import { DeliveryPipeline } from "@/components/task-detail/DeliveryPipeline";
 import { ChatInterface } from "@/components/assistant/ChatInterface";
 import { ReportCard } from "@/components/reports/ReportCard";
@@ -116,6 +117,8 @@ export default function TaskDetailPage({
               checked={spec.checkboxes.checked}
             />
           )}
+
+          <QuestionBanner taskId={id} />
 
           <Tabs defaultValue={defaultTab} className="w-full">
             <TabsList>
