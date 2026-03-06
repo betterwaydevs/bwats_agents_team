@@ -1,0 +1,13 @@
+HTTP/2 200 
+date: Thu, 05 Mar 2026 13:33:16 GMT
+content-type: text/event-stream
+set-cookie: XNS=0852136157c440a8c13cfc3f96237b2b|96915369bf68ff2b6cb479707f6d06b9; Path=/socket/; Secure; HttpOnly; SameSite=Strict
+x-powered-by: Express
+access-control-allow-credentials: true
+access-control-allow-headers: Content-Type, Authorization, X-Branch, X-Data-Source, mcp-session-id
+access-control-allow-methods: GET, POST, OPTIONS
+access-control-allow-origin: *
+cache-control: no-cache
+mcp-session-id: 6d12b39e-0d59-4671-b8c9-450ba03c36a1
+strict-transport-security: max-age=31536000; includeSubDomains; 
+

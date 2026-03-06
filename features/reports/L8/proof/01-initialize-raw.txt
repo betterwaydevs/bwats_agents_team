@@ -1,0 +1,3 @@
+event: message
+data: {"result":{"protocolVersion":"2024-11-05","capabilities":{"tools":{"listChanged":true}},"serverInfo":{"name":"BWATS_ATS","version":"1.0.0"},"instructions":"BWATS Applicant Tracking System MCP server. Provides ATS read and write operations for projects, pipeline stages, candidates, prospects, applications, and events. All tools require a valid authentication token passed as the token parameter. Use auth_validate first to verify the token is valid."},"jsonrpc":"2.0","id":1}
+

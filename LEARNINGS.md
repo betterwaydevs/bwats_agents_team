@@ -170,3 +170,13 @@ Append new entries to the appropriate category using this format:
 - **Issue**: Need to know canonical and URL for the custom ATS MCP server.
 - **Solution**: Canonical `Sk3cINn0`, URL: `https://xano.atlanticsoft.co/x2/mcp/Sk3cINn0/mcp/stream`. Dev: add `X-Data-Source: development` header. Live: omit header. Workspace 6 (BetterWayDevs). Live server ID 594, Dev server ID 602.
 - **Date**: 2026-03-05
+
+### MCP updateAPI requires apigroup_id — not just api_id
+- **Issue**: Calling `updateAPI` via Xano Metadata MCP from curl consistently returned "Unable to get successful response from executing tool." Spent many attempts thinking MCP was broken from the orchestrator.
+- **Solution**: The `updateAPI` tool schema requires `apigroup_id` in addition to `workspace_id` and `api_id`. Without `apigroup_id`, the tool silently fails. Key IDs: association group is 1219 (v1) / 1513 (dev). Once `apigroup_id` was included, `updateAPI` worked perfectly from curl. The "MCP getAPI/updateAPI intermittently broken" note in MEMORY.md was actually caused by missing required parameters.
+- **Date**: 2026-03-06
+
+### XanoScript `in?` / `not in?` with empty arrays causes 502
+- **Issue**: `POST /association/search` returned 502 whenever keyword was non-empty. The endpoint's `db.query` used `not in? $hidden_stage_ids` where `$hidden_stage_ids` could be an empty array `[]`. In SQL, `NOT IN ()` with an empty list is invalid and crashes the Xano worker.
+- **Solution**: Return `null` instead of `[]` for nullable filter arrays (so the `?` skip-if-null operator works), and `[-1]` sentinel for identity-match arrays (so `IN (-1)` generates valid SQL matching nothing). Never pass empty arrays to `in?` or `not in?` operators in XanoScript `db.query`.
+- **Date**: 2026-03-06

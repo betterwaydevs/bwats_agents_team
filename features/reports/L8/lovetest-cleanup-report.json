@@ -1,0 +1,11 @@
+{
+  "timestamp_utc": "2026-03-05T17:19:54Z",
+  "targets": [],
+  "summary": {
+    "projects_found": 0,
+    "projects_deleted": 0,
+    "unassign_failures": 0,
+    "stage_delete_failures": 0,
+    "project_delete_failures": 0
+  }
+}

@@ -1,0 +1,534 @@
+{
+  "timestamp_utc": "2026-03-05T17:27:01Z",
+  "match_pattern": "\\btest\\b|qa|sandbox|demo|l8 mcp live test|zz test",
+  "targets": [
+    {
+      "project_id": 45,
+      "project_name": "L8 MCP Live Test 20260305085135",
+      "associations_found": 6,
+      "associations_unassigned": 6,
+      "unassign_errors": [],
+      "stages_found": [
+        {
+          "id": 714,
+          "name": "Scoring",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 715,
+          "name": "Pre Selected",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 716,
+          "name": "Invited",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 717,
+          "name": "Contacted",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 718,
+          "name": "Follow Up",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 719,
+          "name": "Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 720,
+          "name": "Not Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 721,
+          "name": "Discarded",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 722,
+          "name": "Applied",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 723,
+          "name": "Cultural and Tech Fit - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 724,
+          "name": "Technical Pre Validation - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 725,
+          "name": "Discarded by BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 726,
+          "name": "Presented",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 727,
+          "name": "First Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 728,
+          "name": "Second Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 729,
+          "name": "Discarded",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 730,
+          "name": "Offered",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 731,
+          "name": "Hired",
+          "stage_type": "candidates"
+        }
+      ],
+      "stages_deleted": [
+        714,
+        715,
+        716,
+        717,
+        718,
+        719,
+        720,
+        721,
+        722,
+        723,
+        724,
+        725,
+        726,
+        727,
+        728,
+        729,
+        730,
+        731
+      ],
+      "stage_delete_errors": [],
+      "project_deleted": true,
+      "project_delete_error": null
+    },
+    {
+      "project_id": 38,
+      "project_name": "Senior QA Engineer",
+      "associations_found": 57,
+      "associations_unassigned": 57,
+      "unassign_errors": [],
+      "stages_found": [
+        {
+          "id": 558,
+          "name": "Pre Selected",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 559,
+          "name": "Invited",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 560,
+          "name": "Contacted",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 561,
+          "name": "Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 562,
+          "name": "Not Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 563,
+          "name": "Discarded",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 564,
+          "name": "Applied",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 566,
+          "name": "Technical Pre Validation - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 567,
+          "name": "Discarded by BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 568,
+          "name": "Presented",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 569,
+          "name": "First Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 570,
+          "name": "Second Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 571,
+          "name": "Discarded",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 572,
+          "name": "Offered",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 573,
+          "name": "Hired",
+          "stage_type": "candidates"
+        }
+      ],
+      "stages_deleted": [
+        558,
+        559,
+        560,
+        561,
+        562,
+        563,
+        564,
+        566,
+        567,
+        568,
+        569,
+        570,
+        571,
+        572,
+        573
+      ],
+      "stage_delete_errors": [],
+      "project_deleted": true,
+      "project_delete_error": null
+    },
+    {
+      "project_id": 12,
+      "project_name": "ZZ TEST PROJECT",
+      "associations_found": 118,
+      "associations_unassigned": 118,
+      "unassign_errors": [],
+      "stages_found": [
+        {
+          "id": 101,
+          "name": "Pre Selected",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 102,
+          "name": "Invited",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 103,
+          "name": "Contacted",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 107,
+          "name": "Contacted WP",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 104,
+          "name": "Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 105,
+          "name": "Not Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 106,
+          "name": "Applied",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 432,
+          "name": "On Hold",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 147,
+          "name": "Cultural and Tech Fit - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 148,
+          "name": "Technical Pre Validation - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 149,
+          "name": "Discarded by BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 150,
+          "name": "Presented",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 151,
+          "name": "First Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 152,
+          "name": "Second Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 153,
+          "name": "Discarded",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 154,
+          "name": "Offered",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 155,
+          "name": "Hired",
+          "stage_type": "candidates"
+        }
+      ],
+      "stages_deleted": [
+        102,
+        103,
+        107,
+        104,
+        105,
+        106,
+        432,
+        147,
+        148,
+        149,
+        150,
+        151,
+        152,
+        153,
+        154,
+        155
+      ],
+      "stage_delete_errors": [
+        {
+          "stage_id": 101,
+          "name": "Pre Selected",
+          "error": {
+            "code": "ERROR_FATAL",
+            "message": "Precondition failed.",
+            "payload": ""
+          }
+        }
+      ],
+      "project_deleted": false,
+      "project_delete_error": {
+        "code": "ERROR_FATAL",
+        "message": "Project has stages created, delete them first",
+        "payload": ""
+      }
+    },
+    {
+      "project_id": 35,
+      "project_name": "Senior QA Engineer -Mobile Testing",
+      "associations_found": 181,
+      "associations_unassigned": 179,
+      "unassign_errors": [
+        {
+          "association_id": 25518,
+          "error": {
+            "code": "ERROR_CODE_BAD_REQUEST",
+            "message": "Cannot remove association: there are pending or executing tasks for this person. Complete or cancel them first.",
+            "payload": ""
+          }
+        },
+        {
+          "association_id": 14822,
+          "error": {
+            "code": "ERROR_CODE_BAD_REQUEST",
+            "message": "Cannot remove association: there are pending or executing tasks for this person. Complete or cancel them first.",
+            "payload": ""
+          }
+        }
+      ],
+      "stages_found": [
+        {
+          "id": 521,
+          "name": "Scoring",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 500,
+          "name": "Invited",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 499,
+          "name": "Pre Selected",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 501,
+          "name": "Contacted",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 502,
+          "name": "Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 503,
+          "name": "Not Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 504,
+          "name": "Discarded",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 505,
+          "name": "Applied",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 578,
+          "name": "On Hold",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 579,
+          "name": "Follow Up",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 581,
+          "name": "Presented By Talenter",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 507,
+          "name": "Technical Pre Validation - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 508,
+          "name": "Discarded by BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 509,
+          "name": "Presented",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 510,
+          "name": "First Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 511,
+          "name": "Second Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 512,
+          "name": "Discarded",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 513,
+          "name": "Offered",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 514,
+          "name": "Hired",
+          "stage_type": "candidates"
+        }
+      ],
+      "stages_deleted": [
+        521,
+        500,
+        501,
+        502,
+        503,
+        505,
+        578,
+        579,
+        581,
+        507,
+        508,
+        509,
+        510,
+        511,
+        512,
+        513,
+        514
+      ],
+      "stage_delete_errors": [
+        {
+          "stage_id": 499,
+          "name": "Pre Selected",
+          "error": {
+            "code": "ERROR_FATAL",
+            "message": "Precondition failed.",
+            "payload": ""
+          }
+        },
+        {
+          "stage_id": 504,
+          "name": "Discarded",
+          "error": {
+            "code": "ERROR_FATAL",
+            "message": "Precondition failed.",
+            "payload": ""
+          }
+        }
+      ],
+      "project_deleted": false,
+      "project_delete_error": {
+        "code": "ERROR_FATAL",
+        "message": "Project has stages created, delete them first",
+        "payload": ""
+      }
+    }
+  ],
+  "summary": {
+    "projects_found": 4,
+    "projects_deleted": 2,
+    "unassign_failures": 2,
+    "stage_delete_failures": 3,
+    "project_delete_failures": 2
+  }
+}

@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>L8 Dev MCP Test Report</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; color: #111827; background: #f8fafc; }
+    .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+    h1 { margin: 0 0 8px 0; font-size: 22px; }
+    h2 { margin: 0 0 10px 0; font-size: 18px; }
+    .meta { color: #4b5563; font-size: 14px; }
+    .stats { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+    .badge { border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 600; }
+    .ok { background: #dcfce7; color: #166534; }
+    .warn { background: #fef3c7; color: #92400e; }
+    .err { background: #fee2e2; color: #991b1b; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { border: 1px solid #e5e7eb; padding: 8px; vertical-align: top; }
+    th { background: #f3f4f6; text-align: left; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>L8 Dev MCP Test Report</h1>
+    <div class="meta">Date: 2026-03-05 | Environment: development (MCP server 602) | URL: <code>https://xano.atlanticsoft.co/x2/mcp/Sk3cINn0/mcp/stream</code></div>
+    <div class="stats">
+      <span class="badge ok">Total: 23</span>
+      <span class="badge ok">MCP calls succeeded: 23</span>
+      <span class="badge err">MCP call failures: 0</span>
+      <span class="badge warn">Functional status: token/datasource mismatch for many tools</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Key Finding</h2>
+    <p>All 23 tools are present on development and callable via MCP. Most business responses returned <code>This token belongs to a different datasource.</code> because wrappers are configured with <code>x-data-source=live</code> while test auth token was from development login.</p>
+  </div>
+
+  <div class="card">
+    <h2>Per-Tool Results</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Tool</th>
+          <th>MCP Call</th>
+          <th>Note</th>
+          <th>Response Summary</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>auth_validate</code></td><td><span class="badge ok">PASS</span></td><td>validate token</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>list_applications</code></td><td><span class="badge ok">PASS</span></td><td>pending applications</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>list_events</code></td><td><span class="badge ok">PASS</span></td><td>pending events</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>list_linkedin_events</code></td><td><span class="badge ok">PASS</span></td><td>last 7 days</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>task_counts</code></td><td><span class="badge ok">PASS</span></td><td>task summary</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>mcp_list_projects</code></td><td><span class="badge ok">PASS</span></td><td>active projects</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>mcp_get_project</code></td><td><span class="badge ok">PASS</span></td><td>project details</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>mcp_get_pipeline</code></td><td><span class="badge ok">PASS</span></td><td>pipeline prospects</td><td><code>ok</code></td></tr>
+        <tr><td><code>mcp_list_stage_people</code></td><td><span class="badge ok">PASS</span></td><td>stage people</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>mcp_search_candidates</code></td><td><span class="badge ok">PASS</span></td><td>global candidate search</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>mcp_search_prospects</code></td><td><span class="badge ok">PASS</span></td><td>global prospect search</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>get_candidate</code></td><td><span class="badge ok">PASS</span></td><td>candidate detail</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>mcp_get_prospect</code></td><td><span class="badge ok">PASS</span></td><td>prospect detail</td><td><code>{"code":"ERROR_CODE_NOT_FOUND","message":"Not Found"}</code></td></tr>
+        <tr><td><code>update_application</code></td><td><span class="badge ok">PASS</span></td><td>set application read</td><td><code>{"code":"ERROR_CODE_NOT_FOUND","message":""}</code></td></tr>
+        <tr><td><code>update_notes_candidate</code></td><td><span class="badge ok">PASS</span></td><td>candidate note update</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>update_notes_prospect</code></td><td><span class="badge ok">PASS</span></td><td>prospect note update</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>move_person</code></td><td><span class="badge ok">PASS</span></td><td>move association</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>assign_person</code></td><td><span class="badge ok">PASS</span></td><td>assign person</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>create_event</code></td><td><span class="badge ok">PASS</span></td><td>create event</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>update_event</code></td><td><span class="badge ok">PASS</span></td><td>complete event</td><td><code>{"code":"ERROR_FATAL","message":"Error parsing JSON: Syntax error"}</code></td></tr>
+        <tr><td><code>create_project</code></td><td><span class="badge ok">PASS</span></td><td>create project</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>initialize_stages</code></td><td><span class="badge ok">PASS</span></td><td>initialize stages</td><td><code>{"code":"ERROR_CODE_UNAUTHORIZED","message":"This token belongs to a different datasource."}</code></td></tr>
+        <tr><td><code>search_in_project</code></td><td><span class="badge ok">PASS</span></td><td>search in project</td><td><code>{"code":"ERROR_FATAL","message":"Error parsing JSON: Syntax error"}</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<!doctype html><html><head><meta charset="utf-8"><title>L8 MCP Usage Proof</title>
+<style>body{font-family:Arial;margin:24px;background:#f8fafc;color:#111} .card{background:#fff;border:1px solid #ddd;border-radius:8px;padding:14px;margin:10px 0} code,pre{font-family:monospace;background:#f3f4f6;padding:2px 4px;border-radius:4px} pre{padding:10px;overflow:auto} a{color:#2563eb}</style></head><body>
+<h1>L8 MCP Usage Proof</h1>
+<div class="card"><b>MCP URL:</b> <code>https://xano.atlanticsoft.co/x2/mcp/Sk3cINn0/mcp/stream</code><br><b>Session ID:</b> <code>6d12b39e-0d59-4671-b8c9-450ba03c36a1</code></div>
+<div class="card"><h3>Proof 1: MCP initialize</h3><p>Headers show <code>mcp-session-id</code> returned by MCP server.</p><p>File: <code>features/reports/L8/proof/01-initialize-headers.txt</code></p></div>
+<div class="card"><h3>Proof 2: tools/list via MCP</h3><p>Returned 23 ATS tools from BWATS_ATS MCP server.</p><p>Files: <code>02-tools-list.json</code>, <code>02-tools-names.txt</code></p></div>
+<div class="card"><h3>Proof 3: tools/call auth_validate</h3><p>Raw MCP request uses method <code>tools/call</code> with tool <code>auth_validate</code>.</p><p>Files: <code>03-tools-call-auth-validate-request.json</code>, <code>03-tools-call-auth-validate-response.json</code></p></div>
+<div class="card"><h3>Proof 4: tools/call mcp_list_projects</h3><p>Raw MCP request uses method <code>tools/call</code> with tool <code>mcp_list_projects</code>.</p><p>Files: <code>04-tools-call-list-projects-request.json</code>, <code>04-tools-call-list-projects-response.json</code></p></div>
+</body></html>

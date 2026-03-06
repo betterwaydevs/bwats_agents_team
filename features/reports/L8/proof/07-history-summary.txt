@@ -1,0 +1,5 @@
+MCP tool request history comparison:
+- tool_id 2910 (dev auth_validate): 0 calls
+- tool_id 2921 (v1 auth_validate): recent calls present, branch=v1
+
+This proves current MCP execution path for auth_validate is v1.

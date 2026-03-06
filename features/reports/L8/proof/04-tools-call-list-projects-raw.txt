@@ -1,0 +1,3 @@
+event: message
+data: {"result":{"content":[{"type":"text","text":"{\"code\":\"ERROR_CODE_UNAUTHORIZED\",\"message\":\"This token belongs to a different datasource.\"}"}]},"jsonrpc":"2.0","id":4}
+

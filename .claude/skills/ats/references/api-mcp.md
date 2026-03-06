@@ -5,7 +5,7 @@ Server URL: `https://xano.atlanticsoft.co/x2/mcp/Sk3cINn0/mcp/stream`
 All tools return the underlying API result (`$api_result.response.result`).
 All tools require `token` unless noted.
 
-## Read Tools (13)
+## Read Tools (13 of 30 total)
 
 1. `auth_validate(token)`
 - Validates user token and returns user profile.
@@ -46,13 +46,16 @@ All tools require `token` unless noted.
 13. `mcp_search_prospects(token, keyword_search?, max_salary?, min_year_of_experience?, max_years_of_experience?, city?, role?, page?, item_per_page?)`
 - Global prospect ES search.
 
-## BLOCKED TOOLS — NEVER CALL THESE
+## Removed Tools (not exposed on MCP server)
 
-- `delete_project(token, project_id)` — Cascading deletes destroy cross-project associations. Use ATS web UI.
-- `delete_stage(token, stage_id)` — Destroys pipeline structure. Use ATS web UI.
-- `unassign_person(token, association_id)` — Removes people from projects (data loss). Use ATS web UI.
+The following destructive tools were removed from the MCP server on 2026-03-06.
+The underlying Xano tools still exist but are no longer accessible via the MCP endpoint.
 
-## Write / Action Tools (13 safe)
+- `delete_project` — Cascading deletes destroy cross-project associations.
+- `delete_stage` — Destroys pipeline structure.
+- `unassign_person` — Removes people from projects (data loss).
+
+## Write / Action Tools (13)
 
 14. `update_application(token, application_id, status)`
 - Updates application notification status (`pending` or `read`).

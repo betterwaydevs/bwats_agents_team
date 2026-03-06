@@ -108,6 +108,16 @@ The `backend-developer` team agent invokes tier-2 subagents when doing Xano work
 5. **PO signs off** on acceptance (reviewed QA artifacts, per-AC verdict)
 6. **User approves** via dashboard
 
+### Delivery Supervisor (Post-Completion)
+After a task is marked `done`, the **delivery-supervisor** agent validates the delivery log:
+- Checks all required stages are present with proper sign-offs
+- Rejects code-review-only QA (requires real execution evidence)
+- Verifies per-AC results in QA and PO stages
+- If violations found: reverts status to `in-progress` and instructs orchestrator to resume pipeline
+- If compliant: appends ACCEPT report, task stays `done` for User approval
+
+The supervisor runs automatically — no user intervention needed for the validation loop.
+
 ### What NOT to do:
 - Do NOT use individual `Task` calls for delivery pipeline steps — use teams
 - Do NOT skip any sign-off stage

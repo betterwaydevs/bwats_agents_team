@@ -1,0 +1,826 @@
+{
+  "timestamp_utc": "2026-03-05T17:31:49Z",
+  "targets": [
+    {
+      "project_id": 50,
+      "project_name": "L8 Live V2 20260305115457",
+      "associations_found": 0,
+      "associations_unassigned": 0,
+      "unassign_errors": [],
+      "stages_found": [
+        {
+          "id": 795,
+          "name": "Scoring",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 796,
+          "name": "Pre Selected",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 797,
+          "name": "Invited",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 798,
+          "name": "Contacted",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 799,
+          "name": "Follow Up",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 800,
+          "name": "Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 801,
+          "name": "Not Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 802,
+          "name": "Discarded",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 803,
+          "name": "Applied",
+          "stage_type": "prospects"
+        }
+      ],
+      "stages_deleted": [
+        795,
+        796,
+        797,
+        798,
+        799,
+        800,
+        801,
+        802,
+        803
+      ],
+      "stage_delete_errors": [],
+      "project_deleted": true,
+      "project_delete_error": null
+    },
+    {
+      "project_id": 51,
+      "project_name": "L8 Live V2 20260305115617",
+      "associations_found": 0,
+      "associations_unassigned": 0,
+      "unassign_errors": [],
+      "stages_found": [
+        {
+          "id": 804,
+          "name": "Scoring",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 805,
+          "name": "Pre Selected",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 806,
+          "name": "Invited",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 807,
+          "name": "Contacted",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 808,
+          "name": "Follow Up",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 809,
+          "name": "Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 810,
+          "name": "Not Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 811,
+          "name": "Discarded",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 812,
+          "name": "Applied",
+          "stage_type": "prospects"
+        }
+      ],
+      "stages_deleted": [
+        804,
+        805,
+        806,
+        807,
+        808,
+        809,
+        810,
+        811,
+        812
+      ],
+      "stage_delete_errors": [],
+      "project_deleted": true,
+      "project_delete_error": null
+    },
+    {
+      "project_id": 54,
+      "project_name": "L8 Live V2 20260305120018",
+      "associations_found": 1,
+      "associations_unassigned": 1,
+      "unassign_errors": [],
+      "stages_found": [
+        {
+          "id": 849,
+          "name": "Scoring",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 850,
+          "name": "Pre Selected",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 851,
+          "name": "Invited",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 852,
+          "name": "Contacted",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 853,
+          "name": "Follow Up",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 854,
+          "name": "Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 855,
+          "name": "Not Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 856,
+          "name": "Discarded",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 857,
+          "name": "Applied",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 858,
+          "name": "Cultural and Tech Fit - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 859,
+          "name": "Technical Pre Validation - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 860,
+          "name": "Discarded by BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 861,
+          "name": "Presented",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 862,
+          "name": "First Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 863,
+          "name": "Second Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 864,
+          "name": "Discarded",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 865,
+          "name": "Offered",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 866,
+          "name": "Hired",
+          "stage_type": "candidates"
+        }
+      ],
+      "stages_deleted": [
+        849,
+        850,
+        851,
+        852,
+        853,
+        854,
+        855,
+        856,
+        857,
+        858,
+        859,
+        860,
+        861,
+        862,
+        863,
+        864,
+        865,
+        866
+      ],
+      "stage_delete_errors": [],
+      "project_deleted": true,
+      "project_delete_error": null
+    },
+    {
+      "project_id": 47,
+      "project_name": "L8 Target 20260305090126",
+      "associations_found": 6,
+      "associations_unassigned": 6,
+      "unassign_errors": [],
+      "stages_found": [
+        {
+          "id": 750,
+          "name": "Scoring",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 751,
+          "name": "Pre Selected",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 752,
+          "name": "Invited",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 753,
+          "name": "Contacted",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 754,
+          "name": "Follow Up",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 755,
+          "name": "Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 756,
+          "name": "Not Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 757,
+          "name": "Discarded",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 758,
+          "name": "Applied",
+          "stage_type": "prospects"
+        }
+      ],
+      "stages_deleted": [
+        750,
+        751,
+        752,
+        753,
+        754,
+        755,
+        756,
+        757,
+        758
+      ],
+      "stage_delete_errors": [],
+      "project_deleted": true,
+      "project_delete_error": null
+    },
+    {
+      "project_id": 48,
+      "project_name": "L8 Target 20260305112918",
+      "associations_found": 2,
+      "associations_unassigned": 2,
+      "unassign_errors": [],
+      "stages_found": [
+        {
+          "id": 759,
+          "name": "Scoring",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 760,
+          "name": "Pre Selected",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 761,
+          "name": "Invited",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 762,
+          "name": "Contacted",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 763,
+          "name": "Follow Up",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 764,
+          "name": "Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 765,
+          "name": "Not Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 766,
+          "name": "Discarded",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 767,
+          "name": "Applied",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 768,
+          "name": "Cultural and Tech Fit - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 769,
+          "name": "Technical Pre Validation - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 770,
+          "name": "Discarded by BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 771,
+          "name": "Presented",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 772,
+          "name": "First Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 773,
+          "name": "Second Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 774,
+          "name": "Discarded",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 775,
+          "name": "Offered",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 776,
+          "name": "Hired",
+          "stage_type": "candidates"
+        }
+      ],
+      "stages_deleted": [
+        759,
+        760,
+        761,
+        762,
+        763,
+        764,
+        765,
+        766,
+        767,
+        768,
+        769,
+        770,
+        771,
+        772,
+        773,
+        774,
+        775,
+        776
+      ],
+      "stage_delete_errors": [],
+      "project_deleted": true,
+      "project_delete_error": null
+    },
+    {
+      "project_id": 49,
+      "project_name": "L8 Target 20260305115351",
+      "associations_found": 2,
+      "associations_unassigned": 2,
+      "unassign_errors": [],
+      "stages_found": [
+        {
+          "id": 777,
+          "name": "Scoring",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 778,
+          "name": "Pre Selected",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 779,
+          "name": "Invited",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 780,
+          "name": "Contacted",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 781,
+          "name": "Follow Up",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 782,
+          "name": "Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 783,
+          "name": "Not Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 784,
+          "name": "Discarded",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 785,
+          "name": "Applied",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 786,
+          "name": "Cultural and Tech Fit - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 787,
+          "name": "Technical Pre Validation - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 788,
+          "name": "Discarded by BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 789,
+          "name": "Presented",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 790,
+          "name": "First Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 791,
+          "name": "Second Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 792,
+          "name": "Discarded",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 793,
+          "name": "Offered",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 794,
+          "name": "Hired",
+          "stage_type": "candidates"
+        }
+      ],
+      "stages_deleted": [
+        777,
+        778,
+        779,
+        780,
+        781,
+        782,
+        783,
+        784,
+        785,
+        786,
+        787,
+        788,
+        789,
+        790,
+        791,
+        792,
+        793,
+        794
+      ],
+      "stage_delete_errors": [],
+      "project_deleted": true,
+      "project_delete_error": null
+    },
+    {
+      "project_id": 52,
+      "project_name": "L8 Target 20260305115749",
+      "associations_found": 2,
+      "associations_unassigned": 2,
+      "unassign_errors": [],
+      "stages_found": [
+        {
+          "id": 813,
+          "name": "Scoring",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 814,
+          "name": "Pre Selected",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 815,
+          "name": "Invited",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 816,
+          "name": "Contacted",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 817,
+          "name": "Follow Up",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 818,
+          "name": "Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 819,
+          "name": "Not Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 820,
+          "name": "Discarded",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 821,
+          "name": "Applied",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 822,
+          "name": "Cultural and Tech Fit - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 823,
+          "name": "Technical Pre Validation - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 824,
+          "name": "Discarded by BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 825,
+          "name": "Presented",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 826,
+          "name": "First Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 827,
+          "name": "Second Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 828,
+          "name": "Discarded",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 829,
+          "name": "Offered",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 830,
+          "name": "Hired",
+          "stage_type": "candidates"
+        }
+      ],
+      "stages_deleted": [
+        813,
+        814,
+        815,
+        816,
+        817,
+        818,
+        819,
+        820,
+        821,
+        822,
+        823,
+        824,
+        825,
+        826,
+        827,
+        828,
+        829,
+        830
+      ],
+      "stage_delete_errors": [],
+      "project_deleted": true,
+      "project_delete_error": null
+    },
+    {
+      "project_id": 53,
+      "project_name": "L8 Target 20260305115823",
+      "associations_found": 2,
+      "associations_unassigned": 2,
+      "unassign_errors": [],
+      "stages_found": [
+        {
+          "id": 831,
+          "name": "Scoring",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 832,
+          "name": "Pre Selected",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 833,
+          "name": "Invited",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 834,
+          "name": "Contacted",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 835,
+          "name": "Follow Up",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 836,
+          "name": "Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 837,
+          "name": "Not Interested",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 838,
+          "name": "Discarded",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 839,
+          "name": "Applied",
+          "stage_type": "prospects"
+        },
+        {
+          "id": 840,
+          "name": "Cultural and Tech Fit - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 841,
+          "name": "Technical Pre Validation - BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 842,
+          "name": "Discarded by BWDevs",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 843,
+          "name": "Presented",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 844,
+          "name": "First Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 845,
+          "name": "Second Company Interview",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 846,
+          "name": "Discarded",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 847,
+          "name": "Offered",
+          "stage_type": "candidates"
+        },
+        {
+          "id": 848,
+          "name": "Hired",
+          "stage_type": "candidates"
+        }
+      ],
+      "stages_deleted": [
+        831,
+        832,
+        833,
+        834,
+        835,
+        836,
+        837,
+        838,
+        839,
+        840,
+        841,
+        842,
+        843,
+        844,
+        845,
+        846,
+        847,
+        848
+      ],
+      "stage_delete_errors": [],
+      "project_deleted": true,
+      "project_delete_error": null
+    }
+  ],
+  "summary": {
+    "projects_found": 8,
+    "projects_deleted": 8,
+    "unassign_failures": 0,
+    "stage_delete_failures": 0,
+    "project_delete_failures": 0
+  }
+}

@@ -28,7 +28,7 @@ Each delivery file starts with a title header and contains one or more stage sec
 | `## DEV: Frontend` | DEV | frontend-developer | When frontend work starts/completes |
 | `## DEV: Extension` | DEV | chrome-ext-developer | When extension work starts/completes |
 | `## DEV: Python` | DEV | python-developer | When Python work starts/completes |
-| `## SEC: Security Review` | SEC | security-reviewer | After DEV completes, before QA begins |
+| `## SEC: Security & Optimization Review` | SEC | security-reviewer | After DEV completes, before QA begins (security + performance/quality) |
 | `## QA: Testing` | QA | qa-tester | When testing starts/completes |
 | `## PO: Acceptance` | PO | product-owner | When verifying acceptance criteria |
 | `## User: Approval` | User | (user via dashboard) | Final approval gate |
@@ -94,7 +94,7 @@ Each stage type has specific proof artifacts that agents MUST provide when marki
 | Field | Required? | Details |
 |---|---|---|
 | **Status** | Required | `done` if APPROVE or CONDITIONAL APPROVE; `blocked` if REJECT |
-| **Notes** | Required | Must include finding list with severities, recommendation (APPROVE/CONDITIONAL/REJECT), and files reviewed |
+| **Notes** | Required | Must include finding list with severities for BOTH security and optimization categories, recommendation (APPROVE/CONDITIONAL/REJECT), and files reviewed |
 | **Date** | Required | Date and time of review |
 
 ### QA: Testing

@@ -1,0 +1,104 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Count 2 /Kids [4 0 R 6 0 R] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 5 0 R >>
+endobj
+5 0 obj
+<< /Length 2095 >>
+stream
+BT
+/F1 11 Tf
+1 0 0 1 40 760 Tm (# BWATS ATS MCP Setup Guide) Tj
+1 0 0 1 40 745 Tm () Tj
+1 0 0 1 40 730 Tm (This document explains how to connect the BWATS ATS MCP server in Claude and other MCP clients.) Tj
+1 0 0 1 40 715 Tm () Tj
+1 0 0 1 40 700 Tm (## MCP Server URLs) Tj
+1 0 0 1 40 685 Tm () Tj
+1 0 0 1 40 670 Tm (- Live \(recruiter use\):) Tj
+1 0 0 1 40 655 Tm (  - https://xano.atlanticsoft.co/x2/mcp/Sk3cINn0/mcp/stream) Tj
+1 0 0 1 40 640 Tm (- Development \(testing only\):) Tj
+1 0 0 1 40 625 Tm (  - https://xano.atlanticsoft.co/x2/mcp/Sk3cINn0:development/mcp/stream) Tj
+1 0 0 1 40 610 Tm (  - https://xano.atlanticsoft.co/x2/mcp/Sk3cINn0:development/mcp/sse) Tj
+1 0 0 1 40 595 Tm () Tj
+1 0 0 1 40 580 Tm (## Claude Desktop Configuration) Tj
+1 0 0 1 40 565 Tm () Tj
+1 0 0 1 40 550 Tm (Edit `claude_desktop_config.json` and add:) Tj
+1 0 0 1 40 535 Tm () Tj
+1 0 0 1 40 520 Tm (```json) Tj
+1 0 0 1 40 505 Tm ({) Tj
+1 0 0 1 40 490 Tm (  "mcpServers": {) Tj
+1 0 0 1 40 475 Tm (    "bwats-ats": {) Tj
+1 0 0 1 40 460 Tm (      "url": "https://xano.atlanticsoft.co/x2/mcp/Sk3cINn0/mcp/stream") Tj
+1 0 0 1 40 445 Tm (    }) Tj
+1 0 0 1 40 430 Tm (  }) Tj
+1 0 0 1 40 415 Tm (}) Tj
+1 0 0 1 40 400 Tm (```) Tj
+1 0 0 1 40 385 Tm () Tj
+1 0 0 1 40 370 Tm (Optional dev entry \(for testing only\):) Tj
+1 0 0 1 40 355 Tm () Tj
+1 0 0 1 40 340 Tm (```json) Tj
+1 0 0 1 40 325 Tm ({) Tj
+1 0 0 1 40 310 Tm (  "mcpServers": {) Tj
+1 0 0 1 40 295 Tm (    "bwats-ats-dev": {) Tj
+1 0 0 1 40 280 Tm (      "url": "https://xano.atlanticsoft.co/x2/mcp/Sk3cINn0:development/mcp/stream") Tj
+1 0 0 1 40 265 Tm (    }) Tj
+1 0 0 1 40 250 Tm (  }) Tj
+1 0 0 1 40 235 Tm (}) Tj
+1 0 0 1 40 220 Tm (```) Tj
+1 0 0 1 40 205 Tm () Tj
+1 0 0 1 40 190 Tm (## Claude Code CLI) Tj
+1 0 0 1 40 175 Tm () Tj
+1 0 0 1 40 160 Tm (Add MCP server in your CLI MCP settings using the same URLs.) Tj
+1 0 0 1 40 145 Tm () Tj
+1 0 0 1 40 130 Tm (If using fallback API/curl mode, ensure local permissions allow network calls to `xano.atlanticsoft.co`.) Tj
+1 0 0 1 40 115 Tm () Tj
+1 0 0 1 40 100 Tm (## Generic MCP Clients) Tj
+1 0 0 1 40 85 Tm () Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 7 0 R >>
+endobj
+7 0 obj
+<< /Length 652 >>
+stream
+BT
+/F1 11 Tf
+1 0 0 1 40 760 Tm (Use the MCP stream URL directly in your client/server configuration.) Tj
+1 0 0 1 40 745 Tm () Tj
+1 0 0 1 40 730 Tm (- Transport: HTTP stream or SSE \(if supported\)) Tj
+1 0 0 1 40 715 Tm (- Auth: Bearer token for the MCP server) Tj
+1 0 0 1 40 700 Tm () Tj
+1 0 0 1 40 685 Tm (## Operating Rules) Tj
+1 0 0 1 40 670 Tm () Tj
+1 0 0 1 40 655 Tm (1. Recruiters should use live MCP only.) Tj
+1 0 0 1 40 640 Tm (2. All MCP testing should be done against development MCP.) Tj
+1 0 0 1 40 625 Tm (3. Promote to live only after development validation passes.) Tj
+1 0 0 1 40 610 Tm (4. Keep dev and live toolsets synchronized.) Tj
+ET
+endstream
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000121 00000 n 
+0000000191 00000 n 
+0000000317 00000 n 
+0000002464 00000 n 
+0000002590 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+3293
+%%EOF

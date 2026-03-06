@@ -26,9 +26,9 @@ When picking up a task, agents MUST read both the spec and progress files before
 
 | ID | Title | Type | Status | Owner | Spec |
 |----|-------|------|--------|-------|------|
-| M8 | Delivery Supervisor Agent (Post-Task Hook) | TEAM | pending | — | [spec](specs/M8-task-supervisor-agent.md) |
+| M8 | Delivery Supervisor Agent (Post-Task Hook) | TEAM | dev-complete | — | [spec](specs/M8-task-supervisor-agent.md) |
 | M12 | AI Reply Context Enhancement — Knowledge Base & Project Context | BOTH | pending | — | [spec](specs/M12-ai-reply-context-enhancement.md) |
-| **OPT1** | **Code Optimization Agent — Post-DEV Performance Gate** | **TEAM** | **pending** | — | [spec](specs/OPT1-code-optimization-agent.md) |
+| OPT1 | Code Optimization Agent — Post-DEV Performance Gate | TEAM | dev-complete | — | [spec](specs/OPT1-code-optimization-agent.md) |
 | QF7 | function.call → function.run sweep (touchpoint_create + others on v1) | BACK | done | — | [delivery](delivery/QF7.md) |
 | QF8 | Frontend Laura cleanup — remove hardcoded "Laura" from ~11 files | BOTH | done | — | [delivery](delivery/QF8.md) |
 | QF9 | Backend Async Processing — Prospect Save Returns Fast | BACK | dev-complete | — | [delivery](delivery/QF9.md) |

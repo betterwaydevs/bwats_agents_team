@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>L8 Live MCP Functional Report</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f8fafc;color:#111827;margin:24px}
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:14px}
+    h1{margin:0 0 8px 0} h2{margin:0 0 10px 0;font-size:18px}
+    .meta{font-size:13px;color:#4b5563}
+    .stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .badge{border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600}
+    .ok{background:#dcfce7;color:#166534}.bad{background:#fee2e2;color:#991b1b}.info{background:#dbeafe;color:#1e40af}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{border:1px solid #e5e7eb;padding:6px 8px;vertical-align:top}
+    th{background:#f3f4f6;text-align:left}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>L8 Live MCP Functional Report</h1>
+    <div class="meta">Date: 2026-03-05 | MCP URL: <code>https://xano.atlanticsoft.co/x2/mcp/Sk3cINn0/mcp/stream</code> | Token: live/v1</div>
+    <div class="stats">
+      <span class="badge info">Tools Tested: 23</span>
+      <span class="badge ok">Passed: 19</span>
+      <span class="badge bad">Failed: 4</span>
+      <span class="badge info">Projects Loaded: 17</span>
+      <span class="badge info">Applications: 8</span>
+      <span class="badge info">Events: 25</span>
+      <span class="badge info">LinkedIn Events: 100</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Live Projects Sample</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Name</th><th>Status</th><th>Location</th><th>Candidate Role</th><th>Prospect Role</th></tr></thead>
+      <tbody>
+<tr><td>45</td><td>L8 MCP Live Test 20260305085135</td><td>active</td><td>Remote</td><td>88</td><td>81</td></tr>
+<tr><td>5</td><td>Senior Full-Stack Java and React Developer</td><td>active</td><td>remote in Latam</td><td>88</td><td>81</td></tr>
+<tr><td>19</td><td>Mid–Senior Full Stack Developer (Front-End Focused – React / TypeScript)</td><td>active</td><td>Latam</td><td>111</td><td>112</td></tr>
+<tr><td>24</td><td>Always-Open: Software Engineers (Talent Pool)</td><td>active</td><td>REMOTE LATAM</td><td>88</td><td>80</td></tr>
+<tr><td>29</td><td>Senior Full Stack Product Engineer</td><td>active</td><td>Remote Latam</td><td>118</td><td>119</td></tr>
+<tr><td>30</td><td>Coding Expert - LATAM</td><td>active</td><td>Remote Latam</td><td>120</td><td>121</td></tr>
+<tr><td>33</td><td>Senior Android Mobile Developer</td><td>active</td><td>Montevideo - Uruguay</td><td>126</td><td>127</td></tr>
+<tr><td>35</td><td>Senior QA Engineer -Mobile Testing</td><td>active</td><td>Uruguay-Montevideo</td><td>130</td><td>131</td></tr>
+<tr><td>32</td><td>Senior iOS Mobile Developer</td><td>active</td><td>Uruguay-Montevideo</td><td>124</td><td>125</td></tr>
+<tr><td>34</td><td>Staff Android Developer</td><td>active</td><td>Uruguay-Montevideo</td><td>128</td><td>129</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Pipeline Snapshot (Project)</h2>
+    <table>
+      <thead><tr><th>Stage ID</th><th>Stage</th><th>Count</th></tr></thead>
+      <tbody>
+<tr><td>714</td><td>Scoring</td><td>0</td></tr>
+<tr><td>715</td><td>Pre Selected</td><td>0</td></tr>
+<tr><td>716</td><td>Invited</td><td>0</td></tr>
+<tr><td>717</td><td>Contacted</td><td>0</td></tr>
+<tr><td>718</td><td>Follow Up</td><td>0</td></tr>
+<tr><td>719</td><td>Interested</td><td>0</td></tr>
+<tr><td>720</td><td>Not Interested</td><td>0</td></tr>
+<tr><td>721</td><td>Discarded</td><td>0</td></tr>
+<tr><td>722</td><td>Applied</td><td>0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>People Details Sample</h2>
+    <table>
+      <thead><tr><th>Type</th><th>ID</th><th>Name</th><th>Role</th><th>City</th><th>Country</th><th>ES ID</th></tr></thead>
+      <tbody>
+<tr><td>Candidate</td><td>603</td><td>Jhonjandrys</td><td>react developer</td><td>Medellín</td><td>Colombia</td><td><code>v1oIQZcBYzrcWrEDeUlp</code></td></tr>
+<tr><td>Prospect</td><td>33325</td><td>Lucas</td><td>Mid-level Software Engineer</td><td>Limeira</td><td>Brazil</td><td><code>AXs9y5oB1gtBcfFRHYon</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Per-Tool Functional Results</h2>
+    <table>
+      <thead><tr><th>Tool</th><th>Status</th><th>Note</th><th>Summary</th></tr></thead>
+      <tbody>
+<tr><td><code>auth_validate</code></td><td><span class="badge ok">pass</span></td><td>validate</td><td><code>ok</code></td></tr>
+<tr><td><code>list_applications</code></td><td><span class="badge ok">pass</span></td><td>apps</td><td><code>ok</code></td></tr>
+<tr><td><code>list_events</code></td><td><span class="badge ok">pass</span></td><td>events</td><td><code>ok</code></td></tr>
+<tr><td><code>list_linkedin_events</code></td><td><span class="badge ok">pass</span></td><td>linkedin</td><td><code>ok</code></td></tr>
+<tr><td><code>task_counts</code></td><td><span class="badge ok">pass</span></td><td>tasks</td><td><code>ok</code></td></tr>
+<tr><td><code>mcp_list_projects</code></td><td><span class="badge ok">pass</span></td><td>projects</td><td><code>ok</code></td></tr>
+<tr><td><code>mcp_get_project</code></td><td><span class="badge ok">pass</span></td><td>project</td><td><code>ok</code></td></tr>
+<tr><td><code>mcp_get_pipeline</code></td><td><span class="badge ok">pass</span></td><td>pipeline</td><td><code>ok</code></td></tr>
+<tr><td><code>mcp_list_stage_people</code></td><td><span class="badge ok">pass</span></td><td>people</td><td><code>ok</code></td></tr>
+<tr><td><code>mcp_search_candidates</code></td><td><span class="badge ok">pass</span></td><td>search cand</td><td><code>ok</code></td></tr>
+<tr><td><code>mcp_search_prospects</code></td><td><span class="badge ok">pass</span></td><td>search pros</td><td><code>ok</code></td></tr>
+<tr><td><code>get_candidate</code></td><td><span class="badge ok">pass</span></td><td>candidate</td><td><code>ok</code></td></tr>
+<tr><td><code>mcp_get_prospect</code></td><td><span class="badge ok">pass</span></td><td>prospect</td><td><code>ok</code></td></tr>
+<tr><td><code>update_application</code></td><td><span class="badge ok">pass</span></td><td>mark read</td><td><code>ok</code></td></tr>
+<tr><td><code>update_notes_candidate</code></td><td><span class="badge ok">pass</span></td><td>notes cand</td><td><code>ok</code></td></tr>
+<tr><td><code>update_notes_prospect</code></td><td><span class="badge ok">pass</span></td><td>notes pros</td><td><code>ok</code></td></tr>
+<tr><td><code>create_project</code></td><td><span class="badge ok">pass</span></td><td>create project</td><td><code>ok</code></td></tr>
+<tr><td><code>initialize_stages</code></td><td><span class="badge ok">pass</span></td><td>init prospects</td><td><code>ok</code></td></tr>
+<tr><td><code>assign_person</code></td><td><span class="badge bad">fail</span></td><td>assign prospect</td><td><code>missing prospect id/es</code></td></tr>
+<tr><td><code>move_person</code></td><td><span class="badge bad">fail</span></td><td>move prospect</td><td><code>assign not executed</code></td></tr>
+<tr><td><code>search_in_project</code></td><td><span class="badge bad">fail</span></td><td>search project</td><td><code>{"code":"ERROR_FATAL","message":"Error parsing JSON: Syntax error"}</code></td></tr>
+<tr><td><code>create_event</code></td><td><span class="badge ok">pass</span></td><td>create event</td><td><code>ok</code></td></tr>
+<tr><td><code>update_event</code></td><td><span class="badge bad">fail</span></td><td>update event</td><td><code>{"code":"ERROR_FATAL","message":"Error parsing JSON: Syntax error"}</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</body></html>

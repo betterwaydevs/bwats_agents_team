@@ -1,0 +1,145 @@
+{
+  "total": 23,
+  "pass": 19,
+  "fail": 4,
+  "results": [
+    {
+      "tool": "auth_validate",
+      "status": "pass",
+      "note": "validate",
+      "summary": "ok"
+    },
+    {
+      "tool": "list_applications",
+      "status": "pass",
+      "note": "apps",
+      "summary": "ok"
+    },
+    {
+      "tool": "list_events",
+      "status": "pass",
+      "note": "events",
+      "summary": "ok"
+    },
+    {
+      "tool": "list_linkedin_events",
+      "status": "pass",
+      "note": "linkedin",
+      "summary": "ok"
+    },
+    {
+      "tool": "task_counts",
+      "status": "fail",
+      "note": "tasks",
+      "summary": "assertion failed: type==\"object\" or type==\"array\""
+    },
+    {
+      "tool": "mcp_list_projects",
+      "status": "pass",
+      "note": "projects",
+      "summary": "ok"
+    },
+    {
+      "tool": "mcp_get_project",
+      "status": "pass",
+      "note": "project",
+      "summary": "ok"
+    },
+    {
+      "tool": "mcp_get_pipeline",
+      "status": "pass",
+      "note": "pipeline",
+      "summary": "ok"
+    },
+    {
+      "tool": "mcp_list_stage_people",
+      "status": "pass",
+      "note": "people",
+      "summary": "ok"
+    },
+    {
+      "tool": "mcp_search_candidates",
+      "status": "pass",
+      "note": "search cand",
+      "summary": "ok"
+    },
+    {
+      "tool": "mcp_search_prospects",
+      "status": "pass",
+      "note": "search pros",
+      "summary": "ok"
+    },
+    {
+      "tool": "get_candidate",
+      "status": "pass",
+      "note": "candidate",
+      "summary": "ok"
+    },
+    {
+      "tool": "mcp_get_prospect",
+      "status": "pass",
+      "note": "prospect",
+      "summary": "ok"
+    },
+    {
+      "tool": "update_application",
+      "status": "pass",
+      "note": "mark read",
+      "summary": "ok"
+    },
+    {
+      "tool": "update_notes_candidate",
+      "status": "pass",
+      "note": "notes cand",
+      "summary": "ok"
+    },
+    {
+      "tool": "update_notes_prospect",
+      "status": "pass",
+      "note": "notes pros",
+      "summary": "ok"
+    },
+    {
+      "tool": "create_project",
+      "status": "pass",
+      "note": "create project",
+      "summary": "ok"
+    },
+    {
+      "tool": "initialize_stages",
+      "status": "pass",
+      "note": "init prospects",
+      "summary": "ok"
+    },
+    {
+      "tool": "assign_person",
+      "status": "fail",
+      "note": "assign prospect",
+      "summary": "missing prospect id/es"
+    },
+    {
+      "tool": "move_person",
+      "status": "fail",
+      "note": "move prospect",
+      "summary": "assign not executed"
+    },
+    {
+      "tool": "search_in_project",
+      "status": "fail",
+      "note": "search project",
+      "summary": "assertion failed: type==\"array\" or .items!=null or type==\"object\""
+    },
+    {
+      "tool": "create_event",
+      "status": "pass",
+      "note": "create event",
+      "summary": "ok"
+    },
+    {
+      "tool": "update_event",
+      "status": "pass",
+      "note": "update event",
+      "summary": "ok"
+    }
+  ]
+}

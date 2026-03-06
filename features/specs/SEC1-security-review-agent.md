@@ -3,7 +3,13 @@
 **Priority**: High
 **Type**: TEAM
 **Project**: team (workspace-level)
-**Status**: pending
+**Status**: done (implemented + expanded with OPT1)
+
+---
+
+**NOTE**: This agent has been **expanded** to include performance and code quality review (originally specified in OPT1). The `security-reviewer` agent now checks **10 categories**: 1-9 for security (as originally specified below), and Category 10 for Performance & Optimization (from OPT1). See `features/specs/OPT1-code-optimization-agent.md` for the optimization checklist details.
+
+---
 
 ## Problem
 
