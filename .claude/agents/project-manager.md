@@ -79,6 +79,7 @@ Your stage is `## PM: Assignment`. Always include `## User: Approval` (status: p
 - [ ] Real execution proof (curl responses, Playwright, DB queries) — NOT code review
 - [ ] If Notes say "code review" / "static analysis" / "reviewed the code" → REJECT immediately
 - [ ] Screenshots exist with real data
+- [ ] **For frontend/UI tasks**: Playwright browser screenshots showing the actual rendered interface are MANDATORY. If missing → REJECT. The user reviews these visually.
 - [ ] Report file exists in `features/reports/<ID>/` with date/time
 - [ ] Per-AC results (PASS/FAIL each criterion with evidence)
 

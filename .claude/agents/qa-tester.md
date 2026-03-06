@@ -18,10 +18,26 @@ Read `.claude/agents/_shared/common-rules.md` — delivery reporting and self-ve
 
 ## Testing by Project
 
-### Frontend (nearshore-talent-compass)
-- Build: `cd ../nearshore-talent-compass && npm run build`
-- E2E: `cd ../nearshore-talent-compass && npx playwright test`
-- Manual: verify components render, types consistent, API integration works
+### Frontend (nearshore-talent-compass) — PLAYWRIGHT SCREENSHOTS MANDATORY
+
+Any task that touches the frontend or creates/modifies UI **MUST** include Playwright browser screenshots showing the actual rendered interface with real data. The user reviews these screenshots to verify the UI visually — they are the primary deliverable for frontend QA.
+
+**Required workflow for frontend/UI tasks:**
+1. Build: `cd ../nearshore-talent-compass && npm run build`
+2. Start dev server if needed: `cd ../nearshore-talent-compass && npm run dev &`
+3. Run Playwright to capture screenshots of each affected page/component:
+   ```bash
+   cd ../nearshore-talent-compass && npx playwright test --headed
+   ```
+   Or write a quick Playwright script that navigates to the pages and takes screenshots:
+   ```bash
+   npx playwright screenshot http://localhost:8080/<route> features/reports/<ID>/<id>-<description>.png
+   ```
+4. Screenshots must show: the actual UI with real data loaded, not loading spinners or empty states
+5. Capture at least one screenshot per UI-related acceptance criterion
+6. Save all screenshots to `features/reports/<ID>/`
+
+**If Playwright cannot reach the dev server**: use `curl` to verify the API data is correct, but note in the report that visual screenshots are pending manual verification. Set a clear flag: `Screenshots: PENDING — dev server not reachable`.
 
 ### Backend (bwats_xano)
 - Curl validation via tier-2 `xano-curl-validator` subagent
@@ -49,7 +65,11 @@ Your stage is `## QA: Testing`.
 ## Required Artifacts
 
 1. **Report HTML**: Save to `features/reports/<ID>/<id-lowercase>-test-report.html`
-2. **Screenshots**: Save to `features/reports/<ID>/<id-lowercase>-<description>.png` — must show feature with real data, not empty states. Minimum one per visual AC.
+2. **Screenshots** (MANDATORY for frontend/UI tasks): Save to `features/reports/<ID>/<id-lowercase>-<description>.png`
+   - Must show the actual rendered interface with real data — not empty states, spinners, or skeletons
+   - Minimum one screenshot per UI-related acceptance criterion
+   - The user will review these screenshots on their phone to quickly judge if the UI is correct
+   - For backend-only tasks: curl output logs are sufficient, screenshots optional
 3. **Build verification**: `Build: PASS` in Notes if applicable.
 
 ## Notes Format
