@@ -51,6 +51,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 |----|-------|------|--------|-------|------|
 | INT1 | Multi-Tenant Branding — CSS-Based Logo & Colors | FRONT | done | — | [spec](specs/INT1-global-super-admin-settings.md) |
 | L2 | Prerender / SEO Meta Tags | FRONT/INFRA | pending | — | [spec](specs/L2-prerender-seo.md) |
+| N2 | Local HTTPS for Dashboard — Tailscale cert + nginx/caddy on home server | INFRA | pending | — | |
 
 ## Delegated to Interns (QA on delivery)
 
