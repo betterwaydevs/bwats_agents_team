@@ -1,0 +1,62 @@
+{
+  "startTime": "2026-03-04T11:30:37.620Z",
+  "endTime": "2026-03-04T11:31:17.900Z",
+  "results": [
+    {
+      "testId": "T1",
+      "name": "Auth guard redirect",
+      "status": "PASS",
+      "details": "URL: http://localhost:8080/login",
+      "timestamp": "2026-03-04T11:30:42.212Z"
+    },
+    {
+      "testId": "T2",
+      "name": "Login",
+      "status": "PASS",
+      "details": "URL after login: http://localhost:8080/dashboard",
+      "timestamp": "2026-03-04T11:30:50.666Z"
+    },
+    {
+      "testId": "T3",
+      "name": "Downloads page loads",
+      "status": "PASS",
+      "details": "Empty state shown",
+      "timestamp": "2026-03-04T11:31:00.036Z"
+    },
+    {
+      "testId": "T4",
+      "name": "Empty state",
+      "status": "PASS",
+      "details": "Shows \"No downloads available\" - API returns null",
+      "timestamp": "2026-03-04T11:31:00.036Z"
+    },
+    {
+      "testId": "T5",
+      "name": "Others dropdown",
+      "status": "PASS",
+      "details": "Downloads link found",
+      "timestamp": "2026-03-04T11:31:07.983Z"
+    },
+    {
+      "testId": "T6",
+      "name": "Mobile responsive (375px)",
+      "status": "PASS",
+      "details": "Screenshot captured",
+      "timestamp": "2026-03-04T11:31:12.907Z"
+    },
+    {
+      "testId": "T7",
+      "name": "Desktop layout (1920px)",
+      "status": "PASS",
+      "details": "Screenshot captured",
+      "timestamp": "2026-03-04T11:31:17.547Z"
+    },
+    {
+      "testId": "T8",
+      "name": "API list endpoint",
+      "status": "FAIL",
+      "details": "HTTP 200 but body is null - API function stack empty on dev branch",
+      "timestamp": "2026-03-04T11:31:17.807Z"
+    }
+  ]
+}

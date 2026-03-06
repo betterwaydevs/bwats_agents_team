@@ -84,7 +84,7 @@ Content-Type: application/json
 2. Validate token with `GET /auth/me`
 3. If valid: greet user by name, show dashboard
 4. If invalid (401): delete session file, prompt for browser-based login
-5. **Browser-based login**: Open `https://bwats.betterway.dev/` in the browser, user logs in, copies token from `localStorage.getItem('authToken')` in the console, pastes it back
+5. **Browser-based login**: Open `https://bwats.betterway.dev/cli-token` in the browser, user copies the token shown on that page, pastes it back
 6. After receiving token: validate with `/auth/me`, store token + user info in session file
 7. On any subsequent 401: prompt for re-login, retry the failed request once
 8. **Never ask for passwords** — always use the browser token flow

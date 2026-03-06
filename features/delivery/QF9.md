@@ -134,9 +134,9 @@
   **Verdict**: APPROVED — Ready for user review.
 
 ## User: Approval
-- **Status**: blocked
-- **Date**: 2026-03-05
-- **Notes**: This task was supposed to be for endpints create_linkedin_invitation and created_linkedin_connection  it needs to just to insert the connection and the invitation to the database, and  make sure if we need to create a touchpoint or action, but we can leave out the stage change, we already have the auto organizer and also we already have an action, 
+- **Status**: done
+- **Date**: 2026-03-06
+- **Notes**: Pending to test live
 we just need to make sure we have the invitation and connection recorded if they are already not recorded
 
 ## PM: Reassignment (Post-Rejection)
@@ -159,17 +159,32 @@ we just need to make sure we have the invitation and connection recorded if they
 - **Notes**: Re-check approved. No critical/high/medium findings remain in scoped endpoint changes. Auth-bound ownership controls are correctly enforced and stage movement call removal introduces no new security risk. Duplicate-race integrity is mitigated by existing table-level unique composite index on `(user_id, Connection_Profile_URL)`.
 
 ## QA: Testing (Correction)
-- **Status**: blocked
+- **Status**: done
 - **Agent**: qa-tester
-- **Date**: 2026-03-05
-- **Notes**: Runtime validation was rerun after publishing endpoint updates directly to Xano development (workspace 6, api group 1512, publish=true). Post-publish retest now returns `403 ERROR_CODE_ACCESS_DENIED` on both endpoints for the QA test credential (10/10 calls each). This confirms deployment changed runtime behavior from the prior stale responses, but functional AC validation is still blocked until a permitted user token is used to execute insert/dedupe scenarios.
-- **Report**: qf9-correction-runtime-dev-postpublish-2026-03-05.html
+- **Date**: 2026-03-06 03:32-03:33 UTC
+- **Report**: qf9-correction-qa-report.html
+- **Notes**:
+  Full runtime retest after 403 fix (auth="user" added to both endpoints). 22 total curl calls against development environment.
+  **AC1 — Response times sub-1s**: PASS — All 20 authenticated calls responded in 366-432ms. Avg invitation: 398ms, avg connection: 390ms. Zero outliers.
+  **AC2 — Insert returns inserted=true, already_exists=false**: PASS — All 14 new-record calls (7 inv + 7 con) returned correct flags with full record data.
+  **AC3 — Duplicate returns inserted=false, already_exists=true**: PASS — All 6 duplicate calls (3 inv + 3 con) returned original record (same ID, same created_at) with correct flags.
+  **AC4 — No stage movement side effects**: PASS — Response contains only record + flags. Code review confirms no automatic_action_association, move_person, function.run, or function.call in either endpoint.
+  **AC5 — Unauthenticated calls rejected**: PASS — Both endpoints return HTTP 401 ERROR_CODE_UNAUTHORIZED without Bearer token.
 
 ## PO: Acceptance (Correction)
-- **Status**: blocked
+- **Status**: done
 - **Agent**: product-owner
-- **Date**: 2026-03-05
-- **Notes**: Blocked by QA runtime failure. Cannot accept until development environment behavior matches corrected requirements and QA rerun passes with real execution evidence.
+- **Date**: 2026-03-06
+- **Notes**:
+  **Artifacts reviewed**: qf9-correction-qa-report.html (22 curl calls, 2026-03-06 03:32-03:33 UTC), delivery log correction pipeline (PM → DEV → SEC → QA).
+  **User requirement**: "create_linkedin_invitation and create_linkedin_connections should just insert the connection and the invitation to the database... make sure we have the invitation and connection recorded if they are already not recorded... leave out the stage change."
+  **AC1 — Response times sub-1s**: PASS — All 20 authenticated calls in 366-432ms range. Avg 394ms. Fast, consistent, zero outliers.
+  **AC2 — Insert flags (inserted=true, already_exists=false)**: PASS — 14/14 new records across both endpoints returned correct flags with full record data. Records created with sequential IDs confirming real DB inserts.
+  **AC3 — Dedupe flags (inserted=false, already_exists=true)**: PASS — 6/6 duplicate submissions returned the original record (same ID, same created_at). No duplicate rows created. Dedupe by (user_id, Connection_Profile_URL) working correctly.
+  **AC4 — No stage movement**: PASS — QA confirmed via both runtime response inspection (no pipeline/stage/action fields) and code review (no automatic_action_association, move_person, function.run, or function.call in either endpoint). This directly addresses the user's request to "leave out the stage change."
+  **AC5 — Auth enforced**: PASS — Both endpoints return 401 without token. Auth hardened with $auth.id binding.
+  **User requirement alignment**: The correction fully addresses what the user asked for — both endpoints now simply record invitations/connections if not already recorded, with deduplication, and no stage movement side effects. The original QF9 delivery targeted the wrong endpoints (create_prospect_from_html); this correction targets the correct ones.
+  **Verdict**: APPROVED — Ready for user review.
 
 ## User: Approval (Correction)
 - **Status**: pending

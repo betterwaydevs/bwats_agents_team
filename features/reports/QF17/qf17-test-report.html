@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QF17 Test Report — Extension Slow Loading Fix</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 960px; margin: 0 auto; padding: 24px; background: #f8f9fa; color: #1a1a2e; }
+  h1 { border-bottom: 3px solid #16213e; padding-bottom: 12px; }
+  h2 { color: #16213e; margin-top: 32px; }
+  .meta { background: #e8f4f8; padding: 16px; border-radius: 8px; margin: 16px 0; }
+  .meta strong { display: inline-block; min-width: 140px; }
+  .pass { color: #0a8754; font-weight: bold; }
+  .fail { color: #dc3545; font-weight: bold; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+  th, td { border: 1px solid #dee2e6; padding: 10px 14px; text-align: left; }
+  th { background: #16213e; color: white; }
+  tr:nth-child(even) { background: #f1f3f5; }
+  pre { background: #1a1a2e; color: #a8e6cf; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; }
+  code { background: #e9ecef; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+  .verdict { font-size: 1.4em; padding: 16px; border-radius: 8px; margin: 24px 0; text-align: center; }
+  .verdict.pass-verdict { background: #d4edda; color: #155724; border: 2px solid #0a8754; }
+</style>
+</head>
+<body>
+
+<h1>QF17 — Test Report</h1>
+<p>Extension Slow Loading — Switch to Fast Endpoint</p>
+
+<div class="meta">
+  <strong>Task:</strong> QF17 — Extension Slow Loading Fix<br>
+  <strong>Tester:</strong> qa-tester agent<br>
+  <strong>Date:</strong> 2026-03-03 22:04 UTC<br>
+  <strong>Environment:</strong> v1 production (xano.atlanticsoft.co) + bw_cold_recruiting source code<br>
+  <strong>Tools:</strong> curl (backend), code verification (extension files)
+</div>
+
+<h2>1. Backend Test — Fast Endpoint on v1</h2>
+
+<h3>1.1 Single Request with Full Response</h3>
+<pre>$ curl -s -w "\nHTTP: %{http_code} | Time: %{time_total}s" \
+  "https://xano.atlanticsoft.co/api:zE_czJ22/prospect_parse_status_counts"
+
+{"pending":97,"conflict":0,"parsing":0,"failed":0,"total_unparsed":97}
+HTTP: 200 | Time: 0.681162s</pre>
+
+<h3>1.2 Performance Test — 5 Consecutive Requests</h3>
+<pre>Request 1: HTTP 200 | 0.465s
+Request 2: HTTP 200 | 0.549s
+Request 3: HTTP 200 | 0.410s
+Request 4: HTTP 200 | 0.496s
+Request 5: HTTP 200 | 0.365s
+Average: 0.457s | Best: 0.365s | Worst: 0.549s</pre>
+
+<table>
+  <tr><th>Check</th><th>Expected</th><th>Actual</th><th>Result</th></tr>
+  <tr>
+    <td>Response time</td>
+    <td>&lt; 2 seconds</td>
+    <td>0.457s avg (best: 0.365s)</td>
+    <td class="pass">PASS</td>
+  </tr>
+  <tr>
+    <td>Response structure</td>
+    <td><code>{ pending, conflict, parsing, failed, total_unparsed }</code></td>
+    <td>All fields present, correct types</td>
+    <td class="pass">PASS</td>
+  </tr>
+  <tr>
+    <td>HTTP status</td>
+    <td>200</td>
+    <td>200 on all 5 requests</td>
+    <td class="pass">PASS</td>
+  </tr>
+</table>
+
+<h2>2. Extension Code Verification</h2>
+
+<h3>2.1 AC1 — Endpoint Switch (UnparsedProspectManager.js)</h3>
+<table>
+  <tr><th>Check</th><th>Expected</th><th>Actual (line 12)</th><th>Result</th></tr>
+  <tr>
+    <td>countApiUrl</td>
+    <td><code>prospect_parse_status_counts</code></td>
+    <td><code>this.countApiUrl = 'https://xano.atlanticsoft.co/api:zE_czJ22/prospect_parse_status_counts'</code></td>
+    <td class="pass">PASS</td>
+  </tr>
+  <tr>
+    <td>Response parsing</td>
+    <td>Handles flat object format</td>
+    <td>Lines 82-98: Reads <code>data[key]</code> for pending/conflict/parsing/failed, validates with <code>typeof === 'number'</code>, uses <code>data.total_unparsed</code> with fallback to <code>reduce()</code> sum</td>
+    <td class="pass">PASS</td>
+  </tr>
+  <tr>
+    <td>Reset URL</td>
+    <td><code>unparsed_and_lock_reset</code> present</td>
+    <td><code>this.resetParsingUrl = 'https://xano.atlanticsoft.co/api:zE_czJ22/unparsed_and_lock_reset'</code> (line 15)</td>
+    <td class="pass">PASS</td>
+  </tr>
+</table>
+
+<h3>2.2 AC3 — Version Bump (manifest.json)</h3>
+<table>
+  <tr><th>Check</th><th>Expected</th><th>Actual</th><th>Result</th></tr>
+  <tr>
+    <td>Version</td>
+    <td>1.2.3.1 (bumped from 1.2.3.0)</td>
+    <td><code>"version": "1.2.3.1"</code></td>
+    <td class="pass">PASS</td>
+  </tr>
+  <tr>
+    <td>No permission changes</td>
+    <td>Same permissions as before</td>
+    <td>Only version field changed</td>
+    <td class="pass">PASS</td>
+  </tr>
+</table>
+
+<h3>2.3 AC4 — per_page Reduction</h3>
+<table>
+  <tr><th>File</th><th>Expected per_page</th><th>Actual</th><th>Result</th></tr>
+  <tr>
+    <td>popup.js (line 588)</td>
+    <td>50</td>
+    <td><code>perPage: 50</code></td>
+    <td class="pass">PASS</td>
+  </tr>
+  <tr>
+    <td>xano-api.js (line 430)</td>
+    <td>50</td>
+    <td><code>per_page: options.perPage || 50</code></td>
+    <td class="pass">PASS</td>
+  </tr>
+  <tr>
+    <td>classes/TasksManager.js (line 117)</td>
+    <td>50</td>
+    <td><code>perPage: options.perPage || 50</code></td>
+    <td class="pass">PASS</td>
+  </tr>
+</table>
+
+<h2>3. Acceptance Criteria Verdicts</h2>
+
+<table>
+  <tr><th>AC</th><th>Description</th><th>Evidence</th><th>Result</th></tr>
+  <tr>
+    <td>AC1</td>
+    <td>Extension uses <code>prospect_parse_status_counts</code> instead of <code>unparsed_count</code></td>
+    <td>UnparsedProspectManager.js line 12: countApiUrl = prospect_parse_status_counts. Response parsing updated for flat object format (lines 82-98).</td>
+    <td class="pass">PASS</td>
+  </tr>
+  <tr>
+    <td>AC2</td>
+    <td>Extension prospect count loads in &lt; 2 seconds</td>
+    <td>5 consecutive v1 curl tests: avg 0.457s, all under 0.55s. Well within 2s target (was ~22s+ before).</td>
+    <td class="pass">PASS</td>
+  </tr>
+  <tr>
+    <td>AC3</td>
+    <td>Extension version bumped in manifest.json</td>
+    <td>manifest.json: "version": "1.2.3.1" (up from 1.2.3.0)</td>
+    <td class="pass">PASS</td>
+  </tr>
+  <tr>
+    <td>AC4</td>
+    <td>Tasks fetch per_page reduced to 20-50</td>
+    <td>popup.js, xano-api.js, TasksManager.js all set to 50 (down from 200)</td>
+    <td class="pass">PASS</td>
+  </tr>
+</table>
+
+<div class="verdict pass-verdict">
+  <strong>VERDICT: PASS</strong> — All 4 acceptance criteria verified. Endpoint switch confirmed on v1 (&lt;0.5s avg). Version bumped. per_page reduced to 50 across all files.
+</div>
+
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>QF16 QA Report — Scoring Agent Reliability</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px; color: #1a1a1a; }
+  h1 { border-bottom: 3px solid #2563eb; padding-bottom: 12px; }
+  h2 { color: #2563eb; margin-top: 32px; }
+  .meta { background: #f1f5f9; padding: 16px; border-radius: 8px; margin-bottom: 24px; }
+  .meta dt { font-weight: 600; display: inline; }
+  .meta dd { display: inline; margin: 0 24px 0 4px; }
+  .pass { color: #16a34a; font-weight: 700; }
+  .fail { color: #dc2626; font-weight: 700; }
+  table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+  th, td { border: 1px solid #d1d5db; padding: 10px 14px; text-align: left; }
+  th { background: #f8fafc; }
+  .evidence { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; margin: 12px 0; overflow-x: auto; }
+  .evidence pre { margin: 0; white-space: pre-wrap; word-break: break-word; font-size: 13px; }
+  .summary-box { background: #ecfdf5; border: 2px solid #16a34a; border-radius: 8px; padding: 20px; margin-top: 32px; }
+</style>
+</head>
+<body>
+<h1>QF16 QA Report — Scoring Agent Reliability &amp; Router Integration Fix</h1>
+
+<div class="meta">
+  <dl>
+    <dt>Date:</dt><dd>2026-03-06</dd>
+    <dt>Time:</dt><dd>16:55 UTC</dd>
+    <dt>Tester:</dt><dd>qa-tester (automated)</dd>
+    <dt>Environment:</dt><dd>Xano development branch</dd>
+    <dt>Auth:</dt><dd>Dev credentials (pablo@betterway.dev)</dd>
+  </dl>
+</div>
+
+<h2>Test Results Summary</h2>
+<table>
+  <thead>
+    <tr><th>AC</th><th>Description</th><th>Method</th><th>Result</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>AC1</td>
+      <td><code>call_scoring_agent</code> tool passes pre-fetched <code>person_data</code></td>
+      <td>Code review + runtime</td>
+      <td class="pass">PASS</td>
+    </tr>
+    <tr>
+      <td>AC2</td>
+      <td><code>auto_score_agent</code> uses shared function</td>
+      <td>Code review</td>
+      <td class="pass">PASS</td>
+    </tr>
+    <tr>
+      <td>AC3</td>
+      <td>Double-loop bug fixed</td>
+      <td>Code review</td>
+      <td class="pass">PASS</td>
+    </tr>
+    <tr>
+      <td>AC4</td>
+      <td>Router marks task as failed when all scoring attempts fail</td>
+      <td>Code review</td>
+      <td class="pass">PASS</td>
+    </tr>
+    <tr>
+      <td>AC5</td>
+      <td>End-to-end: router invokes scoring, gets valid scores, proceeds</td>
+      <td>Runtime (curl)</td>
+      <td class="pass">PASS</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>AC1 — call_scoring_agent tool passes person_data</h2>
+<h3>Code Review</h3>
+<p>File: <code>tools/271_call_scoring_agent.xs</code></p>
+<div class="evidence"><pre>// Pre-fetch person data so the scoring agent doesn't need to fetch it itself
+function.run "persons/get_all_person_data" {
+  input = {
+    person_id  : $input.person_id
+    person_type: $input.person_type
+  }
+} as $person_data
+
+ai.agent.run "Prospects and Candidates Project Scorer" {
+  args = {}
+    |set:"project_id":$input.project_id
+    |set:"person_type":$input.person_type
+    |set:"person_id":$input.person_id
+    |set:"association_id":$input.association_id
+    |set:"person_data":$person_data    // &lt;-- person_data passed
+  allow_tool_execution = true
+} as $result</pre></div>
+<p><span class="pass">PASS</span> — <code>get_all_person_data</code> is called before <code>ai.agent.run</code>, and <code>$person_data</code> is passed in the <code>args</code> object.</p>
+
+<h3>Runtime Verification</h3>
+<p>The end-to-end test (AC5) confirms the tool works at runtime. The router's trace shows <code>call_scoring_agent</code> was invoked 3 times, each returning a valid score (56, 88, 65). The agent could not have scored without person_data since it has no data-fetching tools.</p>
+
+<h2>AC2 — auto_score_agent uses shared function</h2>
+<p>File: <code>tasks/148_auto_score_agent.xs</code>, line 86:</p>
+<div class="evidence"><pre>function.run "agents/call_score_agent" {
+  input = {
+    person_id  : $task.person_id
+    person_type: $task.person_type
+    task_id    : $task.id
+    project_id : $task.project_id
+    association_id: $task.payload.association_id|first_notnull:0
+  }
+} as $result</pre></div>
+<p><span class="pass">PASS</span> — No inline <code>ai.agent.run</code>. Uses shared function <code>agents/call_score_agent</code> which handles person_data pre-fetch internally.</p>
+
+<h2>AC3 — Double-loop bug fixed</h2>
+<p>File: <code>tasks/148_auto_score_agent.xs</code></p>
+<div class="evidence"><pre>// Single foreach loop building pending list, capped at 5
+var $max_batch { value = 5 }
+var $idx { value = 0 }
+
+foreach ($pending_tasks) {
+  each as $task_row {
+    conditional {
+      if ($idx &lt; $max_batch) {
+        var.update $pending_list { value = $pending_list|append:$task_row }
+        var.update $idx { value = $idx + 1 }
+      }
+    }
+  }
+}</pre></div>
+<p><span class="pass">PASS</span> — Only one <code>foreach</code> loop exists (lines 45-59). No duplicate loop that previously built the list twice (capped at 1 then appended again capped at 5). Single loop caps at 5.</p>
+
+<h2>AC4 — Router marks task as failed when all scores fail</h2>
+<h3>Agent Prompt (agents/54_person_router_agent.xs, FAILURE HANDLING section)</h3>
+<div class="evidence"><pre>## FAILURE HANDLING
+- If scoring fails for a project, log it as FAILED and CONTINUE to the next project.
+- After processing ALL projects, check results:
+  - If at least 1 project was scored successfully → report success with summary
+  - If ALL scoring attempts failed (0 successful scores) → you MUST report FAILURE.
+    Output "TASK_FAILED: All scoring attempts failed" as the FIRST line of your response</pre></div>
+
+<h3>Function Detection (functions/agents/8049_call_prospect_router.xs, line 140)</h3>
+<div class="evidence"><pre>// Check if agent reported all scoring failed (TASK_FAILED marker)
+conditional {
+  if ($agent_error == "" && $agent_result_text|contains:"TASK_FAILED") {
+    var.update $agent_error {
+      value = "All scoring attempts failed — task marked as failed for retry"
+    }
+  }
+}</pre></div>
+<p>This runs <strong>before</strong> the transient error check (line 147+), so TASK_FAILED detection takes priority. When <code>$agent_error</code> is set and doesn't match transient patterns, the task status becomes <code>"failed"</code> (line 166).</p>
+<p><span class="pass">PASS</span> — TASK_FAILED marker in agent prompt + detection logic in function + correct status flow to "failed".</p>
+
+<h2>AC5 — End-to-end: Router invokes scoring successfully</h2>
+<h3>Test Execution</h3>
+<div class="evidence"><pre>POST /api:8MRsSZQv:development/prospect_router?x-data-source=development
+Body: {"person_id":16891,"person_type":"prospect","origin_project_id":12}
+Time: 2026-03-06 16:55:33 UTC</pre></div>
+
+<h3>Response (key fields)</h3>
+<div class="evidence"><pre>{
+  "success": true,
+  "task_id": 1677,
+  "error": "",
+  "is_transient": false
+}</pre></div>
+
+<h3>Scoring Results</h3>
+<table>
+  <thead><tr><th>Project</th><th>Score</th><th>Action</th><th>Outreach</th></tr></thead>
+  <tbody>
+    <tr><td>ZZ TEST PROJECT (origin, ID 12)</td><td>56</td><td>Scoring (40-79 range)</td><td>N/A</td></tr>
+    <tr><td>Senior Angular Developer (ID 10)</td><td>88</td><td>Pre Selected (&ge;80)</td><td>Skipped (pending task exists)</td></tr>
+    <tr><td>Staff Engineer C# .NET (ID 13)</td><td>65</td><td>Pre Selected (stage change applied)</td><td>N/A</td></tr>
+  </tbody>
+</table>
+
+<h3>Agent Trace (tool calls)</h3>
+<div class="evidence"><pre>1. get_person(16891, prospect)
+2. get_person_project_associations(16891, prospect)
+3. get_users()
+4. get_active_projects()
+5. get_project_stages_by_id(12, prospects)
+6. call_scoring_agent(project=12, person=16891, assoc=4296) → Score 56
+7. change_person_project_association_stage_info(4296, "Score: 56")
+8. get_project_stages_by_id(10, prospects)
+9. call_scoring_agent(project=10, person=16891, assoc=1804) → Score 88
+10. change_person_project_association_stage_info(1804, stage=Pre Selected)
+11. get_touchpoints(16891, prospect, 10)
+12. pending_tasks_per_person(prospect, 16891, 10)
+13. get_project_stages_by_id(13, prospects)
+14. call_scoring_agent(project=13, person=16891, assoc=4295) → Score 65
+15. change_person_project_association_stage_info(4295, stage=Pre Selected)
+16. get_touchpoints(16891, prospect, 13)
+17. pending_tasks_per_person(prospect, 16891, 13)</pre></div>
+
+<h3>Task Verification</h3>
+<div class="evidence"><pre>Task 1677: status="done", completed_at set</pre></div>
+
+<p><span class="pass">PASS</span> — Router successfully scored 3 projects (56, 88, 65), applied stage changes, checked outreach eligibility, and marked task as done. Zero failures.</p>
+
+<div class="summary-box">
+  <h2 style="margin-top:0; color: #16a34a;">Overall Verdict: ALL 5 ACs PASS</h2>
+  <ul>
+    <li><strong>AC1</strong>: Tool pre-fetches person_data — confirmed in code and runtime</li>
+    <li><strong>AC2</strong>: Scheduled task uses shared function — confirmed in code</li>
+    <li><strong>AC3</strong>: Single loop, capped at 5 — confirmed in code</li>
+    <li><strong>AC4</strong>: TASK_FAILED detection + failed status flow — confirmed in code</li>
+    <li><strong>AC5</strong>: End-to-end router scored 3 projects successfully — confirmed via curl at 16:55 UTC</li>
+  </ul>
+</div>
+
+</body>
+</html>

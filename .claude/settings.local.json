@@ -73,6 +73,16 @@
         "WebFetch(domain:docs.xano.com)",
         "WebFetch(domain:xano.atlanticsoft.co)",
         "WebFetch"
+    ],
+    "deny": [
+      "Read(../.env)",
+      "Read(../.env.*)",
+      "Read(../**/.env)",
+      "Read(../**/.env.*)",
+      "Read(/home/pablo/projects/bwats/.env)",
+      "Read(/home/pablo/projects/bwats/.env.*)",
+      "Read(/home/pablo/projects/bwats/**/.env)",
+      "Read(/home/pablo/projects/bwats/**/.env.*)"
     ]
   }
 }

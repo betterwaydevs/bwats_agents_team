@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QF9 Correction QA Report - 2026-03-06</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #333; padding: 24px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  h1 { font-size: 1.6em; margin-bottom: 4px; }
+  .subtitle { color: #666; margin-bottom: 24px; }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .summary-card { background: #fff; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.1); text-align: center; }
+  .summary-card .value { font-size: 2em; font-weight: 700; }
+  .summary-card .label { color: #666; font-size: .85em; margin-top: 4px; }
+  .pass { color: #16a34a; }
+  .fail { color: #dc2626; }
+  .section { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  .section h2 { font-size: 1.15em; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: .9em; }
+  th { background: #f8f8f8; text-align: left; padding: 8px 10px; border-bottom: 2px solid #ddd; }
+  td { padding: 8px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: .8em; font-weight: 600; }
+  .badge-pass { background: #dcfce7; color: #166534; }
+  .badge-insert { background: #dbeafe; color: #1e40af; }
+  .badge-dupe { background: #fef9c3; color: #854d0e; }
+  .badge-unauth { background: #fee2e2; color: #991b1b; }
+  code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: .85em; word-break: break-all; }
+  .mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: .85em; }
+  .ac-table td:first-child { width: 80px; font-weight: 600; }
+  .ac-table td:nth-child(2) { width: 100px; }
+  pre { background: #f8f8f8; padding: 10px; border-radius: 6px; overflow-x: auto; font-size: .82em; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>QF9 Correction Cycle - QA Runtime Report</h1>
+<p class="subtitle">Endpoints: <code>create_linkedin_invitation</code> &amp; <code>create_linkedin_connections</code> | Environment: Development | Date: 2026-03-06 03:32-03:33 UTC</p>
+
+<div class="summary-grid">
+  <div class="summary-card">
+    <div class="value pass">22/22</div>
+    <div class="label">Calls Passed</div>
+  </div>
+  <div class="summary-card">
+    <div class="value pass">5/5</div>
+    <div class="label">ACs Passed</div>
+  </div>
+  <div class="summary-card">
+    <div class="value">398ms</div>
+    <div class="label">Avg Response (inv)</div>
+  </div>
+  <div class="summary-card">
+    <div class="value">390ms</div>
+    <div class="label">Avg Response (con)</div>
+  </div>
+</div>
+
+<!-- AC Verdicts -->
+<div class="section">
+  <h2>Acceptance Criteria Verdicts</h2>
+  <table class="ac-table">
+    <tr><td>AC1</td><td><span class="badge badge-pass">PASS</span></td><td><strong>Response times sub-1s</strong> - All 20 authenticated calls responded in 366-432ms. Average: 394ms. Zero outliers. Well under the 1s threshold.</td></tr>
+    <tr><td>AC2</td><td><span class="badge badge-pass">PASS</span></td><td><strong>Insert returns inserted=true, already_exists=false</strong> - All 14 new-record calls (7 inv + 7 con) returned <code>inserted: true, already_exists: false</code> with correct record data.</td></tr>
+    <tr><td>AC3</td><td><span class="badge badge-pass">PASS</span></td><td><strong>Duplicate returns inserted=false, already_exists=true</strong> - All 6 duplicate calls (3 inv + 3 con) returned <code>inserted: false, already_exists: true</code> with original record data (same ID, same created_at).</td></tr>
+    <tr><td>AC4</td><td><span class="badge badge-pass">PASS</span></td><td><strong>No stage movement side effects</strong> - Response contains only record data + flags. No pipeline/stage/action fields. Code review confirms <code>automatic_action_association</code> removed. No touchpoint or stage calls in either endpoint.</td></tr>
+    <tr><td>AC5</td><td><span class="badge badge-pass">PASS</span></td><td><strong>Unauthenticated calls rejected</strong> - Both endpoints return HTTP 401 <code>ERROR_CODE_UNAUTHORIZED</code> when called without a Bearer token.</td></tr>
+  </table>
+</div>
+
+<!-- Unauthenticated Tests -->
+<div class="section">
+  <h2>Unauthenticated Access Tests</h2>
+  <table>
+    <tr><th>Endpoint</th><th>Time (UTC)</th><th>HTTP</th><th>Response</th><th>Duration</th><th>Result</th></tr>
+    <tr>
+      <td><code>create_linkedin_invitation</code></td>
+      <td class="mono">03:32:46</td>
+      <td class="mono">401</td>
+      <td><code>ERROR_CODE_UNAUTHORIZED</code></td>
+      <td class="mono">0.406s</td>
+      <td><span class="badge badge-unauth">REJECTED</span></td>
+    </tr>
+    <tr>
+      <td><code>create_linkedin_connections</code></td>
+      <td class="mono">03:32:46</td>
+      <td class="mono">401</td>
+      <td><code>ERROR_CODE_UNAUTHORIZED</code></td>
+      <td class="mono">0.543s</td>
+      <td><span class="badge badge-unauth">REJECTED</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- Invitation Tests -->
+<div class="section">
+  <h2>create_linkedin_invitation - 10 Calls</h2>
+  <table>
+    <tr><th>#</th><th>Time (UTC)</th><th>Profile URL</th><th>HTTP</th><th>Duration</th><th>inserted</th><th>already_exists</th><th>Record ID</th><th>Result</th></tr>
+    <tr><td>1</td><td class="mono">03:32:46</td><td><code>qa-test-inv-...-1</code></td><td class="mono">200</td><td class="mono">0.395s</td><td>true</td><td>false</td><td>1939</td><td><span class="badge badge-insert">INSERT</span></td></tr>
+    <tr><td>2</td><td class="mono">03:32:50</td><td><code>qa-test-inv-...-2</code></td><td class="mono">200</td><td class="mono">0.432s</td><td>true</td><td>false</td><td>1940</td><td><span class="badge badge-insert">INSERT</span></td></tr>
+    <tr><td>3</td><td class="mono">03:32:50</td><td><code>qa-test-inv-...-3</code></td><td class="mono">200</td><td class="mono">0.408s</td><td>true</td><td>false</td><td>1941</td><td><span class="badge badge-insert">INSERT</span></td></tr>
+    <tr><td>4</td><td class="mono">03:32:51</td><td><code>qa-test-inv-...-1</code></td><td class="mono">200</td><td class="mono">0.396s</td><td>false</td><td>true</td><td>1939</td><td><span class="badge badge-dupe">DUPE</span></td></tr>
+    <tr><td>5</td><td class="mono">03:32:51</td><td><code>qa-test-inv-...-2</code></td><td class="mono">200</td><td class="mono">0.417s</td><td>false</td><td>true</td><td>1940</td><td><span class="badge badge-dupe">DUPE</span></td></tr>
+    <tr><td>6</td><td class="mono">03:32:51</td><td><code>qa-test-inv-...-new-6</code></td><td class="mono">200</td><td class="mono">0.395s</td><td>true</td><td>false</td><td>1942</td><td><span class="badge badge-insert">INSERT</span></td></tr>
+    <tr><td>7</td><td class="mono">03:32:52</td><td><code>qa-test-inv-...-new-7</code></td><td class="mono">200</td><td class="mono">0.400s</td><td>true</td><td>false</td><td>1943</td><td><span class="badge badge-insert">INSERT</span></td></tr>
+    <tr><td>8</td><td class="mono">03:32:52</td><td><code>qa-test-inv-...-3</code></td><td class="mono">200</td><td class="mono">0.418s</td><td>false</td><td>true</td><td>1941</td><td><span class="badge badge-dupe">DUPE</span></td></tr>
+    <tr><td>9</td><td class="mono">03:32:53</td><td><code>qa-test-inv-...-new-9</code></td><td class="mono">200</td><td class="mono">0.399s</td><td>true</td><td>false</td><td>1944</td><td><span class="badge badge-insert">INSERT</span></td></tr>
+    <tr><td>10</td><td class="mono">03:32:53</td><td><code>qa-test-inv-...-new-10</code></td><td class="mono">200</td><td class="mono">0.418s</td><td>true</td><td>false</td><td>1945</td><td><span class="badge badge-insert">INSERT</span></td></tr>
+  </table>
+  <p style="margin-top:10px; font-size:.9em; color:#555;"><strong>Summary:</strong> 7 inserts, 3 dedupes. Avg response: 398ms. Range: 395-432ms. All correct.</p>
+</div>
+
+<!-- Connection Tests -->
+<div class="section">
+  <h2>create_linkedin_connections - 10 Calls</h2>
+  <table>
+    <tr><th>#</th><th>Time (UTC)</th><th>Profile URL</th><th>HTTP</th><th>Duration</th><th>inserted</th><th>already_exists</th><th>Record ID</th><th>Result</th></tr>
+    <tr><td>1</td><td class="mono">03:32:53</td><td><code>qa-test-con-...-1</code></td><td class="mono">200</td><td class="mono">0.367s</td><td>true</td><td>false</td><td>23775</td><td><span class="badge badge-insert">INSERT</span></td></tr>
+    <tr><td>2</td><td class="mono">03:32:54</td><td><code>qa-test-con-...-2</code></td><td class="mono">200</td><td class="mono">0.386s</td><td>true</td><td>false</td><td>23776</td><td><span class="badge badge-insert">INSERT</span></td></tr>
+    <tr><td>3</td><td class="mono">03:32:54</td><td><code>qa-test-con-...-3</code></td><td class="mono">200</td><td class="mono">0.384s</td><td>true</td><td>false</td><td>23777</td><td><span class="badge badge-insert">INSERT</span></td></tr>
+    <tr><td>4</td><td class="mono">03:32:54</td><td><code>qa-test-con-...-1</code></td><td class="mono">200</td><td class="mono">0.396s</td><td>false</td><td>true</td><td>23775</td><td><span class="badge badge-dupe">DUPE</span></td></tr>
+    <tr><td>5</td><td class="mono">03:32:55</td><td><code>qa-test-con-...-2</code></td><td class="mono">200</td><td class="mono">0.392s</td><td>false</td><td>true</td><td>23776</td><td><span class="badge badge-dupe">DUPE</span></td></tr>
+    <tr><td>6</td><td class="mono">03:32:55</td><td><code>qa-test-con-...-new-6</code></td><td class="mono">200</td><td class="mono">0.422s</td><td>true</td><td>false</td><td>23778</td><td><span class="badge badge-insert">INSERT</span></td></tr>
+    <tr><td>7</td><td class="mono">03:32:56</td><td><code>qa-test-con-...-new-7</code></td><td class="mono">200</td><td class="mono">0.385s</td><td>true</td><td>false</td><td>23779</td><td><span class="badge badge-insert">INSERT</span></td></tr>
+    <tr><td>8</td><td class="mono">03:32:56</td><td><code>qa-test-con-...-3</code></td><td class="mono">200</td><td class="mono">0.380s</td><td>false</td><td>true</td><td>23777</td><td><span class="badge badge-dupe">DUPE</span></td></tr>
+    <tr><td>9</td><td class="mono">03:32:56</td><td><code>qa-test-con-...-new-9</code></td><td class="mono">200</td><td class="mono">0.385s</td><td>true</td><td>false</td><td>23780</td><td><span class="badge badge-insert">INSERT</span></td></tr>
+    <tr><td>10</td><td class="mono">03:32:57</td><td><code>qa-test-con-...-new-10</code></td><td class="mono">200</td><td class="mono">0.407s</td><td>true</td><td>false</td><td>23781</td><td><span class="badge badge-insert">INSERT</span></td></tr>
+  </table>
+  <p style="margin-top:10px; font-size:.9em; color:#555;"><strong>Summary:</strong> 7 inserts, 3 dedupes. Avg response: 390ms. Range: 367-422ms. All correct.</p>
+</div>
+
+<!-- Test Environment -->
+<div class="section">
+  <h2>Test Environment</h2>
+  <table>
+    <tr><td style="width:200px"><strong>Base URL</strong></td><td><code>https://xano.atlanticsoft.co/api:mIBuuXC3:development/</code></td></tr>
+    <tr><td><strong>Data Source</strong></td><td><code>x-data-source=development</code></td></tr>
+    <tr><td><strong>Auth</strong></td><td>Bearer token via <code>api:Ks58d17q:development/auth/login</code></td></tr>
+    <tr><td><strong>Test User</strong></td><td>pablo@betterway.dev (user_id: 1)</td></tr>
+    <tr><td><strong>Test Execution</strong></td><td>2026-03-06 03:32:46 - 03:32:57 UTC (~11 seconds total)</td></tr>
+    <tr><td><strong>Total Calls</strong></td><td>22 (2 unauth + 10 invitation + 10 connection)</td></tr>
+    <tr><td><strong>Test URLs</strong></td><td>Unique per run using epoch timestamp <code>1772767966</code></td></tr>
+  </table>
+</div>
+
+<!-- Dedupe Consistency -->
+<div class="section">
+  <h2>Dedupe Consistency Verification</h2>
+  <p style="font-size:.9em; margin-bottom:10px;">When a duplicate URL is submitted, the endpoint returns the <em>original</em> record (same ID and created_at) with <code>inserted: false</code>. This confirms the dedupe lookup works correctly and no duplicate rows are created.</p>
+  <table>
+    <tr><th>Endpoint</th><th>Original Call</th><th>Dupe Call</th><th>Same ID?</th><th>Same created_at?</th></tr>
+    <tr><td>Invitation</td><td>#1 (ID 1939)</td><td>#4 (ID 1939)</td><td class="pass">Yes</td><td class="pass">Yes</td></tr>
+    <tr><td>Invitation</td><td>#2 (ID 1940)</td><td>#5 (ID 1940)</td><td class="pass">Yes</td><td class="pass">Yes</td></tr>
+    <tr><td>Invitation</td><td>#3 (ID 1941)</td><td>#8 (ID 1941)</td><td class="pass">Yes</td><td class="pass">Yes</td></tr>
+    <tr><td>Connection</td><td>#1 (ID 23775)</td><td>#4 (ID 23775)</td><td class="pass">Yes</td><td class="pass">Yes</td></tr>
+    <tr><td>Connection</td><td>#2 (ID 23776)</td><td>#5 (ID 23776)</td><td class="pass">Yes</td><td class="pass">Yes</td></tr>
+    <tr><td>Connection</td><td>#3 (ID 23777)</td><td>#8 (ID 23777)</td><td class="pass">Yes</td><td class="pass">Yes</td></tr>
+  </table>
+</div>
+
+<!-- Code Verification -->
+<div class="section">
+  <h2>Code-Level Verification (AC4)</h2>
+  <p style="font-size:.9em;">Both endpoint files were reviewed to confirm no stage movement or action association calls exist:</p>
+  <ul style="font-size:.9em; margin: 8px 0 0 20px;">
+    <li><code>16924_create_linkedin_invitation_POST.xs</code> (66 lines) - No <code>automatic_action_association</code>, no <code>move_person</code>, no <code>function.run</code>/<code>function.call</code>. Only: auth check, preconditions, dedupe query, conditional insert, response.</li>
+    <li><code>16921_create_linkedin_connections_POST.xs</code> (65 lines) - Same clean pattern. No side-effect calls.</li>
+  </ul>
+</div>
+
+<p style="text-align:center; color:#999; font-size:.8em; margin-top:20px;">QA Report generated 2026-03-06 03:33 UTC | Agent: qa-tester | QF9 Correction Cycle</p>
+
+</div>
+</body>
+</html>

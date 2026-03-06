@@ -49,17 +49,58 @@ Get a single project by ID. Same response shape as above (single object).
 
 Create a new project. **Requires confirmation.**
 
-**Body:**
+**Body (all available fields):**
 ```json
 {
-  "name": "Project Name",
-  "description": "Optional description",
+  "name": "Senior React Developer",
+  "description": "<p>Looking for a senior React dev with 5+ years...</p>",
   "location": "LATAM",
   "status": "active",
-  "candidate_role_id": 1,
-  "prospect_role_id": 1
+  "candidate_role_id": 5,
+  "prospect_role_id": 3,
+  "company_id": 2,
+  "english_validation_url": "https://videoask.com/...",
+  "messaging_template": "Hi {{candidate_first_name}}, we have a role...",
+  "email_template": "{\"subject\":\"Opportunity: {{project_title}}\",\"body\":\"<p>Hi {{candidate_first_name}}...</p>\"}",
+  "linkedin_invite_template": "Hi {{candidate_first_name}}, I'd like to connect...",
+  "linkedin_inmail_template": "Hi {{candidate_first_name}}, I found your profile...",
+  "linked_inmail_subject": "Exciting opportunity",
+  "internal_qualifications_and_notes": "Must have: React, TypeScript, 5+ years",
+  "public": false
 }
 ```
+
+**Required fields:** `name`, `location`, `status`, `candidate_role_id`, `prospect_role_id`
+
+**Template variables:** `{{candidate_first_name}}`, `{{candidate_last_name}}`, `{{project_title}}`, `{{apply_link}}`, `{{user_first_name}}`, `{{user_last_name}}`, `{{account_first_name}}`, `{{account_last_name}}`, `{{account_signature}}`
+
+**Gotchas:**
+- `description` accepts HTML
+- `email_template` is a JSON string with `subject` and `body` keys (body is HTML)
+- `linked_inmail_subject` — NOT `linkedin_inmail_subject` (DB typo)
+- `linkedin_invite_template` has a 300 character limit
+- Stages are NOT created automatically — call `initialize-stages` after creation
+
+### Fetching Roles (for role_id fields)
+
+```
+GET /api:wosIWFpR/roles?role_type=candidate_prospecting&x-data-source=live  → candidate roles
+GET /api:wosIWFpR/roles?role_type=prospects&x-data-source=live              → prospect roles
+```
+
+Returns array of `{ id, name, role_type }`. Use the `id` for `candidate_role_id` / `prospect_role_id`.
+
+### Full Project Creation Flow
+
+1. Ask the user for: project name, location, company, role/JD description
+2. Fetch available roles: `GET /roles?role_type=candidate_prospecting` and `GET /roles?role_type=prospects`
+3. Present role options — let user pick or suggest based on the JD
+4. Build the project body with all fields the user provided
+5. **Confirm** with the user before creating
+6. `POST /project` to create
+7. `GET /project/{id}/initialize-stages?stage_type=prospects` to create prospect pipeline
+8. `GET /project/{id}/initialize-stages?stage_type=candidates` to create candidate pipeline
+9. Show the created project with its pipeline
 
 ### PATCH `/api:_dY_2A8p/project/{id}?x-data-source=live`
 

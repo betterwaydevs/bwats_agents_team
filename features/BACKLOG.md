@@ -41,7 +41,7 @@ When picking up a task, agents MUST read both the spec and progress files before
 | QF13 | Pending Prospect Count Performance — Fast count + move to ATS + reset button | BOTH | done | — | [delivery](delivery/QF13.md) |
 | QF14 | Add_prospect conflict error — db.patch expects array, gets string | BACK | done | — | [delivery](delivery/QF14.md) |
 | QF15 | Add .env deny rules to `.claude/settings.local.json` — agent permissions hardening | TEAM | done | — | |
-| **QF16** | **Scoring Agent Reliability & Router Integration Fix** | **BACK** | **pending** | — | [spec](specs/QF16-scoring-agent-reliability.md) |
+| QF16 | Scoring Agent Reliability & Router Integration Fix | BACK | dev-complete | — | [delivery](delivery/QF16.md) |
 | QF17 | Extension Slow Loading — Switch to fast count endpoint + tasks N+1 fix | EXT + BACK | done | — | [delivery](delivery/QF17.md) |
 
 

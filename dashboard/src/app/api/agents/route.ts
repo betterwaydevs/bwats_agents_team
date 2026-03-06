@@ -4,7 +4,7 @@ import path from "path";
 
 export async function GET() {
   try {
-    const agentsDir = path.join(process.cwd(), "..", "team", ".claude", "agents");
+    const agentsDir = path.join(process.cwd(), "..", ".claude", "agents");
 
     if (!fs.existsSync(agentsDir)) {
       return NextResponse.json([]);
